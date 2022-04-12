@@ -11,14 +11,15 @@ sealed class Screen(val route: String, val name: String) {
     object AirBarScreen : Screen("airbar", "AirBar")
     object MainScreen : Screen("mainscreen", "Playground")
     object BroadcastReceiverScreen : Screen("broadcastreceiver", "Broadcast Receiver")
+    object AnimatedLazyListScreen : Screen("animatedlazylist", "Animated LazyList")
 
     companion object {
-        val items = arrayOf(AirBarScreen, BroadcastReceiverScreen)
+        val items = arrayOf(AirBarScreen, BroadcastReceiverScreen, AnimatedLazyListScreen)
     }
 }
 
 @Composable
-fun ScaffoldTop(screen: Screen, navController: NavController, block: @Composable (PaddingValues) -> Unit) {
+fun ScaffoldTop(screen: Screen, navController: NavController, bottomBar: @Composable () -> Unit = {}, block: @Composable (PaddingValues) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -26,6 +27,7 @@ fun ScaffoldTop(screen: Screen, navController: NavController, block: @Composable
                 navigationIcon = { IconButton(onClick = { navController.popBackStack() }) { Icon(Icons.Default.ArrowBack, null) } }
             )
         },
+        bottomBar = bottomBar,
         content = block
     )
 }

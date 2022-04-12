@@ -8,8 +8,9 @@ import android.icu.text.SimpleDateFormat
 import android.os.BatteryManager
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -183,18 +184,20 @@ fun batteryIntentFilter() = IntentFilter().apply {
 @Preview
 fun BroadcastReceiverScreen(navController: NavController = rememberNavController()) {
     ScaffoldTop(Screen.BroadcastReceiverScreen, navController = navController) { p ->
-        Column(modifier = Modifier.padding(p)) {
-
-            val currentTime by currentTime()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Text("Time: ${SimpleDateFormat.getDateTimeInstance().format(currentTime)}")
-            } else {
-                Text("Time: ${java.text.SimpleDateFormat.getDateTimeInstance().format(currentTime)}")
+        LazyColumn(modifier = Modifier.padding(p)) {
+            item {
+                val currentTime by currentTime()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Text("Time: ${SimpleDateFormat.getDateTimeInstance().format(currentTime)}")
+                } else {
+                    Text("Time: ${java.text.SimpleDateFormat.getDateTimeInstance().format(currentTime)}")
+                }
             }
-
-            val batteryInfo by batteryInfo()
-            Text("Battery: $batteryInfo")
-
+            item { Divider() }
+            item {
+                val batteryInfo by batteryInfo()
+                Text("Battery: $batteryInfo")
+            }
         }
     }
 }

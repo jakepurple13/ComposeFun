@@ -27,15 +27,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeFunTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-
                     val navController = rememberNavController()
-
                     NavHost(navController = navController, startDestination = Screen.MainScreen.route) {
                         composable(Screen.MainScreen.route) { MainScreen(navController) }
                         composable(Screen.AirBarScreen.route) { AirBarLayout(navController) }
                         composable(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
+                        composable(Screen.AnimatedLazyListScreen.route) { AnimatedLazyListScreen(navController) }
                     }
-
                 }
             }
         }
