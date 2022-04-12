@@ -3,6 +3,7 @@ package com.programmersbox.composefun
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
@@ -12,6 +13,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,9 +26,9 @@ class GroupButtonModel<T>(val item: T, val iconContent: @Composable () -> Unit)
 
 @Composable
 fun <T> GroupButton(
-    modifier: Modifier = Modifier,
     selected: T,
     options: List<GroupButtonModel<T>>,
+    modifier: Modifier = Modifier,
     selectedColor: Color = MaterialTheme.colors.primaryVariant,
     unselectedColor: Color = MaterialTheme.colors.surface,
     shape: CornerBasedShape = RoundedCornerShape(20.0.dp),
@@ -57,10 +59,25 @@ fun <T> GroupButton(
 @Preview
 fun GroupButtonScreen(navController: NavController = rememberNavController()) {
     ScaffoldTop(screen = Screen.GroupButtonScreen, navController = navController) { p ->
-        Column(modifier = Modifier.padding(p)) {
+        Column(
+            modifier = Modifier
+                .padding(p)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             val list = listOf(0, 1, 2, 3, 4, 5)
             var f by remember { mutableStateOf(list.random()) }
             GroupButton(selected = f, options = list.map { GroupButtonModel(it) { Text("$it") } }) { f = it }
+            GroupButton(
+                selected = f,
+                shape = MaterialTheme.shapes.small,
+                options = list.map { GroupButtonModel(it) { Text("$it") } }
+            ) { f = it }
+            GroupButton(
+                selected = f,
+                shape = MaterialTheme.shapes.large,
+                options = list.map { GroupButtonModel(it) { Text("$it") } }
+            ) { f = it }
         }
     }
 }
