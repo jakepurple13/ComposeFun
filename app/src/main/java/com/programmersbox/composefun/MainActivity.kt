@@ -13,6 +13,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.AirBarScreen.route) { AirBarLayout(navController) }
                         composable(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
                         composable(Screen.AnimatedLazyListScreen.route) { AnimatedLazyListScreen(navController) }
+                        composable(Screen.GroupButtonScreen.route) { GroupButtonScreen(navController) }
                     }
                 }
             }
@@ -43,12 +45,12 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(navController: NavController) {
-    Scaffold(topBar = { TopAppBar(title = { Text(Screen.MainScreen.name)}) }) {
+    Scaffold(topBar = { TopAppBar(title = { Text(Screen.MainScreen.name) }) }) {
         LazyVerticalGrid(
             cells = GridCells.Fixed(3),
             contentPadding = it,
             verticalArrangement = Arrangement.spacedBy(2.dp),
             horizontalArrangement = Arrangement.spacedBy(2.dp)
-        ) { items(Screen.items) { Button(onClick = { navController.navigate(it.route) }) { Text(it.name) } } }
+        ) { items(Screen.items) { Button(onClick = { navController.navigate(it.route) }) { Text(it.name, textAlign = TextAlign.Center) } } }
     }
 }

@@ -8,13 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 
 sealed class Screen(val route: String, val name: String) {
-    object AirBarScreen : Screen("airbar", "AirBar")
     object MainScreen : Screen("mainscreen", "Playground")
+    object AirBarScreen : Screen("airbar", "AirBar Playground")
     object BroadcastReceiverScreen : Screen("broadcastreceiver", "Broadcast Receiver")
     object AnimatedLazyListScreen : Screen("animatedlazylist", "Animated LazyList")
+    object GroupButtonScreen : Screen("groupbutton", "Group Buttons")
 
     companion object {
-        val items = arrayOf(AirBarScreen, BroadcastReceiverScreen, AnimatedLazyListScreen)
+        val items = arrayOf(AirBarScreen, BroadcastReceiverScreen, AnimatedLazyListScreen, GroupButtonScreen)
     }
 }
 
