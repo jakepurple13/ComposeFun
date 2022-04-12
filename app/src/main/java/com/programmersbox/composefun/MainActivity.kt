@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.GroupButtonScreen.route) { GroupButtonScreen(navController) }
                         composable(Screen.SettingsScreen.route) { SettingsScreen(navController) }
                         composable(Screen.BannerBoxScreen.route) { BannerBoxScreen(navController) }
+                        composable(Screen.ShadowScreen.route) { ShadowScreen(navController) }
                     }
                 }
             }
