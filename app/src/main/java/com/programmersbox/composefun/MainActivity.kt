@@ -4,13 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,8 +31,9 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
 
                     NavHost(navController = navController, startDestination = Screen.MainScreen.route) {
-                        composable(Screen.MainScreen.route) { MainScreen(navController = navController) }
+                        composable(Screen.MainScreen.route) { MainScreen(navController) }
                         composable(Screen.AirBarScreen.route) { AirBarLayout(navController) }
+                        composable(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
                     }
 
                 }
@@ -44,14 +48,9 @@ fun MainScreen(navController: NavController) {
     Scaffold(topBar = { TopAppBar(title = { Text(Screen.MainScreen.name)}) }) {
         LazyVerticalGrid(
             cells = GridCells.Fixed(3),
-            contentPadding = it
-        ) {
-            item { Button(onClick = { navController.navigate(Screen.AirBarScreen.route) }) { Text(Screen.AirBarScreen.name) } }
-        }
+            contentPadding = it,
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
+        ) { items(Screen.items) { Button(onClick = { navController.navigate(it.route) }) { Text(it.name) } } }
     }
-}
-
-sealed class Screen(val route: String, val name: String) {
-    object AirBarScreen : Screen("airbar", "AirBar")
-    object MainScreen : Screen("mainscreen", "Playground")
 }

@@ -6,7 +6,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -295,14 +294,7 @@ fun AirBar(
 @Composable
 @Preview
 fun AirBarLayout(navController: NavController = rememberNavController()) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(Screen.AirBarScreen.name) },
-                navigationIcon = { IconButton(onClick = { navController.popBackStack() }) { Icon(Icons.Default.ArrowBack, null) } }
-            )
-        }
-    ) { p ->
+    ScaffoldTop(Screen.AirBarScreen, navController = navController) { p ->
         val airBar = rememberAirBarController(45.0)
         val airBar2 = rememberAirBarController(90.0, isHorizontal = true)
         val airBar3 = rememberAirBarController(40.0, isHorizontal = true)
