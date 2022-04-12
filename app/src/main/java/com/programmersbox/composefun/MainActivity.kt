@@ -35,6 +35,8 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
                         composable(Screen.AnimatedLazyListScreen.route) { AnimatedLazyListScreen(navController) }
                         composable(Screen.GroupButtonScreen.route) { GroupButtonScreen(navController) }
+                        composable(Screen.SettingsScreen.route) { SettingsScreen(navController) }
+                        composable(Screen.BannerBoxScreen.route) { BannerBoxScreen(navController) }
                     }
                 }
             }
