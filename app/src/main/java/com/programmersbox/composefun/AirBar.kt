@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.tooling.preview.Preview
@@ -180,8 +181,38 @@ fun AirBar(
     progress: Float,
     modifier: Modifier = Modifier,
     isHorizontal: Boolean = false,
+    fillColor: Brush = Brush.verticalGradient(listOf(MaterialTheme.colors.background, MaterialTheme.colors.primary)),
+    backgroundColor: Color = MaterialTheme.colors.background,
+    cornerRadius: CornerRadius = CornerRadius(x = 40.dp.value, y = 40.dp.value),
+    minValue: Double = 0.0,
+    maxValue: Double = 100.0,
+    icon: (@Composable () -> Unit)? = null,
+    valueChanged: (Float) -> Unit
+) = AirBarSetup(progress, modifier, isHorizontal, fillColor, null, backgroundColor, cornerRadius, minValue, maxValue, icon, valueChanged)
+
+@ExperimentalComposeUiApi
+@Composable
+fun AirBar(
+    progress: Float,
+    modifier: Modifier = Modifier,
+    isHorizontal: Boolean = false,
     fillColor: Color = MaterialTheme.colors.primary,
-    fillColorGradient: List<Color>? = null,
+    backgroundColor: Color = MaterialTheme.colors.background,
+    cornerRadius: CornerRadius = CornerRadius(x = 40.dp.value, y = 40.dp.value),
+    minValue: Double = 0.0,
+    maxValue: Double = 100.0,
+    icon: (@Composable () -> Unit)? = null,
+    valueChanged: (Float) -> Unit
+) = AirBarSetup(progress, modifier, isHorizontal, null, fillColor, backgroundColor, cornerRadius, minValue, maxValue, icon, valueChanged)
+
+@ExperimentalComposeUiApi
+@Composable
+private fun AirBarSetup(
+    progress: Float,
+    modifier: Modifier = Modifier,
+    isHorizontal: Boolean = false,
+    fillColorBrush: Brush? = null,
+    fillColor: Color? = null,
     backgroundColor: Color = MaterialTheme.colors.background,
     cornerRadius: CornerRadius = CornerRadius(x = 40.dp.value, y = 40.dp.value),
     minValue: Double = 0.0,
@@ -268,22 +299,20 @@ fun AirBar(
                 isAntiAlias = true
             })
             drawContext.canvas.clipPath(path = path, ClipOp.Intersect)
-            drawContext.canvas.drawRect(
-                0F,
-                if (isHorizontal) 0f else reverseCalculateValues(progress),
-                if (isHorizontal) reverseCalculateValues(progress) else rightX,
-                size.height,
-                Paint().apply {
-                    color = fillColor
-                    isAntiAlias = true
-                    if (!fillColorGradient.isNullOrEmpty() && fillColorGradient.size > 1) {
-                        shader = LinearGradientShader(
-                            from = Offset(0f, 0f),
-                            to = Offset(size.width, size.height),
-                            colors = fillColorGradient
-                        )
-                    }
-                })
+            if (fillColor != null) {
+                drawRect(
+                    fillColor,
+                    Offset(0f, if (isHorizontal) 0f else reverseCalculateValues(progress)),
+                    Size(if (isHorizontal) reverseCalculateValues(progress) else rightX, size.height)
+                )
+            } else if (fillColorBrush != null) {
+                drawRect(
+                    fillColorBrush,
+                    Offset(0f, if (isHorizontal) 0f else reverseCalculateValues(progress)),
+                    Size(if (isHorizontal) reverseCalculateValues(progress) else rightX, size.height)
+                )
+            }
+
         }
 
         icon?.let { Box(modifier = if (!isHorizontal) Modifier.padding(bottom = 15.dp) else Modifier.padding(start = 15.dp)) { it() } }
@@ -360,18 +389,78 @@ fun AirBarLayout(navController: NavController = rememberNavController()) {
 
             }
 
-            AirBar(
-                controller = airBar,
-                modifier = Modifier
-                    .height(200.dp)
-                    .width(80.dp),
-                fillColor = primary,
-                backgroundColor = background,
-                icon = { Icon(Icons.Default.Refresh, null) }
-            ) { airBar.progress = it }
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
 
-            Row {
-                Column {
+                AirBar(
+                    controller = airBar,
+                    modifier = Modifier
+                        .height(200.dp)
+                        .width(80.dp),
+                    fillColor = primary,
+                    backgroundColor = background,
+                    icon = { Icon(Icons.Default.Refresh, null) }
+                ) { airBar.progress = it }
+
+                AirBar(
+                    fillColor = primary,
+                    backgroundColor = background,
+                    progress = if (airBar2.animateProgress && airBar.animateProgress)
+                        animateFloatAsState(targetValue = progress).value
+                    else
+                        progress,
+                    valueChanged = { progress = it },
+                    modifier = Modifier
+                        .height(200.dp)
+                        .width(80.dp)
+                )
+
+                AirBar(
+                    progress = if (airBar2.animateProgress && airBar.animateProgress)
+                        animateFloatAsState(targetValue = progress).value
+                    else
+                        progress,
+                    valueChanged = { progress = it },
+                    fillColor = Brush.verticalGradient(listOf(background, primary)),
+                    backgroundColor = background,
+                    modifier = Modifier
+                        .height(200.dp)
+                        .width(80.dp)
+                )
+
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    AirBar(
+                        fillColor = primary,
+                        backgroundColor = background,
+                        isHorizontal = true,
+                        progress = if (airBar2.animateProgress && airBar.animateProgress)
+                            animateFloatAsState(targetValue = progress).value
+                        else
+                            progress,
+                        valueChanged = { progress = it },
+                        modifier = Modifier
+                            .height(80.dp)
+                            .width(100.dp)
+                    )
+
+                    AirBar(
+                        progress = if (airBar2.animateProgress && airBar.animateProgress)
+                            animateFloatAsState(targetValue = progress).value
+                        else
+                            progress,
+                        valueChanged = { progress = it },
+                        isHorizontal = true,
+                        fillColor = Brush.horizontalGradient(listOf(background, primary)),
+                        backgroundColor = background,
+                        modifier = Modifier
+                            .height(80.dp)
+                            .width(100.dp)
+                    )
+                }
+
+            }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     AirBar(
                         controller = airBar2,
                         modifier = Modifier
@@ -397,12 +486,10 @@ fun AirBarLayout(navController: NavController = rememberNavController()) {
                     controller = airBar3,
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(horizontal = 4.dp)
                         .height(160.dp),
                     backgroundColor = background,
                     fillColor = primary
                 )
-
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -435,7 +522,7 @@ fun AirBarLayout(navController: NavController = rememberNavController()) {
                 AirBar(
                     controller = airBar4,
                     backgroundColor = background,
-                    fillColor = primary,
+                    fillColorGradient = listOf(background, primary),
                     modifier = Modifier
                         .height(200.dp)
                         .width(80.dp)
