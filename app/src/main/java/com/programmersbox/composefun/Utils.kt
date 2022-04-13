@@ -27,6 +27,7 @@ sealed class Screen(val route: String, val name: String) {
     object SettingsScreen : Screen("settings", "Settings Screen")
     object BannerBoxScreen : Screen("bannerbox", "Banner Box Screen")
     object ShadowScreen : Screen("shadow", "Shadow Screen")
+    object BlackjackScreen : Screen("blackjack", "Blackjack Screen")
 
     companion object {
         val items = arrayOf(
@@ -36,7 +37,8 @@ sealed class Screen(val route: String, val name: String) {
             GroupButtonScreen,
             SettingsScreen,
             BannerBoxScreen,
-            ShadowScreen
+            ShadowScreen,
+            BlackjackScreen
         )
     }
 }

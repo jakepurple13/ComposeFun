@@ -6,9 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -22,7 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import com.programmersbox.composefun.ui.theme.ComposeFunTheme
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalComposeUiApi::class)
+    @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.SettingsScreen.route) { SettingsScreen(navController) }
                         composable(Screen.BannerBoxScreen.route) { BannerBoxScreen(navController) }
                         composable(Screen.ShadowScreen.route) { ShadowScreen(navController) }
+                        composable(Screen.BlackjackScreen.route) { Blackjack(navController) }
                     }
                 }
             }
@@ -50,7 +51,7 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(navController: NavController) {
     Scaffold(topBar = { TopAppBar(title = { Text(Screen.MainScreen.name) }) }) {
         LazyVerticalGrid(
-            cells = GridCells.Fixed(3),
+            columns = GridCells.Fixed(3),
             contentPadding = it,
             verticalArrangement = Arrangement.spacedBy(2.dp),
             horizontalArrangement = Arrangement.spacedBy(2.dp)
