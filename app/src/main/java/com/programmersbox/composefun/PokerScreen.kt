@@ -79,16 +79,13 @@ class PokerViewModel : ViewModel() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun Poker(navController: NavController) {
-
-    val vm: PokerViewModel = viewModel()
-
+fun Poker(navController: NavController, vm: PokerViewModel = viewModel()) {
     ScaffoldTop(
         screen = Screen.PokerScreen,
         navController = navController,
         bottomBar = {
             LazyRow(
-                horizontalArrangement = Arrangement.spacedBy((-5).dp),
+                horizontalArrangement = Arrangement.spacedBy((-25).dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 items(vm.hand) {
@@ -162,21 +159,21 @@ fun Poker(navController: NavController) {
             }
 
             Row(modifier = Modifier.fillMaxWidth()) {
-                AnimatedVisibility(vm.state == PokerState.Start) {
+                if (vm.state == PokerState.Start) {
                     Button(
                         onClick = { vm.start() },
                         modifier = Modifier.fillMaxWidth()
                     ) { Text("Play") }
                 }
 
-                AnimatedVisibility(vm.state == PokerState.Swap) {
+                if (vm.state == PokerState.Swap) {
                     Button(
                         onClick = { vm.swap() },
                         modifier = Modifier.fillMaxWidth()
                     ) { Text("Draw") }
                 }
 
-                AnimatedVisibility(vm.state == PokerState.End) {
+                if (vm.state == PokerState.End) {
                     Button(
                         onClick = { vm.end() },
                         modifier = Modifier.fillMaxWidth()
