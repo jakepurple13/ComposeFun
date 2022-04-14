@@ -1,6 +1,7 @@
 package com.programmersbox.composefun
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -9,6 +10,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -28,6 +30,7 @@ sealed class Screen(val route: String, val name: String) {
     object BannerBoxScreen : Screen("bannerbox", "Banner Box Screen")
     object ShadowScreen : Screen("shadow", "Shadow Screen")
     object BlackjackScreen : Screen("blackjack", "Blackjack Screen")
+    object PokerScreen : Screen("poker", "Poker\nScreen")
 
     companion object {
         val items = arrayOf(
@@ -38,18 +41,28 @@ sealed class Screen(val route: String, val name: String) {
             SettingsScreen,
             BannerBoxScreen,
             ShadowScreen,
-            BlackjackScreen
+            BlackjackScreen,
+            PokerScreen
         )
     }
 }
 
 @Composable
-fun ScaffoldTop(screen: Screen, navController: NavController, bottomBar: @Composable () -> Unit = {}, block: @Composable (PaddingValues) -> Unit) {
+fun ScaffoldTop(
+    screen: Screen,
+    navController: NavController,
+    scaffoldState: ScaffoldState = rememberScaffoldState(),
+    bottomBar: @Composable () -> Unit = {},
+    topBarActions: @Composable RowScope.() -> Unit = {},
+    block: @Composable (PaddingValues) -> Unit
+) {
     Scaffold(
+        scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
                 title = { Text(screen.name) },
-                navigationIcon = { IconButton(onClick = { navController.popBackStack() }) { Icon(Icons.Default.ArrowBack, null) } }
+                navigationIcon = { IconButton(onClick = { navController.popBackStack() }) { Icon(Icons.Default.ArrowBack, null) } },
+                actions = topBarActions
             )
         },
         bottomBar = bottomBar,
@@ -92,3 +105,6 @@ fun Modifier.combineClickable(
             onDoubleTap = onDoubleTap?.let { d -> { d() } }
         )
     }
+
+@Composable
+fun Int.animateAsState() = animateIntAsState(targetValue = this)
