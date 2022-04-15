@@ -46,9 +46,9 @@ sealed class Screen(val route: String, val name: String) {
             SettingsScreen,
             BannerBoxScreen,
             ShadowScreen,
+            CompositionLocalScreen,
             BlackjackScreen,
             PokerScreen,
-            CompositionLocalScreen,
             CalculationScreen
         )
     }

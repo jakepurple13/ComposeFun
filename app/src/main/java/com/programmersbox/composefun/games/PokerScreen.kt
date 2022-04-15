@@ -1,4 +1,4 @@
-package com.programmersbox.composefun
+package com.programmersbox.composefun.games
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.programmersbox.composefun.ScaffoldTop
+import com.programmersbox.composefun.Screen
 
 enum class PokerState { Start, Swap, End }
 

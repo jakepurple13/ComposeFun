@@ -1,4 +1,4 @@
-package com.programmersbox.composefun
+package com.programmersbox.composefun.games
 
 import androidx.compose.material.Card
 import androidx.compose.runtime.mutableStateListOf

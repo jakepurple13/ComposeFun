@@ -14,6 +14,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.programmersbox.composefun.games.Card
+import com.programmersbox.composefun.games.Deck
+import com.programmersbox.composefun.games.PlayingCard
+import com.programmersbox.composefun.games.Suit
 
 val LocalDeck = compositionLocalOf { Deck.defaultDeck() }
 val LocalCard = staticCompositionLocalOf { Card(1, Suit.SPADES) }
