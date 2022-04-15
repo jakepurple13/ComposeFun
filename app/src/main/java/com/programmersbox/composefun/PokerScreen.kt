@@ -27,7 +27,7 @@ enum class PokerState { Start, Swap, End }
 
 class PokerViewModel : ViewModel() {
 
-    val deck = Deck.defaultDeck().also {
+    private val deck = Deck.defaultDeck().also {
         it.addDeckListener {
             onDraw { _, size ->
                 if (size == 0) {
@@ -45,14 +45,14 @@ class PokerViewModel : ViewModel() {
     var state by mutableStateOf(PokerState.Start)
     val cardsToDiscard = mutableStateListOf<Card>()
 
-    fun draw() {
+    private fun draw() {
         hand.removeAll(cardsToDiscard)
         while (hand.size != 5) {
             hand.add(deck.draw())
         }
     }
 
-    fun reset() {
+    private fun reset() {
         hand.clear()
         hand.addAll(deck.draw(5))
     }
