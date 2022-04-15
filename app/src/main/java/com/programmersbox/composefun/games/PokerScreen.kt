@@ -20,10 +20,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.programmersbox.composefun.ScaffoldTop
 import com.programmersbox.composefun.Screen
+import kotlinx.coroutines.launch
 
 enum class PokerState { Start, Swap, End }
 
@@ -70,8 +72,17 @@ class PokerViewModel : ViewModel() {
         state = PokerState.End
     }
 
-    fun end() {
-        currentAmount += PokerHand.values().first { it.check(hand) }.let { it.initialWinning * currentBet }
+    fun end(scaffoldState: ScaffoldState) {
+        val winnings = PokerHand.values().first { it.check(hand) }.let { it.initialWinning * currentBet }
+        viewModelScope.launch {
+            scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
+            if (winnings > 0) {
+                scaffoldState.snackbarHostState.showSnackbar("Won \$$winnings")
+            } else {
+                scaffoldState.snackbarHostState.showSnackbar("Lost \$$currentBet")
+            }
+        }
+        currentAmount += winnings
         cardsToDiscard.clear()
         hand.clear()
         state = PokerState.Start
@@ -82,7 +93,9 @@ class PokerViewModel : ViewModel() {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Poker(navController: NavController, vm: PokerViewModel = viewModel()) {
+    val state = rememberScaffoldState()
     ScaffoldTop(
+        scaffoldState = state,
         screen = Screen.PokerScreen,
         navController = navController,
         bottomBar = {
@@ -90,16 +103,27 @@ fun Poker(navController: NavController, vm: PokerViewModel = viewModel()) {
                 horizontalArrangement = Arrangement.spacedBy((-25).dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                items(vm.hand) {
-                    PlayingCard(
-                        it,
-                        modifier = Modifier
-                            .border(
-                                1.dp,
-                                animateColorAsState(if (it in vm.cardsToDiscard) Color.Red else Color.Transparent).value,
-                                RoundedCornerShape(2.dp)
-                            )
-                    ) { if (it in vm.cardsToDiscard) vm.cardsToDiscard.remove(it) else vm.cardsToDiscard.add(it) }
+                if (vm.hand.isEmpty()) {
+                    items(5) {
+                        Card(
+                            onClick = { },
+                            shape = RoundedCornerShape(7.dp),
+                            elevation = 5.dp,
+                            modifier = Modifier.size(100.dp, 150.dp)
+                        ) {}
+                    }
+                } else {
+                    items(vm.hand) {
+                        PlayingCard(
+                            it,
+                            modifier = Modifier
+                                .border(
+                                    1.dp,
+                                    animateColorAsState(if (it in vm.cardsToDiscard) Color.Red else Color.Transparent).value,
+                                    RoundedCornerShape(2.dp)
+                                )
+                        ) { if (it in vm.cardsToDiscard) vm.cardsToDiscard.remove(it) else vm.cardsToDiscard.add(it) }
+                    }
                 }
             }
         },
@@ -177,7 +201,7 @@ fun Poker(navController: NavController, vm: PokerViewModel = viewModel()) {
 
                 if (vm.state == PokerState.End) {
                     Button(
-                        onClick = { vm.end() },
+                        onClick = { vm.end(state) },
                         modifier = Modifier.fillMaxWidth()
                     ) { Text("Play Again") }
                 }
