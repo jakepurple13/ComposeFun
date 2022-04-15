@@ -17,7 +17,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 
 sealed class Screen(val route: String, val name: String) {
@@ -32,6 +35,7 @@ sealed class Screen(val route: String, val name: String) {
     object BlackjackScreen : Screen("blackjack", "Blackjack Screen")
     object PokerScreen : Screen("poker", "Video Poker Screen")
     object CompositionLocalScreen : Screen("composition", "Composition Local")
+    object CalculationScreen : Screen("calculation", "Calculation Screen")
 
     companion object {
         val items = arrayOf(
@@ -44,7 +48,8 @@ sealed class Screen(val route: String, val name: String) {
             ShadowScreen,
             BlackjackScreen,
             PokerScreen,
-            CompositionLocalScreen
+            CompositionLocalScreen,
+            CalculationScreen
         )
     }
 }
@@ -54,6 +59,7 @@ fun ScaffoldTop(
     screen: Screen,
     navController: NavController,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
+    backgroundColor: Color = MaterialTheme.colors.background,
     bottomBar: @Composable () -> Unit = {},
     topBarActions: @Composable RowScope.() -> Unit = {},
     block: @Composable (PaddingValues) -> Unit
@@ -67,6 +73,7 @@ fun ScaffoldTop(
                 actions = topBarActions
             )
         },
+        backgroundColor = backgroundColor,
         bottomBar = bottomBar,
         content = block
     )
@@ -110,3 +117,12 @@ fun Modifier.combineClickable(
 
 @Composable
 fun Int.animateAsState() = animateIntAsState(targetValue = this)
+
+inline fun <reified V : ViewModel> factoryCreate(crossinline build: () -> V) = object : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(V::class.java)) {
+            return build() as T
+        }
+        throw IllegalArgumentException("Unknown class name")
+    }
+}

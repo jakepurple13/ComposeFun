@@ -41,6 +41,7 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.BlackjackScreen.route) { Blackjack(navController) }
                         composable(Screen.PokerScreen.route) { Poker(navController) }
                         composable(Screen.CompositionLocalScreen.route) { CompositionLocalScreen(navController) }
+                        composable(Screen.CalculationScreen.route) { CalculationScreen(navController) }
                     }
                 }
             }
