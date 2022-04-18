@@ -23,6 +23,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 sealed class Screen(val route: String, val name: String) {
     object MainScreen : Screen("mainscreen", "Playground")
@@ -130,4 +132,12 @@ inline fun <reified V : ViewModel> factoryCreate(crossinline build: () -> V) = o
         }
         throw IllegalArgumentException("Unknown class name")
     }
+}
+
+fun Any?.toJson(): String = Gson().toJson(this)
+
+inline fun <reified T> String?.fromJson(): T? = try {
+    Gson().fromJson(this, object : TypeToken<T>() {}.type)
+} catch (e: Exception) {
+    null
 }
