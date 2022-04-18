@@ -42,7 +42,6 @@ class MastermindViewModel : ViewModel() {
 
         currentGuess = 0
         repeat(difficulty.length) { sequence.add(Card.RandomCard) }
-        sequence.shuffle()
         everythingCorrect = false
         println(sequence.joinToString(", ") { it.toSymbolString() })
     }
@@ -82,7 +81,7 @@ fun MastermindScreen(navController: NavController, vm: MastermindViewModel = vie
             text = {
                 Text(
                     "The answer was ${vm.sequence.joinToString(", ") { it.toSymbolString() }}!" +
-                            " And you got it in $vm.currentGuess guesses!"
+                            " And you got it in ${vm.currentGuess} guesses!"
                 )
             },
             confirmButton = { TextButton(onClick = { vm.reset() }) { Text("Play Again") } },
