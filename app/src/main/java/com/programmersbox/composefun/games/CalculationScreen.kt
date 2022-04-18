@@ -96,12 +96,7 @@ fun CalculationScreen(navController: NavController, vm: CalculationViewModel = v
                 if (vm.pickUpCard != null) {
                     PlayingCard(vm.pickUpCard!!)
                 } else {
-                    Card(
-                        onClick = { },
-                        shape = RoundedCornerShape(7.dp),
-                        elevation = 5.dp,
-                        modifier = Modifier.size(100.dp, 150.dp)
-                    ) {}
+                    EmptyCard()
                 }
 
                 Card(
@@ -204,7 +199,7 @@ private fun nextVal(currentVal: Int, upBy: Int): Int {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@ExperimentalMaterialApi
 @Composable
 fun HoldingCards(vm: CalculationViewModel, cardHold: SnapshotStateList<Card>) {
     LazyColumn(
@@ -212,17 +207,12 @@ fun HoldingCards(vm: CalculationViewModel, cardHold: SnapshotStateList<Card>) {
     ) {
         if (cardHold.isEmpty()) {
             item {
-                Card(
-                    onClick = {
-                        vm.pickUpCard?.let {
-                            cardHold.add(it)
-                            vm.pickUpCard = null
-                        }
-                    },
-                    shape = RoundedCornerShape(7.dp),
-                    elevation = 5.dp,
-                    modifier = Modifier.size(100.dp, 150.dp)
-                ) {}
+                EmptyCard {
+                    vm.pickUpCard?.let {
+                        cardHold.add(it)
+                        vm.pickUpCard = null
+                    }
+                }
             }
         } else {
             items(cardHold) {

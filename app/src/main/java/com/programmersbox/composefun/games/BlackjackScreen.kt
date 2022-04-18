@@ -292,3 +292,16 @@ fun PlayingCard(card: Card, modifier: Modifier = Modifier, onClick: () -> Unit =
         }
     }
 }
+
+@ExperimentalMaterialApi
+@Composable
+fun EmptyCard(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+    Card(
+        onClick = onClick,
+        shape = RoundedCornerShape(7.dp),
+        elevation = 5.dp,
+        modifier = Modifier
+            .size(100.dp, 150.dp)
+            .then(modifier)
+    ) {}
+}
