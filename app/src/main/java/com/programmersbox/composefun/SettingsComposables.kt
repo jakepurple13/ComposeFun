@@ -4,8 +4,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -68,8 +66,8 @@ fun <T> ListSetting(
             onDismissRequest = { dialogPopup.value = false },
             title = dialogTitle,
             text = {
-                LazyColumn {
-                    items(options) {
+                Column {
+                    options.forEach {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -152,8 +150,8 @@ fun <T> MultiSelectListSetting(
             onDismissRequest = { dialogPopup.value = false },
             title = dialogTitle,
             text = {
-                LazyColumn {
-                    items(options) {
+                Column {
+                    options.forEach {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier

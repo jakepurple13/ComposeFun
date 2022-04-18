@@ -9,6 +9,7 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.*
@@ -36,6 +37,7 @@ sealed class Screen(val route: String, val name: String) {
     object PokerScreen : Screen("poker", "Video Poker Screen")
     object CompositionLocalScreen : Screen("composition", "Composition Local")
     object CalculationScreen : Screen("calculation", "Calculation Screen")
+    object MastermindScreen : Screen("mastermind", "Mastermind Screen")
 
     companion object {
         val items = arrayOf(
@@ -49,7 +51,8 @@ sealed class Screen(val route: String, val name: String) {
             CompositionLocalScreen,
             BlackjackScreen,
             PokerScreen,
-            CalculationScreen
+            CalculationScreen,
+            MastermindScreen
         )
     }
 }
@@ -60,6 +63,7 @@ fun ScaffoldTop(
     navController: NavController,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     backgroundColor: Color = MaterialTheme.colors.background,
+    drawer: (@Composable ColumnScope.() -> Unit)? = null,
     bottomBar: @Composable () -> Unit = {},
     topBarActions: @Composable RowScope.() -> Unit = {},
     block: @Composable (PaddingValues) -> Unit
@@ -73,6 +77,7 @@ fun ScaffoldTop(
                 actions = topBarActions
             )
         },
+        drawerContent = drawer,
         backgroundColor = backgroundColor,
         bottomBar = bottomBar,
         content = block

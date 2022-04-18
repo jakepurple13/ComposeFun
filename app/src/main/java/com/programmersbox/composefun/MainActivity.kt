@@ -21,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.programmersbox.composefun.games.Blackjack
 import com.programmersbox.composefun.games.CalculationScreen
+import com.programmersbox.composefun.games.MastermindScreen
 import com.programmersbox.composefun.games.Poker
 import com.programmersbox.composefun.ui.theme.ComposeFunTheme
 
@@ -45,6 +46,7 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.BlackjackScreen.route) { Blackjack(navController) }
                         composable(Screen.PokerScreen.route) { Poker(navController) }
                         composable(Screen.CalculationScreen.route) { CalculationScreen(navController) }
+                        composable(Screen.MastermindScreen.route) { MastermindScreen(navController) }
                     }
                 }
             }
