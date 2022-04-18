@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.PokerScreen.route) { Poker(navController) }
                         composable(Screen.CalculationScreen.route) { CalculationScreen(navController) }
                         composable(Screen.MastermindScreen.route) { MastermindScreen(navController) }
+                        composable(Screen.DadJokesScreen.route) { DadJokesScreen(navController) }
                     }
                 }
             }

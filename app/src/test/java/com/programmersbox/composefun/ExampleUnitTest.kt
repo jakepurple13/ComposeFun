@@ -23,33 +23,10 @@ class ExampleUnitTest {
     @Test
     fun jokeTest() = runBlocking {
         val client = HttpClient()
-        val response: HttpResponse = client.get("https://api.jokes.one/jod")
-        println(response.bodyAsText().fromJson<JokeBase>())
+        val response: HttpResponse = client.get("https://icanhazdadjoke.com/") {
+            headers { append("Accept", "application/json") }
+        }
+        println(response.bodyAsText().fromJson<DadJoke>())
         client.close()
     }
 }
-
-data class Success(val total: Number?)
-
-data class JokeBase(val success: Success?, val contents: Contents?)
-
-data class Contents(val jokes: List<Jokes>?, val copyright: String?)
-
-data class Joke(
-    val title: String?,
-    val lang: String?,
-    val length: String?,
-    val clean: String?,
-    val racial: String?,
-    val id: String?,
-    val text: String?
-)
-
-data class Jokes(
-    val description: String?,
-    val language: String?,
-    val background: String?,
-    val category: String?,
-    val date: String?,
-    val joke: Joke?
-)

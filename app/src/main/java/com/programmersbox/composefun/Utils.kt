@@ -25,6 +25,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 
 sealed class Screen(val route: String, val name: String) {
     object MainScreen : Screen("mainscreen", "Playground")
@@ -40,6 +44,7 @@ sealed class Screen(val route: String, val name: String) {
     object CompositionLocalScreen : Screen("composition", "Composition Local")
     object CalculationScreen : Screen("calculation", "Calculation Screen")
     object MastermindScreen : Screen("mastermind", "Mastermind Screen")
+    object DadJokesScreen : Screen("dadjokes", "Dad Jokes Screen")
 
     companion object {
         val items = arrayOf(
@@ -51,6 +56,7 @@ sealed class Screen(val route: String, val name: String) {
             BannerBoxScreen,
             ShadowScreen,
             CompositionLocalScreen,
+            DadJokesScreen,
             BlackjackScreen,
             PokerScreen,
             CalculationScreen,
@@ -140,4 +146,10 @@ inline fun <reified T> String?.fromJson(): T? = try {
     Gson().fromJson(this, object : TypeToken<T>() {}.type)
 } catch (e: Exception) {
     null
+}
+
+suspend inline fun <reified T> getApi(url: String, noinline headers: HeadersBuilder.() -> Unit = {}): T? {
+    val client = HttpClient()
+    val response: HttpResponse = client.get(url) { headers(headers) }
+    return response.bodyAsText().fromJson<T>()
 }
