@@ -8,12 +8,10 @@ import android.icu.text.SimpleDateFormat
 import android.os.BatteryManager
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
@@ -184,7 +182,7 @@ fun batteryIntentFilter() = IntentFilter().apply {
 @Preview
 fun BroadcastReceiverScreen(navController: NavController = rememberNavController()) {
     ScaffoldTop(Screen.BroadcastReceiverScreen, navController = navController) { p ->
-        LazyColumn(modifier = Modifier.padding(p)) {
+        LazyColumn(contentPadding = p) {
             item {
                 val currentTime by currentTime()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
