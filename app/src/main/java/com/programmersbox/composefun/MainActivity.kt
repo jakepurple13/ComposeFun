@@ -48,6 +48,7 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.CalculationScreen.route) { CalculationScreen(navController) }
                         composable(Screen.MastermindScreen.route) { MastermindScreen(navController) }
                         composable(Screen.DadJokesScreen.route) { DadJokesScreen(navController) }
+                        composable(Screen.MotionScreen.route) { MotionScreen(navController) }
                     }
                 }
             }
