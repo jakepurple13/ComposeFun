@@ -3,6 +3,8 @@ package com.programmersbox.composefun
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,9 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
@@ -33,7 +35,8 @@ class MainActivity : ComponentActivity() {
         ExperimentalComposeUiApi::class,
         ExperimentalFoundationApi::class,
         ExperimentalMaterialApi::class,
-        ExperimentalMaterialNavigationApi::class
+        ExperimentalMaterialNavigationApi::class,
+        ExperimentalAnimationApi::class
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +44,9 @@ class MainActivity : ComponentActivity() {
             ComposeFunTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val bottomSheetNavigator = rememberBottomSheetNavigator()
-                    val navController = rememberNavController(bottomSheetNavigator)
+                    val navController = rememberAnimatedNavController(bottomSheetNavigator)
                     com.google.accompanist.navigation.material.ModalBottomSheetLayout(bottomSheetNavigator) {
-                        NavHost(navController = navController, startDestination = Screen.MainScreen.route) {
+                        AnimatedNavHost(navController = navController, startDestination = Screen.MainScreen.route) {
                             composable(Screen.MainScreen.route) { MainScreen(navController) }
                             composable(Screen.AirBarScreen.route) { AirBarLayout(navController) }
                             bottomSheet(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
@@ -51,14 +54,26 @@ class MainActivity : ComponentActivity() {
                             composable(Screen.GroupButtonScreen.route) { GroupButtonScreen(navController) }
                             composable(Screen.SettingsScreen.route) { SettingsScreen(navController) }
                             composable(Screen.BannerBoxScreen.route) { BannerBoxScreen(navController) }
-                            composable(Screen.ShadowScreen.route) { ShadowScreen(navController) }
                             composable(Screen.CompositionLocalScreen.route) { CompositionLocalScreen(navController) }
                             composable(Screen.BlackjackScreen.route) { Blackjack(navController) }
                             composable(Screen.PokerScreen.route) { Poker(navController) }
                             composable(Screen.CalculationScreen.route) { CalculationScreen(navController) }
                             composable(Screen.MastermindScreen.route) { MastermindScreen(navController) }
                             composable(Screen.DadJokesScreen.route) { DadJokesScreen(navController) }
-                            composable(Screen.MotionScreen.route) { MotionScreen(navController) }
+                            composable(
+                                Screen.ShadowScreen.route,
+                                enterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Up) },
+                                exitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Down) },
+                                popEnterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Down) },
+                                popExitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Up) }
+                            ) { ShadowScreen(navController) }
+                            composable(
+                                Screen.MotionScreen.route,
+                                enterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Start) },
+                                exitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Start) },
+                                popEnterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.End) },
+                                popExitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.End) }
+                            ) { MotionScreen(navController) }
                         }
                     }
                 }
