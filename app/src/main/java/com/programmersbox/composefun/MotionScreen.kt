@@ -10,6 +10,7 @@ import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.layoutId
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.ExperimentalMotionApi
@@ -25,7 +26,7 @@ fun MotionScreen(navController: NavController) {
     var progress by remember(switch) { mutableStateOf(if (switch) 1f else 0f) }
 
     ScaffoldTop(
-        screen = Screen.DadJokesScreen,
+        screen = Screen.MotionScreen,
         navController = navController,
         bottomBar = {
             BottomAppBar {
@@ -46,8 +47,10 @@ fun MotionScreen(navController: NavController) {
         ) {
 
             Button(
-                onClick = { /* Do something */ },
-                modifier = Modifier.layoutId("button")
+                onClick = { progress = .5f },
+                modifier = Modifier
+                    .layoutId("button")
+                    .rotate(360f * animateFloatAsState(progress).value)
             ) { Text("Button") }
 
             Text("Text", Modifier.layoutId("text"))
@@ -82,7 +85,6 @@ fun layoutOne() = ConstraintSet {
     }
 
     constrain(slider) {
-        top.linkTo(text.bottom)
         start.linkTo(parent.start)
         end.linkTo(parent.end)
         bottom.linkTo(parent.bottom)
@@ -109,7 +111,6 @@ fun layoutTwo() = ConstraintSet {
     }
 
     constrain(slider) {
-        top.linkTo(button.bottom)
         start.linkTo(parent.start)
         end.linkTo(parent.end)
         bottom.linkTo(parent.bottom)
