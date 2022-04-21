@@ -65,6 +65,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-flowlayout:0.24.6-alpha"
     implementation "androidx.compose.material:material-icons-core:$compose_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    implementation "com.google.accompanist:accompanist-navigation-material:0.24.6-alpha"
     implementation datastore.datastore
     implementation "io.ktor:ktor-client-core:2.0.0"
     implementation "io.ktor:ktor-client-cio:2.0.0"

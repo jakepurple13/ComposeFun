@@ -19,6 +19,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.bottomSheet
+import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.programmersbox.composefun.games.Blackjack
 import com.programmersbox.composefun.games.CalculationScreen
 import com.programmersbox.composefun.games.MastermindScreen
@@ -26,29 +29,37 @@ import com.programmersbox.composefun.games.Poker
 import com.programmersbox.composefun.ui.theme.ComposeFunTheme
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+    @OptIn(
+        ExperimentalComposeUiApi::class,
+        ExperimentalFoundationApi::class,
+        ExperimentalMaterialApi::class,
+        ExperimentalMaterialNavigationApi::class
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             ComposeFunTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = Screen.MainScreen.route) {
-                        composable(Screen.MainScreen.route) { MainScreen(navController) }
-                        composable(Screen.AirBarScreen.route) { AirBarLayout(navController) }
-                        composable(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
-                        composable(Screen.AnimatedLazyListScreen.route) { AnimatedLazyListScreen(navController) }
-                        composable(Screen.GroupButtonScreen.route) { GroupButtonScreen(navController) }
-                        composable(Screen.SettingsScreen.route) { SettingsScreen(navController) }
-                        composable(Screen.BannerBoxScreen.route) { BannerBoxScreen(navController) }
-                        composable(Screen.ShadowScreen.route) { ShadowScreen(navController) }
-                        composable(Screen.CompositionLocalScreen.route) { CompositionLocalScreen(navController) }
-                        composable(Screen.BlackjackScreen.route) { Blackjack(navController) }
-                        composable(Screen.PokerScreen.route) { Poker(navController) }
-                        composable(Screen.CalculationScreen.route) { CalculationScreen(navController) }
-                        composable(Screen.MastermindScreen.route) { MastermindScreen(navController) }
-                        composable(Screen.DadJokesScreen.route) { DadJokesScreen(navController) }
-                        composable(Screen.MotionScreen.route) { MotionScreen(navController) }
+                    val bottomSheetNavigator = rememberBottomSheetNavigator()
+                    val navController = rememberNavController(bottomSheetNavigator)
+                    com.google.accompanist.navigation.material.ModalBottomSheetLayout(bottomSheetNavigator) {
+                        NavHost(navController = navController, startDestination = Screen.MainScreen.route) {
+                            composable(Screen.MainScreen.route) { MainScreen(navController) }
+                            composable(Screen.AirBarScreen.route) { AirBarLayout(navController) }
+                            bottomSheet(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
+                            composable(Screen.AnimatedLazyListScreen.route) { AnimatedLazyListScreen(navController) }
+                            composable(Screen.GroupButtonScreen.route) { GroupButtonScreen(navController) }
+                            composable(Screen.SettingsScreen.route) { SettingsScreen(navController) }
+                            composable(Screen.BannerBoxScreen.route) { BannerBoxScreen(navController) }
+                            composable(Screen.ShadowScreen.route) { ShadowScreen(navController) }
+                            composable(Screen.CompositionLocalScreen.route) { CompositionLocalScreen(navController) }
+                            composable(Screen.BlackjackScreen.route) { Blackjack(navController) }
+                            composable(Screen.PokerScreen.route) { Poker(navController) }
+                            composable(Screen.CalculationScreen.route) { CalculationScreen(navController) }
+                            composable(Screen.MastermindScreen.route) { MastermindScreen(navController) }
+                            composable(Screen.DadJokesScreen.route) { DadJokesScreen(navController) }
+                            composable(Screen.MotionScreen.route) { MotionScreen(navController) }
+                        }
                     }
                 }
             }
