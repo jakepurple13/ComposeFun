@@ -90,7 +90,8 @@ fun MainScreen(navController: NavController) {
             columns = GridCells.Fixed(3),
             contentPadding = it,
             verticalArrangement = Arrangement.spacedBy(2.dp),
-            horizontalArrangement = Arrangement.spacedBy(2.dp)
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier.fillMaxSize()
         ) { items(Screen.items) { Button(onClick = { navController.navigate(it.route) }) { Text(it.name, textAlign = TextAlign.Center) } } }
     }
 }
