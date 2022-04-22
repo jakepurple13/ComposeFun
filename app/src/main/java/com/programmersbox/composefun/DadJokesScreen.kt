@@ -1,9 +1,6 @@
 package com.programmersbox.composefun
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -37,54 +34,58 @@ data class DadJoke(val id: String?, val joke: String?, val status: Number?)
 
 @Composable
 fun DadJokesScreen(navController: NavController, vm: DadJokeViewModel = viewModel()) {
-
     LaunchedEffect(Unit) { vm.getNewJoke() }
 
-    ScaffoldTop(
-        screen = Screen.DadJokesScreen,
+    JokeScreens(
         navController = navController,
-        bottomBar = {
-            BottomAppBar {
-                Button(
-                    onClick = { vm.getNewJoke() },
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Get New Joke") }
-            }
-        }
-    ) { p ->
-        Card(
-            modifier = Modifier
-                .padding(p)
-                .fillMaxSize()
-                .padding(4.dp)
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                if (vm.loading) {
-                    CircularProgressIndicator()
-                } else {
-                    Text(vm.joke, textAlign = TextAlign.Center)
-                }
-            }
+        screen = Screen.DadJokesScreen,
+        buttonText = "Get New Joke",
+        onNewJokeClick = { vm.getNewJoke() }
+    ) {
+        if (vm.loading) {
+            CircularProgressIndicator()
+        } else {
+            Text(vm.joke, textAlign = TextAlign.Center)
         }
     }
 }
 
 @Composable
 fun DidYouKnowScreen(navController: NavController) {
-
     var count by remember { mutableStateOf(0) }
-
     val didYouKnow by getDidYouKnowFact(count)
 
-    ScaffoldTop(
+    JokeScreens(
+        navController = navController,
         screen = Screen.DidYouKnowScreen,
+        buttonText = "Get New Fact",
+        onNewJokeClick = { count++ }
+    ) {
+        when (didYouKnow) {
+            is Result.Error -> Text("Please Try Again", textAlign = TextAlign.Center)
+            is Result.Loading -> CircularProgressIndicator()
+            is Result.Success -> Text((didYouKnow as Result.Success<DidYouKnowFact>).value.text, textAlign = TextAlign.Center)
+        }
+    }
+}
+
+@Composable
+private fun JokeScreens(
+    navController: NavController,
+    screen: Screen,
+    buttonText: String,
+    onNewJokeClick: () -> Unit,
+    content: @Composable BoxScope.() -> Unit
+) {
+    ScaffoldTop(
+        screen = screen,
         navController = navController,
         bottomBar = {
             BottomAppBar {
                 Button(
-                    onClick = { count++ },
+                    onClick = onNewJokeClick,
                     modifier = Modifier.fillMaxWidth()
-                ) { Text("Get New Fact") }
+                ) { Text(buttonText) }
             }
         }
     ) { p ->
@@ -93,15 +94,7 @@ fun DidYouKnowScreen(navController: NavController) {
                 .padding(p)
                 .fillMaxSize()
                 .padding(4.dp)
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                when (didYouKnow) {
-                    is Result.Error -> Text("Please Try Again", textAlign = TextAlign.Center)
-                    is Result.Loading -> CircularProgressIndicator()
-                    is Result.Success -> Text((didYouKnow as Result.Success<DidYouKnowFact>).value.text, textAlign = TextAlign.Center)
-                }
-            }
-        }
+        ) { Box(contentAlignment = Alignment.Center, content = content) }
     }
 }
 
@@ -120,7 +113,7 @@ fun getDidYouKnowFact(key: Any): State<Result<DidYouKnowFact>> {
     // If either `url` or `imageRepository` changes, the running producer
     // will cancel and will be re-launched with the new inputs.
     return produceState<Result<DidYouKnowFact>>(Result.Loading(), key) {
-
+        //We start by making value Loading so that it will show the loading screen everytime
         value = Result.Loading()
 
         // In a coroutine, can make suspend calls
@@ -135,7 +128,6 @@ fun getDidYouKnowFact(key: Any): State<Result<DidYouKnowFact>> {
         }
     }
 }
-
 
 sealed class Result<T> {
     class Error<T> : Result<T>()
