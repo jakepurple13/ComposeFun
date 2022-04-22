@@ -19,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -590,7 +589,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                 values = multiListSetting,
                 options = listOf(1, 2, 3, 4, 5),
                 updateValue = { it, b -> if (b) multiListSetting.add(it) else multiListSetting.remove(it) },
-                settingSummary = { Text(multiListSetting.fastMap { it }.toString()) }
+                settingSummary = { Text(multiListSetting.joinToString()) }
             )
 
             Divider()
@@ -604,6 +603,12 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
             }
 
             Divider()
+
+            PreferenceSetting(settingTitle = { Text("Setting") })
+            PreferenceSetting(settingTitle = { Text("Setting") })
+            PreferenceSetting(settingTitle = { Text("Setting") })
+            PreferenceSetting(settingTitle = { Text("Setting") })
+            PreferenceSetting(settingTitle = { Text("Setting") })
 
         }
     }

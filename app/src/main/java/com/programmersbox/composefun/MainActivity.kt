@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
                             bottomSheet(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
                             composable(Screen.AnimatedLazyListScreen.route) { AnimatedLazyListScreen(navController) }
                             composable(Screen.GroupButtonScreen.route) { GroupButtonScreen(navController) }
-                            composable(Screen.SettingsScreen.route) { SettingsScreen(navController) }
+                            bottomSheet(Screen.SettingsScreen.route) { SettingsScreen(navController) }
                             composable(Screen.BannerBoxScreen.route) { BannerBoxScreen(navController) }
                             composable(Screen.CompositionLocalScreen.route) { CompositionLocalScreen(navController) }
                             composable(Screen.BlackjackScreen.route) { Blackjack(navController) }
@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@ExperimentalFoundationApi
 @Composable
 fun MainScreen(navController: NavController) {
     Scaffold(topBar = { TopAppBar(title = { Text(Screen.MainScreen.name) }) }) {
