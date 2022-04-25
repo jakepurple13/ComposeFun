@@ -18,7 +18,6 @@ import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.*
 
-
 @OptIn(ExperimentalMotionApi::class, ExperimentalPermissionsApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun PermissionScreen(navController: NavController) {
@@ -36,6 +35,8 @@ fun PermissionScreen(navController: NavController) {
                 permissions = listOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE)
             )
             MultiplePermissionItem(permissionState = readWriteState)
+            val smsPermissionState = rememberPermissionState(android.Manifest.permission.SEND_SMS)
+            PermissionItem(permissionState = smsPermissionState)
         }
     }
 }
@@ -63,7 +64,7 @@ fun PermissionItem(permissionState: PermissionState) {
         }
     ) {
         ListItem(
-            text = { Text("Permission: ${permissionState.permission}") },
+            text = { Text("Permission: ${permissionState.permission.removePrefix("android.permission.")}") },
             icon = {
                 when (permissionState.status) {
                     PermissionStatus.Granted -> Icon(Icons.Default.CheckCircle, null)
@@ -102,7 +103,7 @@ fun MultiplePermissionItem(permissionState: MultiplePermissionsState) {
         }
     ) {
         ListItem(
-            text = { Text("Permission: ${permissionState.permissions.joinToString(", ") { it.permission }}") },
+            text = { Text("Permission: ${permissionState.permissions.joinToString(", ") { it.permission.removePrefix("android.permission.") }}") },
             icon = {
                 when (permissionState.allPermissionsGranted) {
                     true -> Icon(Icons.Default.CheckCircle, null)
