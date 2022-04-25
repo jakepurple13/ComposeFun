@@ -50,14 +50,10 @@ fun PermissionItem(permissionState: PermissionState) {
         onClick = {
             when (permissionState.status) {
                 PermissionStatus.Granted -> {
-                    if (permissionState.status.shouldShowRationale) {
-                        permissionState.launchPermissionRequest()
-                    } else {
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        val uri: Uri = Uri.fromParts("package", context.packageName, null)
-                        intent.data = uri
-                        context.startActivity(intent)
-                    }
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    val uri: Uri = Uri.fromParts("package", context.packageName, null)
+                    intent.data = uri
+                    context.startActivity(intent)
                 }
                 is PermissionStatus.Denied -> permissionState.launchPermissionRequest()
             }
@@ -71,10 +67,12 @@ fun PermissionItem(permissionState: PermissionState) {
                     is PermissionStatus.Denied -> Icon(Icons.Default.Cancel, null)
                 }
             },
-            secondaryText = if (permissionState.status is PermissionStatus.Denied) {
-                { Text(if (permissionState.status.shouldShowRationale) "This is important! Please Grant!" else "Please Grant!") }
-            } else {
-                { Text("Press again to go to Deny Permission") }
+            secondaryText = {
+                if (permissionState.status is PermissionStatus.Denied) {
+                    Text(if (permissionState.status.shouldShowRationale) "This is important! Please Grant!" else "Please Grant!")
+                } else {
+                    Text("Press again to go to Deny Permission")
+                }
             }
         )
     }
@@ -89,14 +87,10 @@ fun MultiplePermissionItem(permissionState: MultiplePermissionsState) {
         onClick = {
             when (permissionState.allPermissionsGranted) {
                 true -> {
-                    if (permissionState.permissions.any { it.status.shouldShowRationale }) {
-                        permissionState.launchMultiplePermissionRequest()
-                    } else {
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        val uri: Uri = Uri.fromParts("package", context.packageName, null)
-                        intent.data = uri
-                        context.startActivity(intent)
-                    }
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    val uri: Uri = Uri.fromParts("package", context.packageName, null)
+                    intent.data = uri
+                    context.startActivity(intent)
                 }
                 false -> permissionState.launchMultiplePermissionRequest()
             }
@@ -110,10 +104,12 @@ fun MultiplePermissionItem(permissionState: MultiplePermissionsState) {
                     false -> Icon(Icons.Default.Cancel, null)
                 }
             },
-            secondaryText = if (!permissionState.allPermissionsGranted) {
-                { Text(if (permissionState.shouldShowRationale) "This is important! Please Grant!" else "Please Grant!") }
-            } else {
-                { Text("Press again to go to Deny Permission") }
+            secondaryText = {
+                if (!permissionState.allPermissionsGranted) {
+                    Text(if (permissionState.shouldShowRationale) "This is important! Please Grant!" else "Please Grant!")
+                } else {
+                    Text("Press again to go to Deny Permission")
+                }
             }
         )
     }
