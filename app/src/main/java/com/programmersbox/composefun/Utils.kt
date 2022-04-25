@@ -47,6 +47,7 @@ sealed class Screen(val route: String, val name: String) {
     object DadJokesScreen : Screen("dadjokes", "Dad Jokes Screen")
     object DidYouKnowScreen : Screen("didyouknow", "Did You Know Screen")
     object MotionScreen : Screen("motion", "Motion Layout")
+    object PermissionScreen : Screen("permission", "Permissions Screen")
 
     companion object {
         val items = arrayOf(
@@ -61,6 +62,7 @@ sealed class Screen(val route: String, val name: String) {
             DadJokesScreen,
             DidYouKnowScreen,
             MotionScreen,
+            PermissionScreen,
             BlackjackScreen,
             PokerScreen,
             CalculationScreen,

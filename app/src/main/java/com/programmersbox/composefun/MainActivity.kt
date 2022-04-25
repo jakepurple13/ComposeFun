@@ -61,6 +61,7 @@ class MainActivity : ComponentActivity() {
                             composable(Screen.MastermindScreen.route) { MastermindScreen(navController) }
                             composable(Screen.DadJokesScreen.route) { DadJokesScreen(navController) }
                             composable(Screen.DidYouKnowScreen.route) { DidYouKnowScreen(navController) }
+                            composable(Screen.PermissionScreen.route) { PermissionScreen(navController) }
                             composable(
                                 Screen.ShadowScreen.route,
                                 enterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Up) },
