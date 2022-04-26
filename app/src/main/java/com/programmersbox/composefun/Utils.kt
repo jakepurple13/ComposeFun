@@ -55,18 +55,22 @@ sealed class Screen(val route: String, val name: String) {
             BroadcastReceiverScreen,
             AnimatedLazyListScreen,
             GroupButtonScreen,
-            SettingsScreen,
             BannerBoxScreen,
             ShadowScreen,
             CompositionLocalScreen,
             DadJokesScreen,
             DidYouKnowScreen,
-            MotionScreen,
             PermissionScreen,
             BlackjackScreen,
             PokerScreen,
             CalculationScreen,
             MastermindScreen
+        )
+
+        val mainItems = listOf(
+            MainScreen,
+            MotionScreen,
+            SettingsScreen
         )
     }
 }
