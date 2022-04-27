@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,10 +19,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Adb
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -34,6 +35,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.programmersbox.composefun.games.Blackjack
 import com.programmersbox.composefun.games.CalculationScreen
 import com.programmersbox.composefun.games.MastermindScreen
@@ -51,6 +53,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+            val sys = rememberSystemUiController()
+            val primary = MaterialTheme.colors.primaryVariant
+            var c by remember { mutableStateOf(primary) }
+            val ac by animateColorAsState(c)
+            LaunchedEffect(ac) { sys.setStatusBarColor(ac) }
+
             ComposeFunTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val bottomSheetNavigator = rememberBottomSheetNavigator()
@@ -65,7 +74,13 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.MainScreen.route) { MainScreen(navController) }
                                 composable(Screen.AirBarScreen.route) { AirBarLayout(navController) }
                                 bottomSheet(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
-                                composable(Screen.AnimatedLazyListScreen.route) { AnimatedLazyListScreen(navController) }
+                                composable(Screen.AnimatedLazyListScreen.route) {
+                                    DisposableEffect(Unit) {
+                                        c = Color.Blue
+                                        onDispose { c = primary }
+                                    }
+                                    AnimatedLazyListScreen(navController)
+                                }
                                 bottomSheet(Screen.GroupButtonScreen.route) { GroupButtonScreen(navController) }
                                 composable(Screen.SettingsScreen.route) { SettingsScreen(navController) }
                                 composable(Screen.BannerBoxScreen.route) { BannerBoxScreen(navController) }

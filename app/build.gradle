@@ -58,6 +58,7 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "androidx.compose.ui:ui-util:$compose_version"
+    //implementation "androidx.compose.ui:text-googlefonts:$compose_version"
     def nav_version = "2.4.2"
     implementation "androidx.navigation:navigation-compose:$nav_version"
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
@@ -69,6 +70,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist"
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist"
     implementation "com.google.accompanist:accompanist-permissions:$accompanist"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist"
     implementation datastore.datastore
     implementation "io.ktor:ktor-client-core:2.0.0"
     implementation "io.ktor:ktor-client-cio:2.0.0"
