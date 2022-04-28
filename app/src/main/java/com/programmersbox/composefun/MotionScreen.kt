@@ -1,23 +1,24 @@
 package com.programmersbox.composefun
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomAppBar
-import androidx.compose.material.Button
-import androidx.compose.material.Slider
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.navigation.NavController
 
-@OptIn(ExperimentalMotionApi::class)
+@OptIn(ExperimentalMotionApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun MotionScreen(navController: NavController) {
 
@@ -25,15 +26,31 @@ fun MotionScreen(navController: NavController) {
 
     var progress by remember(switch) { mutableStateOf(if (switch) 1f else 0f) }
 
+    var airBarOrSlider by remember { mutableStateOf(false) }
+
+    val airBar = rememberAirBarController(progress.toDouble() * 100, isHorizontal = true)
+
+    LaunchedEffect(airBarOrSlider, progress) { airBar.progress = progress.toDouble() * 100 }
+
     ScaffoldTop(
         screen = Screen.MotionScreen,
         navController = navController,
+        topBarActions = { Text("${String.format("%.1f", animateFloatAsState(progress).value * 100)}%") },
         bottomBar = {
             BottomAppBar {
                 Button(
                     onClick = { switch = !switch },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 1.dp)
                 ) { Text("Change Layout") }
+
+                Button(
+                    onClick = { airBarOrSlider = !airBarOrSlider },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 1.dp)
+                ) { Text("Use ${if (airBarOrSlider) "Slider" else "AirBar"}") }
             }
         }
     ) { p ->
@@ -55,12 +72,27 @@ fun MotionScreen(navController: NavController) {
 
             Text("Text", Modifier.layoutId("text"))
 
-            Slider(
-                value = progress,
-                onValueChange = { progress = it },
-                modifier = Modifier.layoutId("slider")
-            )
-
+            Box(
+                modifier = Modifier
+                    .layoutId("slider")
+                    .height(40.dp)
+            ) {
+                Crossfade(targetState = airBarOrSlider) { choice ->
+                    if (choice) {
+                        AirBar(
+                            fillColor = MaterialTheme.colors.primary,
+                            backgroundColor = MaterialTheme.colors.background,
+                            controller = airBar,
+                            valueChanged = { progress = it.toFloat() / 100f },
+                        )
+                    } else {
+                        Slider(
+                            value = progress,
+                            onValueChange = { progress = it }
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -87,7 +119,7 @@ fun layoutOne() = ConstraintSet {
     constrain(slider) {
         start.linkTo(parent.start)
         end.linkTo(parent.end)
-        bottom.linkTo(parent.bottom)
+        bottom.linkTo(parent.bottom, margin = 4.dp)
     }
 }
 
@@ -113,6 +145,6 @@ fun layoutTwo() = ConstraintSet {
     constrain(slider) {
         start.linkTo(parent.start)
         end.linkTo(parent.end)
-        bottom.linkTo(parent.bottom)
+        bottom.linkTo(parent.bottom, margin = 4.dp)
     }
 }
