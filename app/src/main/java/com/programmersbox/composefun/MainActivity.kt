@@ -109,6 +109,7 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.CrashScreen.route) { LaunchedEffect(Unit) { throw RuntimeException("Innocent Crash!") } }
                                 composable(Screen.WifiScreen.route) { WifiScreen(navController) }
                                 composable(Screen.BleScreen.route) { BleScreen(navController) }
+                                composable(Screen.BluetoothScreen.route) { BluetoothScreen(navController) }
                             }
                         }
                     }
