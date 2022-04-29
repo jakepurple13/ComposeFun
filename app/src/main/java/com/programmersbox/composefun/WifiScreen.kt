@@ -21,8 +21,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -31,14 +29,16 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun WifiScreen(navController: NavController, vm: WifiViewModel = viewModel()) {
+fun WifiScreen(navController: NavController) {
+    var refreshing by remember { mutableStateOf(false) }
+    var sortBy by remember { mutableStateOf(WifiSortBy.Default) }
     ScaffoldTop(
         screen = Screen.WifiScreen,
         navController = navController,
         topBarActions = {
-            IconButton(onClick = { vm.sortBy = if (vm.sortBy == WifiSortBy.Default) WifiSortBy.Name else WifiSortBy.Default }) {
+            IconButton(onClick = { sortBy = if (sortBy == WifiSortBy.Default) WifiSortBy.Name else WifiSortBy.Default }) {
                 Icon(
-                    when (vm.sortBy) {
+                    when (sortBy) {
                         WifiSortBy.Name -> Icons.Default.SortByAlpha
                         WifiSortBy.Default -> Icons.Default.Sort
                     },
@@ -61,34 +61,17 @@ fun WifiScreen(navController: NavController, vm: WifiViewModel = viewModel()) {
         if (wifiPermissionState.allPermissionsGranted) {
             val context = LocalContext.current
             val wifiManager = remember { context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager }
-            DisposableEffect(Unit) {
-                val wifiScanReceiver = object : BroadcastReceiver() {
-                    override fun onReceive(context: Context, intent: Intent) {
-                        val success = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false)
-                        if (success) {
-                            vm.scanSuccess(wifiManager)
-                        } else {
-                            vm.scanFailure(wifiManager)
-                        }
-                        vm.refreshing = false
-                    }
-                }
-
-                val intentFilter = IntentFilter()
-                intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
-                context.registerReceiver(wifiScanReceiver, intentFilter)
-                onDispose { context.unregisterReceiver(wifiScanReceiver) }
-            }
+            val wifiNetworks by wifiNetworks(wifiManager = wifiManager) { refreshing = false }
 
             LaunchedEffect(Unit) {
                 wifiManager.startScan()
-                vm.refreshing = true
+                refreshing = true
             }
             SwipeRefresh(
-                state = rememberSwipeRefreshState(isRefreshing = vm.refreshing),
+                state = rememberSwipeRefreshState(isRefreshing = refreshing),
                 onRefresh = {
                     wifiManager.startScan()
-                    vm.refreshing = true
+                    refreshing = true
                 },
                 indicatorPadding = p
             ) {
@@ -96,7 +79,7 @@ fun WifiScreen(navController: NavController, vm: WifiViewModel = viewModel()) {
                     contentPadding = p,
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                     modifier = Modifier.fillMaxSize()
-                ) { items(vm.scanResults.let { if (vm.sortBy == WifiSortBy.Name) it.sortedBy(ScanResult::SSID) else it }) { WifiItem(it) } }
+                ) { items(wifiNetworks.let { if (sortBy == WifiSortBy.Name) it.sortedBy(ScanResult::SSID) else it }) { WifiItem(it) } }
             }
         } else {
             Card(
@@ -122,20 +105,29 @@ fun WifiItem(scanResult: ScanResult) {
     }
 }
 
-class WifiViewModel : ViewModel() {
-    var refreshing by mutableStateOf(false)
-    var sortBy by mutableStateOf(WifiSortBy.Default)
-    val scanResults = mutableStateListOf<ScanResult>()
-
-    fun scanSuccess(wifiManager: WifiManager) {
-        scanResults.clear()
-        scanResults.addAll(wifiManager.scanResults)
-    }
-
-    fun scanFailure(wifiManager: WifiManager) {
-        scanResults.clear()
-        scanResults.addAll(wifiManager.scanResults)
-    }
-}
-
 enum class WifiSortBy { Name, Default }
+
+@Composable
+fun wifiNetworks(wifiManager: WifiManager, finishScan: () -> Unit): State<List<ScanResult>> {
+    val scanResults = remember { mutableStateOf(emptyList<ScanResult>()) }
+    val context = LocalContext.current
+    DisposableEffect(Unit) {
+        val wifiScanReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                val success = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false)
+                scanResults.value = if (success) {
+                    wifiManager.scanResults
+                } else {
+                    wifiManager.scanResults
+                }
+                finishScan()
+            }
+        }
+
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
+        context.registerReceiver(wifiScanReceiver, intentFilter)
+        onDispose { context.unregisterReceiver(wifiScanReceiver) }
+    }
+    return scanResults
+}
