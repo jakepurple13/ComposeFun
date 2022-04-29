@@ -107,6 +107,7 @@ class MainActivity : ComponentActivity() {
                                     popExitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.End) }
                                 ) { MotionScreen(navController) }
                                 composable(Screen.CrashScreen.route) { LaunchedEffect(Unit) { throw RuntimeException("Innocent Crash!") } }
+                                composable(Screen.WifiScreen.route) { WifiScreen(navController) }
                             }
                         }
                     }
