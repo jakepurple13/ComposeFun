@@ -56,6 +56,7 @@ class MainActivity : ComponentActivity() {
 
             val sys = rememberSystemUiController()
             val primary = MaterialTheme.colors.primaryVariant
+            val background = MaterialTheme.colors.surface
             var c by remember { mutableStateOf(primary) }
             val ac by animateColorAsState(c)
             LaunchedEffect(ac) { sys.setStatusBarColor(ac) }
@@ -110,6 +111,8 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.WifiScreen.route) { WifiScreen(navController) }
                                 composable(Screen.BleScreen.route) { BleScreen(navController) }
                                 composable(Screen.BluetoothScreen.route) { BluetoothScreen(navController) }
+                                composable(Screen.PlaceholderScreen.route) { PlaceholderScreen(navController) }
+                                composable(Screen.InsetScreen.route) { InsetScreen(navController) }
                             }
                         }
                     }

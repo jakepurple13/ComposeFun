@@ -52,6 +52,8 @@ sealed class Screen(val route: String, val name: String) {
     object WifiScreen : Screen("wifi", "Wifi Network Screen")
     object BleScreen : Screen("bluetoothle", "Bluetooth LE Screen")
     object BluetoothScreen : Screen("bluetooth", "Bluetooth Screen")
+    object PlaceholderScreen : Screen("placeholder", "Placeholder Screen")
+    object InsetScreen : Screen("inset", "Window Insets Screen")
 
     companion object {
         val items = arrayOf(
@@ -72,7 +74,9 @@ sealed class Screen(val route: String, val name: String) {
             CrashScreen,
             WifiScreen,
             BleScreen,
-            BluetoothScreen
+            BluetoothScreen,
+            PlaceholderScreen,
+            InsetScreen
         )
 
         val mainItems = listOf(
