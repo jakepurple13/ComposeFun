@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -56,7 +57,6 @@ class MainActivity : ComponentActivity() {
 
             val sys = rememberSystemUiController()
             val primary = MaterialTheme.colors.primaryVariant
-            val background = MaterialTheme.colors.surface
             var c by remember { mutableStateOf(primary) }
             val ac by animateColorAsState(c)
             LaunchedEffect(ac) { sys.setStatusBarColor(ac) }
@@ -112,7 +112,17 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.BleScreen.route) { BleScreen(navController) }
                                 composable(Screen.BluetoothScreen.route) { BluetoothScreen(navController) }
                                 composable(Screen.PlaceholderScreen.route) { PlaceholderScreen(navController) }
-                                composable(Screen.InsetScreen.route) { InsetScreen(navController) }
+                                composable(Screen.InsetScreen.route) {
+                                    DisposableEffect(Unit) {
+                                        WindowCompat.setDecorFitsSystemWindows(window, false)
+                                        sys.setSystemBarsColor(Color.Transparent)
+                                        onDispose {
+                                            WindowCompat.setDecorFitsSystemWindows(window, true)
+                                            sys.setSystemBarsColor(Color.Black)
+                                        }
+                                    }
+                                    InsetScreen(navController)
+                                }
                                 composable(Screen.PagerScreen.route) { PagerScreen(navController) }
                             }
                         }
