@@ -113,6 +113,7 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.BluetoothScreen.route) { BluetoothScreen(navController) }
                                 composable(Screen.PlaceholderScreen.route) { PlaceholderScreen(navController) }
                                 composable(Screen.InsetScreen.route) { InsetScreen(navController) }
+                                composable(Screen.PagerScreen.route) { PagerScreen(navController) }
                             }
                         }
                     }
