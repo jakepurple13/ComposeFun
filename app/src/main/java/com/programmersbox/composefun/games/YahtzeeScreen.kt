@@ -3,6 +3,7 @@ package com.programmersbox.composefun.games
 import android.content.Context
 import android.icu.text.SimpleDateFormat
 import android.os.Build
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateIntAsState
@@ -289,6 +290,8 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         score = vm.scores.sixes,
                         onClick = vm::placeSixes
                     )
+
+                    AnimatedVisibility(smallScore >= 63) { Text("$smallScore >= 63! +35") }
 
                     Text("Small Score: ${animateIntAsState(smallScore).value}")
                 }
