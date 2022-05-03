@@ -173,7 +173,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                     items(highscores.sortedByDescending(YahtzeeScoreItem::score)) {
                         Card(elevation = 4.dp) {
                             ListItem(
-                                text = { Text(it.score.toString()) },
+                                text = { Text("Score: ${it.score}") },
                                 overlineText = {
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                                         Text("Time: ${SimpleDateFormat.getDateTimeInstance().format(it.time)}")
