@@ -3,6 +3,7 @@ package com.programmersbox.composefun.games
 import android.content.Context
 import android.icu.text.SimpleDateFormat
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -33,6 +34,7 @@ import com.programmersbox.composefun.ScaffoldTop
 import com.programmersbox.composefun.Screen
 import com.programmersbox.composefun.ui.theme.ComposeFunTheme
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.math.max
 import kotlin.random.Random
@@ -158,9 +160,13 @@ class Dice(value: Int = Random.nextInt(1..6), val location: String) {
 fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel()) {
     val context = LocalContext.current
     val dao = remember { YahtzeeDatabase.getInstance(context).yahtzeeDao() }
-    val highscores by dao.getAllScores().collectAsState(initial = emptyList())
+    val highScores by dao.getAllScores().collectAsState(initial = emptyList())
 
+    val scope = rememberCoroutineScope()
     val state = rememberScaffoldState()
+
+    BackHandler(state.drawerState.isOpen) { scope.launch { state.drawerState.close() } }
+
     ScaffoldTop(
         scaffoldState = state,
         screen = Screen.YahtzeeScreen,
@@ -171,7 +177,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                     contentPadding = p
                 ) {
-                    items(highscores.sortedByDescending(YahtzeeScoreItem::score)) {
+                    items(highScores.sortedByDescending(YahtzeeScoreItem::score)) {
                         Card(elevation = 4.dp) {
                             ListItem(
                                 text = { Text("Score: ${it.score}") },
