@@ -50,10 +50,18 @@ fun DadJokesScreen(navController: NavController, vm: DadJokeViewModel = viewMode
     }
 }
 
+data class DidYouKnowFact(
+    val id: String,
+    val text: String,
+    val source_url: String,
+    val language: String,
+    val permalink: String
+)
+
 @Composable
 fun DidYouKnowScreen(navController: NavController) {
     var count by remember { mutableStateOf(0) }
-    val didYouKnow by getDidYouKnowFact(count)
+    val didYouKnow by getApiJoke(count) { getApi<DidYouKnowFact>("https://uselessfacts.jsph.pl/random.json?language=en") }
 
     JokeScreens(
         navController = navController,
@@ -65,6 +73,102 @@ fun DidYouKnowScreen(navController: NavController) {
             is Result.Error -> Text("Please Try Again", textAlign = TextAlign.Center)
             is Result.Loading -> CircularProgressIndicator()
             is Result.Success -> Text((didYouKnow as Result.Success<DidYouKnowFact>).value.text, textAlign = TextAlign.Center)
+        }
+    }
+}
+
+data class Success(val total: Number?)
+data class JokeBase(val success: Success?, val contents: Contents?)
+data class Contents(val jokes: List<Jokes>?, val copyright: String?)
+
+data class Joke(
+    val title: String?,
+    val lang: String?,
+    val length: String?,
+    val clean: String?,
+    val racial: String?,
+    val id: String?,
+    val text: String?
+)
+
+data class Jokes(
+    val description: String?,
+    val language: String?,
+    val background: String?,
+    val category: String?,
+    val date: String?,
+    val joke: Joke?
+)
+
+@Composable
+fun JokeOfTheDayScreen(navController: NavController) {
+    val joke by getApiJoke(Unit) { getApi<JokeBase>("https://api.jokes.one/jod") }
+
+    JokeScreens(
+        navController = navController,
+        screen = Screen.JokeOfTheDayScreen,
+        buttonText = "One Joke!",
+        onNewJokeClick = {}
+    ) {
+        when (joke) {
+            is Result.Error -> Text("Please Try Again", textAlign = TextAlign.Center)
+            is Result.Loading -> CircularProgressIndicator()
+            is Result.Success -> Text(
+                (joke as Result.Success<JokeBase>).value.contents?.jokes?.firstOrNull()?.joke?.text.orEmpty(),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+data class EvilInsult(
+    val number: String?,
+    val language: String?,
+    val insult: String?,
+    val created: String?,
+    val shown: String?,
+    val createdby: String?,
+    val active: String?,
+    val comment: String?
+)
+
+@Composable
+fun EvilInsultScreen(navController: NavController) {
+    var count by remember { mutableStateOf(0) }
+    val evilInsult by getApiJoke(count) { getApi<EvilInsult>("https://evilinsult.com/generate_insult.php?lang=en&type=json") }
+
+    JokeScreens(
+        navController = navController,
+        screen = Screen.EvilInsultScreen,
+        buttonText = "Get New Insult",
+        onNewJokeClick = { count++ }
+    ) {
+        when (evilInsult) {
+            is Result.Error -> Text("Please Try Again", textAlign = TextAlign.Center)
+            is Result.Loading -> CircularProgressIndicator()
+            is Result.Success -> Text((evilInsult as Result.Success<EvilInsult>).value.insult.orEmpty(), textAlign = TextAlign.Center)
+        }
+    }
+}
+
+data class ChuckNorrisBase(val type: String?, val value: ChuckNorris?)
+data class ChuckNorris(val id: Number?, val joke: String?, val categories: List<Any>?)
+
+@Composable
+fun ChuckNorrisScreen(navController: NavController) {
+    var count by remember { mutableStateOf(0) }
+    val chuckNorris by getApiJoke(count) { getApi<ChuckNorrisBase>("http://api.icndb.com/jokes/random") }
+
+    JokeScreens(
+        navController = navController,
+        screen = Screen.ChuckNorrisScreen,
+        buttonText = "Get New Chuck Norris Fact",
+        onNewJokeClick = { count++ }
+    ) {
+        when (chuckNorris) {
+            is Result.Error -> Text("Please Try Again", textAlign = TextAlign.Center)
+            is Result.Loading -> CircularProgressIndicator()
+            is Result.Success -> Text((chuckNorris as Result.Success<ChuckNorrisBase>).value.value?.joke.orEmpty(), textAlign = TextAlign.Center)
         }
     }
 }
@@ -98,33 +202,25 @@ private fun JokeScreens(
     }
 }
 
-data class DidYouKnowFact(
-    val id: String,
-    val text: String,
-    val source_url: String,
-    val language: String,
-    val permalink: String
-)
-
 @Composable
-fun getDidYouKnowFact(key: Any): State<Result<DidYouKnowFact>> {
+fun <T> getApiJoke(key: Any, request: suspend () -> T?): State<Result<T>> {
 
     // Creates a State<T> with Result.Loading as initial value
     // If either `url` or `imageRepository` changes, the running producer
     // will cancel and will be re-launched with the new inputs.
-    return produceState<Result<DidYouKnowFact>>(Result.Loading(), key) {
+    return produceState<Result<T>>(Result.Loading(), key) {
         //We start by making value Loading so that it will show the loading screen everytime
         value = Result.Loading()
 
         // In a coroutine, can make suspend calls
-        val dyk = withContext(Dispatchers.IO) { getApi<DidYouKnowFact>("https://uselessfacts.jsph.pl/random.json?language=en") }
+        val joke = withContext(Dispatchers.IO) { request() }
 
         // Update State with either an Error or Success result.
         // This will trigger a recomposition where this State is read
-        value = if (dyk == null) {
+        value = if (joke == null) {
             Result.Error()
         } else {
-            Result.Success(dyk)
+            Result.Success(joke)
         }
     }
 }

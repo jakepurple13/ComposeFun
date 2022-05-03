@@ -46,6 +46,9 @@ sealed class Screen(val route: String, val name: String) {
     object MastermindScreen : Screen("mastermind", "Mastermind Screen")
     object DadJokesScreen : Screen("dadjokes", "Dad Jokes Screen")
     object DidYouKnowScreen : Screen("didyouknow", "Did You Know Screen")
+    object JokeOfTheDayScreen : Screen("jokeoftheday", "Joke of the Day Screen")
+    object EvilInsultScreen : Screen("evilinsult", "Evil Insult Screen")
+    object ChuckNorrisScreen : Screen("chucknorris", "Chuck Norris Screen")
     object MotionScreen : Screen("motion", "Motion Layout")
     object PermissionScreen : Screen("permission", "Permissions Screen")
     object CrashScreen : Screen("crash", "Crash Application")
@@ -67,6 +70,9 @@ sealed class Screen(val route: String, val name: String) {
             CompositionLocalScreen,
             DadJokesScreen,
             DidYouKnowScreen,
+            JokeOfTheDayScreen,
+            EvilInsultScreen,
+            ChuckNorrisScreen,
             PermissionScreen,
             BlackjackScreen,
             PokerScreen,
