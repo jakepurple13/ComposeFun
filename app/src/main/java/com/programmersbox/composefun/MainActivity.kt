@@ -37,10 +37,7 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.programmersbox.composefun.games.Blackjack
-import com.programmersbox.composefun.games.CalculationScreen
-import com.programmersbox.composefun.games.MastermindScreen
-import com.programmersbox.composefun.games.Poker
+import com.programmersbox.composefun.games.*
 import com.programmersbox.composefun.ui.theme.ComposeFunTheme
 
 class MainActivity : ComponentActivity() {
@@ -90,6 +87,7 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.PokerScreen.route) { Poker(navController) }
                                 composable(Screen.CalculationScreen.route) { CalculationScreen(navController) }
                                 composable(Screen.MastermindScreen.route) { MastermindScreen(navController) }
+                                composable(Screen.YahtzeeScreen.route) { YahtzeeScreen(navController) }
                                 composable(Screen.DadJokesScreen.route) { DadJokesScreen(navController) }
                                 composable(Screen.DidYouKnowScreen.route) { DidYouKnowScreen(navController) }
                                 composable(Screen.JokeOfTheDayScreen.route) { JokeOfTheDayScreen(navController) }
