@@ -26,13 +26,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.room.*
 import com.programmersbox.composefun.ScaffoldTop
 import com.programmersbox.composefun.Screen
+import com.programmersbox.composefun.ui.theme.Alizarin
 import com.programmersbox.composefun.ui.theme.ComposeFunTheme
+import com.programmersbox.composefun.ui.theme.Emerald
+import com.programmersbox.composefun.ui.theme.Sunflower
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.util.*
@@ -61,7 +66,12 @@ class YahtzeeViewModel : ViewModel() {
     fun reroll() {
         for (i in 0 until hand.size) {
             if (hand[i] !in hold) {
-                hand[i].value = Random.nextInt(1..6)
+                viewModelScope.launch {
+                    for (d in 0..5) {
+                        delay(50L)
+                        hand[i].value = Random.nextInt(1..6)
+                    }
+                }
             }
         }
 
@@ -204,7 +214,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                             .weight(1f)
                             .border(
                                 width = animateDpAsState(targetValue = if (it in vm.hold) 4.dp else 0.dp).value,
-                                color = animateColorAsState(targetValue = if (it in vm.hold) Color.Green else Color.Transparent).value,
+                                color = animateColorAsState(targetValue = if (it in vm.hold) Emerald else Color.Transparent).value,
                                 shape = RoundedCornerShape(7.dp)
                             )
                     ) { if (it in vm.hold) vm.hold.remove(it) else vm.hold.add(it) }
@@ -255,10 +265,33 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.Start
                 ) {
+
+                    val groupedCheck = vm.hand.groupingBy { it.value }
+                        .eachCount()
+                        .toList()
+                        .sortedWith(compareBy({ it.second }, { it.first }))
+                        .reversed()
+                        .toMap()
+                        .entries
+
+                    val highest = groupedCheck.elementAtOrNull(0)
+                    val medium = groupedCheck.elementAtOrNull(1)
+                    val lowest = groupedCheck.elementAtOrNull(2)
+
+                    fun canScore(value: Int) = highest?.key == value || medium?.key == value || lowest?.key == value
+                    fun scoreColor(value: Int) = when {
+                        highest?.key == value -> Emerald
+                        medium?.key == value -> Sunflower
+                        lowest?.key == value -> Alizarin
+                        else -> Color.Transparent
+                    }
+
                     ScoreButton(
                         category = "Ones",
                         enabled = !vm.scores.placedOnes,
                         score = vm.scores.ones,
+                        canScore = canScore(1),
+                        customBorderColor = scoreColor(1),
                         onClick = vm::placeOnes
                     )
 
@@ -266,6 +299,8 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Twos",
                         enabled = !vm.scores.placedTwos,
                         score = vm.scores.twos,
+                        canScore = canScore(2),
+                        customBorderColor = scoreColor(2),
                         onClick = vm::placeTwos
                     )
 
@@ -273,6 +308,8 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Threes",
                         enabled = !vm.scores.placedThrees,
                         score = vm.scores.threes,
+                        canScore = canScore(3),
+                        customBorderColor = scoreColor(3),
                         onClick = vm::placeThrees
                     )
 
@@ -280,6 +317,8 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Fours",
                         enabled = !vm.scores.placedFours,
                         score = vm.scores.fours,
+                        canScore = canScore(4),
+                        customBorderColor = scoreColor(4),
                         onClick = vm::placeFours
                     )
 
@@ -287,6 +326,8 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Fives",
                         enabled = !vm.scores.placedFives,
                         score = vm.scores.fives,
+                        canScore = canScore(5),
+                        customBorderColor = scoreColor(5),
                         onClick = vm::placeFives
                     )
 
@@ -294,6 +335,8 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Sixes",
                         enabled = !vm.scores.placedSixes,
                         score = vm.scores.sixes,
+                        canScore = canScore(6),
+                        customBorderColor = scoreColor(6),
                         onClick = vm::placeSixes
                     )
 
@@ -371,13 +414,23 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
 }
 
 @Composable
-fun ScoreButton(category: String, enabled: Boolean, canScore: Boolean = false, score: Int, onClick: () -> Unit) {
+fun ScoreButton(
+    category: String,
+    enabled: Boolean,
+    canScore: Boolean = false,
+    customBorderColor: Color = Emerald,
+    score: Int,
+    onClick: () -> Unit
+) {
     OutlinedButton(
         onClick = onClick,
         enabled = enabled,
         border = BorderStroke(
             ButtonDefaults.OutlinedBorderSize,
-            animateColorAsState(if (canScore && enabled) Color.Green else MaterialTheme.colors.primary.copy(alpha = ButtonDefaults.OutlinedBorderOpacity)).value
+            animateColorAsState(
+                if (canScore && enabled) customBorderColor
+                else MaterialTheme.colors.primary.copy(alpha = ButtonDefaults.OutlinedBorderOpacity)
+            ).value
         )
     ) { Text("$category: ${animateIntAsState(score).value}") }
 }
