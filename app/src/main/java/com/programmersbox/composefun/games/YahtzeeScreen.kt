@@ -39,9 +39,8 @@ import com.programmersbox.composefun.ui.theme.Alizarin
 import com.programmersbox.composefun.ui.theme.ComposeFunTheme
 import com.programmersbox.composefun.ui.theme.Emerald
 import com.programmersbox.composefun.ui.theme.Sunflower
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.math.max
 import kotlin.random.Random
@@ -50,6 +49,8 @@ import kotlin.random.nextInt
 enum class YahtzeeState { RollOne, RollTwo, RollThree, Stop }
 
 class YahtzeeViewModel : ViewModel() {
+
+    var rolling by mutableStateOf(false)
 
     var showGameOverDialog by mutableStateOf(true)
 
@@ -68,22 +69,25 @@ class YahtzeeViewModel : ViewModel() {
     val hold = mutableStateListOf<Dice>()
 
     fun reroll() {
-        for (i in 0 until hand.size) {
-            if (hand[i] !in hold) {
-                viewModelScope.launch {
-                    for (d in 0..5) {
-                        delay(50L)
-                        hand[i].value = Random.nextInt(1..6)
+        viewModelScope.launch {
+            rolling = true
+            (0 until hand.size).map { i ->
+                async(Dispatchers.IO) {
+                    if (hand[i] !in hold) {
+                        for (d in 0..5) {
+                            delay(50L)
+                            hand[i].value = Random.nextInt(1..6)
+                        }
                     }
                 }
+            }.awaitAll()
+            rolling = false
+            state = when (state) {
+                YahtzeeState.RollOne -> YahtzeeState.RollTwo
+                YahtzeeState.RollTwo -> YahtzeeState.RollThree
+                YahtzeeState.RollThree -> YahtzeeState.Stop
+                YahtzeeState.Stop -> YahtzeeState.RollOne
             }
-        }
-
-        state = when (state) {
-            YahtzeeState.RollOne -> YahtzeeState.RollTwo
-            YahtzeeState.RollTwo -> YahtzeeState.RollThree
-            YahtzeeState.RollThree -> YahtzeeState.Stop
-            YahtzeeState.Stop -> YahtzeeState.RollOne
         }
     }
 
@@ -326,7 +330,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Ones",
                         enabled = !vm.scores.placedOnes,
                         score = vm.scores.ones,
-                        canScore = canScore(1),
+                        canScore = canScore(1) && !vm.rolling,
                         customBorderColor = scoreColor(1),
                         onClick = vm::placeOnes
                     )
@@ -335,7 +339,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Twos",
                         enabled = !vm.scores.placedTwos,
                         score = vm.scores.twos,
-                        canScore = canScore(2),
+                        canScore = canScore(2) && !vm.rolling,
                         customBorderColor = scoreColor(2),
                         onClick = vm::placeTwos
                     )
@@ -344,7 +348,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Threes",
                         enabled = !vm.scores.placedThrees,
                         score = vm.scores.threes,
-                        canScore = canScore(3),
+                        canScore = canScore(3) && !vm.rolling,
                         customBorderColor = scoreColor(3),
                         onClick = vm::placeThrees
                     )
@@ -353,7 +357,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Fours",
                         enabled = !vm.scores.placedFours,
                         score = vm.scores.fours,
-                        canScore = canScore(4),
+                        canScore = canScore(4) && !vm.rolling,
                         customBorderColor = scoreColor(4),
                         onClick = vm::placeFours
                     )
@@ -362,7 +366,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Fives",
                         enabled = !vm.scores.placedFives,
                         score = vm.scores.fives,
-                        canScore = canScore(5),
+                        canScore = canScore(5) && !vm.rolling,
                         customBorderColor = scoreColor(5),
                         onClick = vm::placeFives
                     )
@@ -371,7 +375,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Sixes",
                         enabled = !vm.scores.placedSixes,
                         score = vm.scores.sixes,
-                        canScore = canScore(6),
+                        canScore = canScore(6) && !vm.rolling,
                         customBorderColor = scoreColor(6),
                         onClick = vm::placeSixes
                     )
@@ -389,7 +393,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Three of a Kind",
                         enabled = !vm.scores.placedThreeOfKind,
                         score = vm.scores.threeOfKind,
-                        canScore = vm.scores.canGetThreeKind(vm.hand) && vm.state != YahtzeeState.RollOne,
+                        canScore = vm.scores.canGetThreeKind(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
                         onClick = vm::placeThreeOfKind
                     )
 
@@ -397,7 +401,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Four of a Kind",
                         enabled = !vm.scores.placedFourOfKind,
                         score = vm.scores.fourOfKind,
-                        canScore = vm.scores.canGetFourKind(vm.hand) && vm.state != YahtzeeState.RollOne,
+                        canScore = vm.scores.canGetFourKind(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
                         onClick = vm::placeFourOfKind
                     )
 
@@ -405,7 +409,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Full House",
                         enabled = !vm.scores.placedFullHouse,
                         score = vm.scores.fullHouse,
-                        canScore = vm.scores.canGetFullHouse(vm.hand) && vm.state != YahtzeeState.RollOne,
+                        canScore = vm.scores.canGetFullHouse(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
                         onClick = vm::placeFullHouse
                     )
 
@@ -413,7 +417,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Small Straight",
                         enabled = !vm.scores.placedSmallStraight,
                         score = vm.scores.smallStraight,
-                        canScore = vm.scores.canGetSmallStraight(vm.hand) && vm.state != YahtzeeState.RollOne,
+                        canScore = vm.scores.canGetSmallStraight(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
                         onClick = vm::placeSmallStraight
                     )
 
@@ -421,7 +425,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Large Straight",
                         enabled = !vm.scores.placedLargeStraight,
                         score = vm.scores.largeStraight,
-                        canScore = vm.scores.canGetLargeStraight(vm.hand) && vm.state != YahtzeeState.RollOne,
+                        canScore = vm.scores.canGetLargeStraight(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
                         onClick = vm::placeLargeStraight
                     )
 
@@ -429,7 +433,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         category = "Yahtzee",
                         enabled = !vm.scores.placedYahtzee || vm.scores.canGetYahtzee(vm.hand) && vm.hand.none { it.value == 0 },
                         score = vm.scores.yahtzee,
-                        canScore = vm.scores.canGetYahtzee(vm.hand) && vm.state != YahtzeeState.RollOne,
+                        canScore = vm.scores.canGetYahtzee(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
                         onClick = vm::placeYahtzee
                     )
 
