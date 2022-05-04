@@ -340,7 +340,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         onClick = vm::placeSixes
                     )
 
-                    AnimatedVisibility(smallScore >= 63) { Text("$smallScore >= 63! +35") }
+                    AnimatedVisibility(smallScore >= 63) { Text("${smallScore - 35} >= 63! +35") }
 
                     Text("Small Score: ${animateIntAsState(smallScore).value}")
                 }
