@@ -16,7 +16,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +50,8 @@ import kotlin.random.nextInt
 enum class YahtzeeState { RollOne, RollTwo, RollThree, Stop }
 
 class YahtzeeViewModel : ViewModel() {
+
+    var showGameOverDialog by mutableStateOf(true)
 
     var state by mutableStateOf(YahtzeeState.RollOne)
 
@@ -157,6 +161,7 @@ class YahtzeeViewModel : ViewModel() {
     fun resetGame() {
         reset()
         scores.resetScores()
+        showGameOverDialog = true
     }
 
 }
@@ -176,6 +181,31 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
     val state = rememberScaffoldState()
 
     BackHandler(state.drawerState.isOpen) { scope.launch { state.drawerState.close() } }
+
+    var smallScore = vm.scores.run { ones + twos + threes + fours + fives + sixes }
+
+    if (smallScore >= 63) smallScore += 35
+
+    val largeScore = vm.scores.run { threeOfKind + fourOfKind + fullHouse + smallStraight + largeStraight + yahtzee + chance }
+
+    var newGameDialog by remember { mutableStateOf(false) }
+
+    if (newGameDialog) {
+        AlertDialog(
+            onDismissRequest = { newGameDialog = false },
+            title = { Text("Want to start a new game?") },
+            text = { Text("You have ${largeScore + smallScore} points. Are you sure?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        vm.resetGame()
+                        newGameDialog = false
+                    }
+                ) { Text("Yes") }
+            },
+            dismissButton = { TextButton(onClick = { newGameDialog = false }) { Text("No") } }
+        )
+    }
 
     ScaffoldTop(
         scaffoldState = state,
@@ -204,6 +234,10 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                 }
             }
         },
+        topBarActions = {
+            IconButton(onClick = { newGameDialog = true }) { Icon(Icons.Default.OpenInNew, null) }
+            IconButton(onClick = { scope.launch { state.drawerState.open() } }) { Icon(Icons.Default.Settings, null) }
+        },
         bottomBar = {
             BottomAppBar {
                 vm.hand.forEach {
@@ -229,28 +263,30 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
         },
     ) { p ->
 
-        var smallScore = vm.scores.run { ones + twos + threes + fours + fives + sixes }
-
-        if (smallScore >= 63) smallScore += 35
-
-        val largeScore = vm.scores.run { threeOfKind + fourOfKind + fullHouse + smallStraight + largeStraight + yahtzee + chance }
-
         if (
             vm.scores.run {
                 placedYahtzee && placedChance &&
                         placedLargeStraight && placedSmallStraight &&
                         placedFullHouse &&
                         placedFourOfKind && placedThreeOfKind &&
-                        placedOnes && placedTwos && placedThrees && placedFours && placedFives && placedSixes
+                        placedOnes && placedTwos && placedThrees && placedFours && placedFives && placedSixes &&
+                        vm.showGameOverDialog
             }
         ) {
             LaunchedEffect(Unit) { dao.insertScore(YahtzeeScoreItem(System.currentTimeMillis(), largeScore + smallScore)) }
             AlertDialog(
-                onDismissRequest = {},
+                onDismissRequest = { vm.showGameOverDialog = false },
                 title = { Text("Game Over") },
                 text = { Text("You got a score of ${largeScore + smallScore}") },
                 confirmButton = { TextButton(onClick = vm::resetGame) { Text("Play Again") } },
-                dismissButton = { TextButton(onClick = { navController.popBackStack() }) { Text("Stop Playing") } }
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            navController.popBackStack()
+                            vm.showGameOverDialog = false
+                        }
+                    ) { Text("Stop Playing") }
+                }
             )
         }
 
