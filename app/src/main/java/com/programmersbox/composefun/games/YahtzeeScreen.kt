@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Settings
@@ -216,26 +217,18 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
         screen = Screen.YahtzeeScreen,
         navController = navController,
         drawer = {
-            Scaffold(topBar = { TopAppBar { Text("High Scores") } }) { p ->
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = { Text("High Scores") },
+                        actions = { Text(highScores.size.toString()) }
+                    )
+                }
+            ) { p ->
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                     contentPadding = p
-                ) {
-                    items(highScores.sortedByDescending(YahtzeeScoreItem::score)) {
-                        Card(elevation = 4.dp) {
-                            ListItem(
-                                text = { Text("Score: ${it.score}") },
-                                overlineText = {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                        Text("Time: ${SimpleDateFormat.getDateTimeInstance().format(it.time)}")
-                                    } else {
-                                        Text("Time: ${java.text.SimpleDateFormat.getDateTimeInstance().format(it.time)}")
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
+                ) { items(highScores.sortedByDescending(YahtzeeScoreItem::score)) { HighScoreItem(it) { scope.launch { dao.deleteScore(it) } } } }
             }
         },
         topBarActions = {
@@ -310,9 +303,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
             modifier = Modifier.padding(p),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+            Row(horizontalArrangement = Arrangement.SpaceBetween) {
                 Column(
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.Start
@@ -323,18 +314,17 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         .toList()
                         .sortedWith(compareBy({ it.second }, { it.first }))
                         .reversed()
-                        .toMap()
-                        .entries
+                        .map { it.first }
 
                     val highest = groupedCheck.elementAtOrNull(0)
                     val medium = groupedCheck.elementAtOrNull(1)
                     val lowest = groupedCheck.elementAtOrNull(2)
 
-                    fun canScore(value: Int) = highest?.key == value || medium?.key == value || lowest?.key == value
+                    fun canScore(value: Int) = highest == value || medium == value || lowest == value
                     fun scoreColor(value: Int) = when {
-                        highest?.key == value -> Emerald
-                        medium?.key == value -> Sunflower
-                        lowest?.key == value -> Alizarin
+                        highest == value -> Emerald
+                        medium == value -> Sunflower
+                        lowest == value -> Alizarin
                         else -> Color.Transparent
                     }
 
@@ -462,6 +452,45 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
 
             Text("Total Score: ${animateIntAsState(largeScore + smallScore).value}")
         }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+fun HighScoreItem(item: YahtzeeScoreItem, onDelete: () -> Unit) {
+    var deleteDialog by remember { mutableStateOf(false) }
+
+    val time = remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            SimpleDateFormat.getDateTimeInstance().format(item.time)
+        } else {
+            java.text.SimpleDateFormat.getDateTimeInstance().format(item.time)
+        }
+    }
+
+    if (deleteDialog) {
+        AlertDialog(
+            onDismissRequest = { deleteDialog = false },
+            title = { Text("Delete ${item.score} at $time") },
+            text = { Text("Are you sure?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDelete()
+                        deleteDialog = false
+                    }
+                ) { Text("Yes") }
+            },
+            dismissButton = { TextButton(onClick = { deleteDialog = false }) { Text("No") } }
+        )
+    }
+
+    Card(elevation = 4.dp) {
+        ListItem(
+            trailing = { IconButton(onClick = { deleteDialog = true }) { Icon(Icons.Default.Close, null) } },
+            text = { Text("Score: ${item.score}") },
+            overlineText = { Text("Time: $time") }
+        )
     }
 }
 
@@ -638,8 +667,7 @@ class YahtzeeScores {
         var sequence = 0
         for (i in 1 until a.size) {
             when (a[i].value - a[i - 1].value) {
-                0 -> {/*ignore duplicates*/
-                }
+                0 -> Unit/*ignore duplicates*/
                 1 -> sequence += 1
                 else -> if (sequence > longest) {
                     longest = sequence
@@ -720,6 +748,9 @@ interface YahtzeeDao {
 
     @Query("Select * from YahtzeeScores")
     fun getAllScores(): Flow<List<YahtzeeScoreItem>>
+
+    @Delete
+    suspend fun deleteScore(item: YahtzeeScoreItem)
 
 }
 
