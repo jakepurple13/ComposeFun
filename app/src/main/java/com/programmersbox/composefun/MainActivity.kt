@@ -61,28 +61,6 @@ class MainActivity : ComponentActivity() {
             val ac by animateColorAsState(c)
             LaunchedEffect(ac) { sys.setStatusBarColor(ac) }
 
-            @Composable
-            fun noBottomNav() {
-                val lifecycleOwner = LocalLifecycleOwner.current
-                // If `lifecycleOwner` changes, dispose and reset the effect
-                DisposableEffect(lifecycleOwner) {
-                    // Create an observer that triggers our remembered callbacks
-                    // for sending analytics events
-                    val observer = LifecycleEventObserver { _, event ->
-                        showBottomNav = when (event) {
-                            Lifecycle.Event.ON_CREATE, Lifecycle.Event.ON_START, Lifecycle.Event.ON_RESUME -> false
-                            Lifecycle.Event.ON_STOP, Lifecycle.Event.ON_DESTROY, Lifecycle.Event.ON_PAUSE, Lifecycle.Event.ON_ANY -> true
-                        }
-                    }
-
-                    // Add the observer to the lifecycle
-                    lifecycleOwner.lifecycle.addObserver(observer)
-
-                    // When the effect leaves the Composition, remove the observer
-                    onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-                }
-            }
-
             ComposeFunTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val bottomSheetNavigator = rememberBottomSheetNavigator()
@@ -128,23 +106,23 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.BannerBoxScreen.route) { BannerBoxScreen(navController) }
                                 composable(Screen.CompositionLocalScreen.route) { CompositionLocalScreen(navController) }
                                 composable(Screen.BlackjackScreen.route) {
-                                    noBottomNav()
+                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
                                     Blackjack(navController)
                                 }
                                 composable(Screen.PokerScreen.route) {
-                                    noBottomNav()
+                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
                                     Poker(navController)
                                 }
                                 composable(Screen.CalculationScreen.route) {
-                                    noBottomNav()
+                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
                                     CalculationScreen(navController)
                                 }
                                 composable(Screen.MastermindScreen.route) {
-                                    noBottomNav()
+                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
                                     MastermindScreen(navController)
                                 }
                                 composable(Screen.YahtzeeScreen.route) {
-                                    noBottomNav()
+                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
                                     YahtzeeScreen(navController)
                                 }
                                 composable(Screen.DadJokesScreen.route) { DadJokesScreen(navController) }

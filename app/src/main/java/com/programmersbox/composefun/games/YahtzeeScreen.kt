@@ -262,11 +262,23 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                     onClick = vm::reroll,
                     modifier = Modifier.weight(1f),
                     enabled = vm.state != YahtzeeState.Stop
-                ) { Icon(Icons.Default.PlayCircle, null) }
+                ) {
+                    Icon(
+                        Icons.Default.PlayCircle,
+                        null,
+                        tint = animateColorAsState(
+                            when (vm.state) {
+                                YahtzeeState.RollOne -> Emerald
+                                YahtzeeState.RollTwo -> Sunflower
+                                YahtzeeState.RollThree -> Alizarin
+                                YahtzeeState.Stop -> LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+                            }
+                        ).value
+                    )
+                }
             }
         },
     ) { p ->
-
         if (
             vm.scores.run {
                 placedYahtzee && placedChance &&
@@ -380,7 +392,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         onClick = vm::placeSixes
                     )
 
-                    AnimatedVisibility(smallScore >= 63) { Text("${smallScore - 35} >= 63! +35") }
+                    AnimatedVisibility(smallScore >= 63) { Text("${animateIntAsState(smallScore).value - 35} >= 63! +35") }
 
                     Text("Small Score: ${animateIntAsState(smallScore).value}")
                 }
