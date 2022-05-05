@@ -3,9 +3,7 @@ package com.programmersbox.composefun
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -52,6 +50,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
+            var showBottomNav by remember { mutableStateOf(true) }
+
             val sys = rememberSystemUiController()
             val primary = MaterialTheme.colors.primaryVariant
             var c by remember { mutableStateOf(primary) }
@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
                     val bottomSheetNavigator = rememberBottomSheetNavigator()
                     val navController = rememberAnimatedNavController(bottomSheetNavigator)
                     com.google.accompanist.navigation.material.ModalBottomSheetLayout(bottomSheetNavigator) {
-                        BottomNavScaffold(navController = navController) { innerPadding ->
+                        BottomNavScaffold(navController = navController, showBottomNav = showBottomNav) { innerPadding ->
                             AnimatedNavHost(
                                 navController = navController,
                                 startDestination = Screen.MainScreen.route,
@@ -87,7 +87,13 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.PokerScreen.route) { Poker(navController) }
                                 composable(Screen.CalculationScreen.route) { CalculationScreen(navController) }
                                 composable(Screen.MastermindScreen.route) { MastermindScreen(navController) }
-                                composable(Screen.YahtzeeScreen.route) { YahtzeeScreen(navController) }
+                                composable(Screen.YahtzeeScreen.route) {
+                                    DisposableEffect(Unit) {
+                                        showBottomNav = false
+                                        onDispose { showBottomNav = true }
+                                    }
+                                    YahtzeeScreen(navController)
+                                }
                                 composable(Screen.DadJokesScreen.route) { DadJokesScreen(navController) }
                                 composable(Screen.DidYouKnowScreen.route) { DidYouKnowScreen(navController) }
                                 composable(Screen.JokeOfTheDayScreen.route) { JokeOfTheDayScreen(navController) }
@@ -149,34 +155,40 @@ fun MainScreen(navController: NavController) {
 }
 
 @Composable
-fun BottomNavScaffold(navController: NavController, content: @Composable (PaddingValues) -> Unit) {
+fun BottomNavScaffold(navController: NavController, showBottomNav: Boolean, content: @Composable (PaddingValues) -> Unit) {
     Scaffold(
         bottomBar = {
-            BottomNavigation {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-                Screen.mainItems.forEach { screen ->
-                    BottomNavigationItem(
-                        icon = {
-                            Icon(
-                                when (screen) {
-                                    Screen.MainScreen -> Icons.Default.Favorite
-                                    Screen.SettingsScreen -> Icons.Default.Settings
-                                    else -> Icons.Default.Adb
-                                },
-                                null
-                            )
-                        },
-                        label = { Text(screen.name) },
-                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                        onClick = {
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
+            AnimatedVisibility(
+                showBottomNav,
+                enter = slideInVertically { it },
+                exit = slideOutVertically { it }
+            ) {
+                BottomNavigation {
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentDestination = navBackStackEntry?.destination
+                    Screen.mainItems.forEach { screen ->
+                        BottomNavigationItem(
+                            icon = {
+                                Icon(
+                                    when (screen) {
+                                        Screen.MainScreen -> Icons.Default.Favorite
+                                        Screen.SettingsScreen -> Icons.Default.Settings
+                                        else -> Icons.Default.Adb
+                                    },
+                                    null
+                                )
+                            },
+                            label = { Text(screen.name) },
+                            selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                            onClick = {
+                                navController.navigate(screen.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         },
