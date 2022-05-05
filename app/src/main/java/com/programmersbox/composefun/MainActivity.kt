@@ -21,9 +21,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -81,9 +84,28 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.AirBarScreen.route) { AirBarLayout(navController) }
                                 bottomSheet(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
                                 composable(Screen.AnimatedLazyListScreen.route) {
-                                    DisposableEffect(Unit) {
-                                        c = Color.Blue
-                                        onDispose { c = primary }
+                                    val lifecycleOwner = LocalLifecycleOwner.current
+
+                                    // If `lifecycleOwner` changes, dispose and reset the effect
+                                    DisposableEffect(lifecycleOwner) {
+                                        // Create an observer that triggers our remembered callbacks
+                                        // for sending analytics events
+                                        val observer = LifecycleEventObserver { _, event ->
+                                            c = when (event) {
+                                                Lifecycle.Event.ON_CREATE -> Color.Yellow
+                                                Lifecycle.Event.ON_START -> Color.Green
+                                                Lifecycle.Event.ON_RESUME -> Color.Blue
+                                                Lifecycle.Event.ON_PAUSE -> Color.Magenta
+                                                Lifecycle.Event.ON_STOP, Lifecycle.Event.ON_DESTROY -> primary
+                                                Lifecycle.Event.ON_ANY -> Color.White
+                                            }
+                                        }
+
+                                        // Add the observer to the lifecycle
+                                        lifecycleOwner.lifecycle.addObserver(observer)
+
+                                        // When the effect leaves the Composition, remove the observer
+                                        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
                                     }
                                     AnimatedLazyListScreen(navController)
                                 }
