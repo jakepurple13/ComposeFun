@@ -48,6 +48,8 @@ import kotlin.math.max
 import kotlin.random.Random
 import kotlin.random.nextInt
 
+private const val YAHTZEE_HIGH_SCORE_LIMIT = 25
+
 enum class YahtzeeState { RollOne, RollTwo, RollThree, Stop }
 
 class YahtzeeViewModel : ViewModel() {
@@ -183,7 +185,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
     val dao = remember { YahtzeeDatabase.getInstance(context).yahtzeeDao() }
     val highScores by dao.getAllScores().collectAsState(initial = emptyList())
 
-    LaunchedEffect(highScores) { highScores.sortedByDescending(YahtzeeScoreItem::score).drop(50).fastMap { dao.deleteScore(it) } }
+    LaunchedEffect(highScores) { highScores.drop(YAHTZEE_HIGH_SCORE_LIMIT).fastMap { dao.deleteScore(it) } }
 
     val scope = rememberCoroutineScope()
     val state = rememberScaffoldState()
@@ -229,7 +231,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                     contentPadding = p
-                ) { items(highScores.sortedByDescending(YahtzeeScoreItem::score)) { HighScoreItem(it) { scope.launch { dao.deleteScore(it) } } } }
+                ) { items(highScores) { HighScoreItem(it) { scope.launch { dao.deleteScore(it) } } } }
             }
         },
         topBarActions = {
@@ -749,7 +751,7 @@ interface YahtzeeDao {
     @Insert
     suspend fun insertScore(item: YahtzeeScoreItem)
 
-    @Query("Select * from YahtzeeScores")
+    @Query("select * from YahtzeeScores order by yahtzee_score desc")
     fun getAllScores(): Flow<List<YahtzeeScoreItem>>
 
     @Delete
