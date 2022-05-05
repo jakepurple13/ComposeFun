@@ -382,9 +382,10 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         onClick = vm::placeSixes
                     )
 
-                    AnimatedVisibility(smallScore >= 63) { Text("${animateIntAsState(smallScore).value - 35} >= 63! +35") }
+                    AnimatedVisibility(smallScore >= 63) { Text("+35 for >= 63") }
 
-                    Text("Small Score: ${animateIntAsState(smallScore).value}")
+                    val originalScore = if (smallScore >= 63) " (${animateIntAsState(smallScore).value - 35})" else ""
+                    Text("Small Score: ${animateIntAsState(smallScore).value}$originalScore")
                 }
 
                 Column(
@@ -523,6 +524,7 @@ fun Dice(dice: Dice, modifier: Modifier = Modifier, onClick: () -> Unit) {
         onClick = onClick,
         shape = RoundedCornerShape(7.dp),
         elevation = 5.dp,
+        enabled = dice.value != 0,
         modifier = Modifier
             .size(50.dp)
             .then(modifier),
