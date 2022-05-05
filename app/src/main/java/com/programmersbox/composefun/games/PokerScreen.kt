@@ -127,23 +127,6 @@ fun Poker(navController: NavController, vm: PokerViewModel = viewModel()) {
                 .padding(p)
                 .fillMaxSize()
         ) {
-
-            AnimatedVisibility(vm.state == PokerState.Start) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    IconButton(onClick = { vm.currentBet = (vm.currentBet - 1).coerceAtLeast(1) }) {
-                        Icon(Icons.Default.RemoveCircle, null)
-                    }
-                    Text("\$${vm.currentBet}")
-                    IconButton(onClick = { vm.currentBet = (vm.currentBet + 1).coerceAtMost(5) }) {
-                        Icon(Icons.Default.AddCircle, null)
-                    }
-                }
-            }
-
             val canCheck = vm.hand.size == 5
             val s = LocalTextStyle.current
             val defaultColor = s.color
@@ -173,6 +156,22 @@ fun Poker(navController: NavController, vm: PokerViewModel = viewModel()) {
                             style = s.copy(animateColorAsState(targetValue = if (vm.currentBet == (it + 1)) Color.Green else defaultColor).value),
                             textAlign = TextAlign.End
                         )
+                    }
+                }
+            }
+
+            AnimatedVisibility(vm.state == PokerState.Start) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    IconButton(onClick = { vm.currentBet = (vm.currentBet - 1).coerceAtLeast(1) }) {
+                        Icon(Icons.Default.RemoveCircle, null)
+                    }
+                    Text("\$${vm.currentBet}")
+                    IconButton(onClick = { vm.currentBet = (vm.currentBet + 1).coerceAtMost(5) }) {
+                        Icon(Icons.Default.AddCircle, null)
                     }
                 }
             }

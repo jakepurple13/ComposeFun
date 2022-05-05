@@ -90,7 +90,9 @@ fun CalculationScreen(navController: NavController, vm: CalculationViewModel = v
         ).value,
         bottomBar = {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .systemBarsPadding()
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 if (vm.pickUpCard != null) {

@@ -58,6 +58,14 @@ class MainActivity : ComponentActivity() {
             val ac by animateColorAsState(c)
             LaunchedEffect(ac) { sys.setStatusBarColor(ac) }
 
+            @Composable
+            fun noBottomNav() {
+                DisposableEffect(Unit) {
+                    showBottomNav = false
+                    onDispose { showBottomNav = true }
+                }
+            }
+
             ComposeFunTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val bottomSheetNavigator = rememberBottomSheetNavigator()
@@ -83,15 +91,24 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.SettingsScreen.route) { SettingsScreen(navController) }
                                 composable(Screen.BannerBoxScreen.route) { BannerBoxScreen(navController) }
                                 composable(Screen.CompositionLocalScreen.route) { CompositionLocalScreen(navController) }
-                                composable(Screen.BlackjackScreen.route) { Blackjack(navController) }
-                                composable(Screen.PokerScreen.route) { Poker(navController) }
-                                composable(Screen.CalculationScreen.route) { CalculationScreen(navController) }
-                                composable(Screen.MastermindScreen.route) { MastermindScreen(navController) }
+                                composable(Screen.BlackjackScreen.route) {
+                                    noBottomNav()
+                                    Blackjack(navController)
+                                }
+                                composable(Screen.PokerScreen.route) {
+                                    noBottomNav()
+                                    Poker(navController)
+                                }
+                                composable(Screen.CalculationScreen.route) {
+                                    noBottomNav()
+                                    CalculationScreen(navController)
+                                }
+                                composable(Screen.MastermindScreen.route) {
+                                    noBottomNav()
+                                    MastermindScreen(navController)
+                                }
                                 composable(Screen.YahtzeeScreen.route) {
-                                    DisposableEffect(Unit) {
-                                        showBottomNav = false
-                                        onDispose { showBottomNav = true }
-                                    }
+                                    noBottomNav()
                                     YahtzeeScreen(navController)
                                 }
                                 composable(Screen.DadJokesScreen.route) { DadJokesScreen(navController) }
