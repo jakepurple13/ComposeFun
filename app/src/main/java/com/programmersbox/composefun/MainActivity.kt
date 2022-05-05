@@ -63,9 +63,23 @@ class MainActivity : ComponentActivity() {
 
             @Composable
             fun noBottomNav() {
-                DisposableEffect(Unit) {
-                    showBottomNav = false
-                    onDispose { showBottomNav = true }
+                val lifecycleOwner = LocalLifecycleOwner.current
+                // If `lifecycleOwner` changes, dispose and reset the effect
+                DisposableEffect(lifecycleOwner) {
+                    // Create an observer that triggers our remembered callbacks
+                    // for sending analytics events
+                    val observer = LifecycleEventObserver { _, event ->
+                        showBottomNav = when (event) {
+                            Lifecycle.Event.ON_CREATE, Lifecycle.Event.ON_START, Lifecycle.Event.ON_RESUME -> false
+                            Lifecycle.Event.ON_STOP, Lifecycle.Event.ON_DESTROY, Lifecycle.Event.ON_PAUSE, Lifecycle.Event.ON_ANY -> true
+                        }
+                    }
+
+                    // Add the observer to the lifecycle
+                    lifecycleOwner.lifecycle.addObserver(observer)
+
+                    // When the effect leaves the Composition, remove the observer
+                    onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
                 }
             }
 
