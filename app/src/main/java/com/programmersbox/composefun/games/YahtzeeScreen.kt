@@ -183,9 +183,6 @@ class Dice(value: Int = Random.nextInt(1..6), val location: String) {
 fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel()) {
     val context = LocalContext.current
     val dao = remember { YahtzeeDatabase.getInstance(context).yahtzeeDao() }
-    val highScores by dao.getAllScores().collectAsState(initial = emptyList())
-
-    LaunchedEffect(highScores) { highScores.drop(YAHTZEE_HIGH_SCORE_LIMIT).fastMap { dao.deleteScore(it) } }
 
     val scope = rememberCoroutineScope()
     val state = rememberScaffoldState()
@@ -220,6 +217,10 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
         screen = Screen.YahtzeeScreen,
         navController = navController,
         drawer = {
+            val highScores by dao.getAllScores().collectAsState(initial = emptyList())
+
+            LaunchedEffect(highScores) { highScores.drop(YAHTZEE_HIGH_SCORE_LIMIT).fastMap { dao.deleteScore(it) } }
+
             Scaffold(
                 topBar = {
                     TopAppBar(
@@ -238,42 +239,7 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
             IconButton(onClick = { newGameDialog = true }) { Icon(Icons.Default.OpenInNew, null) }
             IconButton(onClick = { scope.launch { state.drawerState.open() } }) { Icon(Icons.Default.Settings, null) }
         },
-        bottomBar = {
-            BottomAppBar {
-                vm.hand.forEach {
-                    Dice(
-                        it,
-                        modifier = Modifier
-                            .padding(horizontal = 4.dp)
-                            .weight(1f)
-                            .border(
-                                width = animateDpAsState(targetValue = if (it in vm.hold) 4.dp else 0.dp).value,
-                                color = animateColorAsState(targetValue = if (it in vm.hold) Emerald else Color.Transparent).value,
-                                shape = RoundedCornerShape(7.dp)
-                            )
-                    ) { if (it in vm.hold) vm.hold.remove(it) else vm.hold.add(it) }
-                }
-
-                IconButton(
-                    onClick = vm::reroll,
-                    modifier = Modifier.weight(1f),
-                    enabled = vm.state != YahtzeeState.Stop
-                ) {
-                    Icon(
-                        Icons.Default.PlayCircle,
-                        null,
-                        tint = animateColorAsState(
-                            when (vm.state) {
-                                YahtzeeState.RollOne -> Emerald
-                                YahtzeeState.RollTwo -> Sunflower
-                                YahtzeeState.RollThree -> Alizarin
-                                YahtzeeState.Stop -> LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
-                            }
-                        ).value
-                    )
-                }
-            }
-        },
+        bottomBar = { BottomBarDiceRow(vm) },
     ) { p ->
         if (
             vm.scores.run {
@@ -307,155 +273,202 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.Start
-                ) {
-
-                    val groupedCheck = vm.hand.groupingBy { it.value }
-                        .eachCount()
-                        .toList()
-                        .sortedWith(compareBy({ it.second }, { it.first }))
-                        .reversed()
-                        .map { it.first }
-
-                    val highest = groupedCheck.elementAtOrNull(0)
-                    val medium = groupedCheck.elementAtOrNull(1)
-                    val lowest = groupedCheck.elementAtOrNull(2)
-
-                    fun canScore(value: Int) = highest == value || medium == value || lowest == value
-                    fun scoreColor(value: Int) = when {
-                        highest == value -> Emerald
-                        medium == value -> Sunflower
-                        lowest == value -> Alizarin
-                        else -> Color.Transparent
-                    }
-
-                    ScoreButton(
-                        category = "Ones",
-                        enabled = !vm.scores.placedOnes,
-                        score = vm.scores.ones,
-                        canScore = canScore(1) && !vm.rolling,
-                        customBorderColor = scoreColor(1),
-                        onClick = vm::placeOnes
-                    )
-
-                    ScoreButton(
-                        category = "Twos",
-                        enabled = !vm.scores.placedTwos,
-                        score = vm.scores.twos,
-                        canScore = canScore(2) && !vm.rolling,
-                        customBorderColor = scoreColor(2),
-                        onClick = vm::placeTwos
-                    )
-
-                    ScoreButton(
-                        category = "Threes",
-                        enabled = !vm.scores.placedThrees,
-                        score = vm.scores.threes,
-                        canScore = canScore(3) && !vm.rolling,
-                        customBorderColor = scoreColor(3),
-                        onClick = vm::placeThrees
-                    )
-
-                    ScoreButton(
-                        category = "Fours",
-                        enabled = !vm.scores.placedFours,
-                        score = vm.scores.fours,
-                        canScore = canScore(4) && !vm.rolling,
-                        customBorderColor = scoreColor(4),
-                        onClick = vm::placeFours
-                    )
-
-                    ScoreButton(
-                        category = "Fives",
-                        enabled = !vm.scores.placedFives,
-                        score = vm.scores.fives,
-                        canScore = canScore(5) && !vm.rolling,
-                        customBorderColor = scoreColor(5),
-                        onClick = vm::placeFives
-                    )
-
-                    ScoreButton(
-                        category = "Sixes",
-                        enabled = !vm.scores.placedSixes,
-                        score = vm.scores.sixes,
-                        canScore = canScore(6) && !vm.rolling,
-                        customBorderColor = scoreColor(6),
-                        onClick = vm::placeSixes
-                    )
-
-                    AnimatedVisibility(smallScore >= 63) { Text("+35 for >= 63") }
-
-                    val originalScore = if (smallScore >= 63) " (${animateIntAsState(smallScore).value - 35})" else ""
-                    Text("Small Score: ${animateIntAsState(smallScore).value}$originalScore")
-                }
-
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.End
-                ) {
-                    ScoreButton(
-                        category = "Three of a Kind",
-                        enabled = !vm.scores.placedThreeOfKind,
-                        score = vm.scores.threeOfKind,
-                        canScore = vm.scores.canGetThreeKind(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
-                        onClick = vm::placeThreeOfKind
-                    )
-
-                    ScoreButton(
-                        category = "Four of a Kind",
-                        enabled = !vm.scores.placedFourOfKind,
-                        score = vm.scores.fourOfKind,
-                        canScore = vm.scores.canGetFourKind(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
-                        onClick = vm::placeFourOfKind
-                    )
-
-                    ScoreButton(
-                        category = "Full House",
-                        enabled = !vm.scores.placedFullHouse,
-                        score = vm.scores.fullHouse,
-                        canScore = vm.scores.canGetFullHouse(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
-                        onClick = vm::placeFullHouse
-                    )
-
-                    ScoreButton(
-                        category = "Small Straight",
-                        enabled = !vm.scores.placedSmallStraight,
-                        score = vm.scores.smallStraight,
-                        canScore = vm.scores.canGetSmallStraight(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
-                        onClick = vm::placeSmallStraight
-                    )
-
-                    ScoreButton(
-                        category = "Large Straight",
-                        enabled = !vm.scores.placedLargeStraight,
-                        score = vm.scores.largeStraight,
-                        canScore = vm.scores.canGetLargeStraight(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
-                        onClick = vm::placeLargeStraight
-                    )
-
-                    ScoreButton(
-                        category = "Yahtzee",
-                        enabled = !vm.scores.placedYahtzee || vm.scores.canGetYahtzee(vm.hand) && vm.hand.none { it.value == 0 },
-                        score = vm.scores.yahtzee,
-                        canScore = vm.scores.canGetYahtzee(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
-                        onClick = vm::placeYahtzee
-                    )
-
-                    ScoreButton(
-                        category = "Chance",
-                        enabled = !vm.scores.placedChance,
-                        score = vm.scores.chance,
-                        onClick = vm::placeChance
-                    )
-
-                    Text("Large Score: ${animateIntAsState(largeScore).value}")
-                }
+                SmallScores(vm, smallScore)
+                LargeScores(vm, largeScore)
             }
 
             Text("Total Score: ${animateIntAsState(largeScore + smallScore).value}")
         }
+    }
+}
+
+@Composable
+fun RowScope.SmallScores(vm: YahtzeeViewModel, smallScore: Int) {
+    Column(
+        modifier = Modifier.weight(1f),
+        horizontalAlignment = Alignment.Start
+    ) {
+        val groupedCheck = vm.hand.groupingBy { it.value }
+            .eachCount()
+            .toList()
+            .sortedWith(compareBy({ it.second }, { it.first }))
+            .reversed()
+            .map { it.first }
+
+        val highest = groupedCheck.elementAtOrNull(0)
+        val medium = groupedCheck.elementAtOrNull(1)
+        val lowest = groupedCheck.elementAtOrNull(2)
+
+        fun canScore(value: Int) = highest == value || medium == value || lowest == value
+        fun scoreColor(value: Int) = when {
+            highest == value -> Emerald
+            medium == value -> Sunflower
+            lowest == value -> Alizarin
+            else -> Color.Transparent
+        }
+
+        ScoreButton(
+            category = "Ones",
+            enabled = !vm.scores.placedOnes,
+            score = vm.scores.ones,
+            canScore = canScore(1) && !vm.rolling,
+            customBorderColor = scoreColor(1),
+            onClick = vm::placeOnes
+        )
+
+        ScoreButton(
+            category = "Twos",
+            enabled = !vm.scores.placedTwos,
+            score = vm.scores.twos,
+            canScore = canScore(2) && !vm.rolling,
+            customBorderColor = scoreColor(2),
+            onClick = vm::placeTwos
+        )
+
+        ScoreButton(
+            category = "Threes",
+            enabled = !vm.scores.placedThrees,
+            score = vm.scores.threes,
+            canScore = canScore(3) && !vm.rolling,
+            customBorderColor = scoreColor(3),
+            onClick = vm::placeThrees
+        )
+
+        ScoreButton(
+            category = "Fours",
+            enabled = !vm.scores.placedFours,
+            score = vm.scores.fours,
+            canScore = canScore(4) && !vm.rolling,
+            customBorderColor = scoreColor(4),
+            onClick = vm::placeFours
+        )
+
+        ScoreButton(
+            category = "Fives",
+            enabled = !vm.scores.placedFives,
+            score = vm.scores.fives,
+            canScore = canScore(5) && !vm.rolling,
+            customBorderColor = scoreColor(5),
+            onClick = vm::placeFives
+        )
+
+        ScoreButton(
+            category = "Sixes",
+            enabled = !vm.scores.placedSixes,
+            score = vm.scores.sixes,
+            canScore = canScore(6) && !vm.rolling,
+            customBorderColor = scoreColor(6),
+            onClick = vm::placeSixes
+        )
+
+        AnimatedVisibility(smallScore >= 63) { Text("+35 for >= 63") }
+
+        val originalScore = if (smallScore >= 63) " (${animateIntAsState(smallScore).value - 35})" else ""
+        Text("Small Score: ${animateIntAsState(smallScore).value}$originalScore")
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+fun BottomBarDiceRow(vm: YahtzeeViewModel) {
+    BottomAppBar {
+        vm.hand.forEach {
+            Dice(
+                it,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .weight(1f)
+                    .border(
+                        width = animateDpAsState(targetValue = if (it in vm.hold) 4.dp else 0.dp).value,
+                        color = animateColorAsState(targetValue = if (it in vm.hold) Emerald else Color.Transparent).value,
+                        shape = RoundedCornerShape(7.dp)
+                    )
+            ) { if (it in vm.hold) vm.hold.remove(it) else vm.hold.add(it) }
+        }
+
+        IconButton(
+            onClick = vm::reroll,
+            modifier = Modifier.weight(1f),
+            enabled = vm.state != YahtzeeState.Stop
+        ) {
+            Icon(
+                Icons.Default.PlayCircle,
+                null,
+                tint = animateColorAsState(
+                    when (vm.state) {
+                        YahtzeeState.RollOne -> Emerald
+                        YahtzeeState.RollTwo -> Sunflower
+                        YahtzeeState.RollThree -> Alizarin
+                        YahtzeeState.Stop -> LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+                    }
+                ).value
+            )
+        }
+    }
+}
+
+@Composable
+fun RowScope.LargeScores(vm: YahtzeeViewModel, largeScore: Int) {
+    Column(
+        modifier = Modifier.weight(1f),
+        horizontalAlignment = Alignment.End
+    ) {
+        ScoreButton(
+            category = "Three of a Kind",
+            enabled = !vm.scores.placedThreeOfKind,
+            score = vm.scores.threeOfKind,
+            canScore = vm.scores.canGetThreeKind(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
+            onClick = vm::placeThreeOfKind
+        )
+
+        ScoreButton(
+            category = "Four of a Kind",
+            enabled = !vm.scores.placedFourOfKind,
+            score = vm.scores.fourOfKind,
+            canScore = vm.scores.canGetFourKind(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
+            onClick = vm::placeFourOfKind
+        )
+
+        ScoreButton(
+            category = "Full House",
+            enabled = !vm.scores.placedFullHouse,
+            score = vm.scores.fullHouse,
+            canScore = vm.scores.canGetFullHouse(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
+            onClick = vm::placeFullHouse
+        )
+
+        ScoreButton(
+            category = "Small Straight",
+            enabled = !vm.scores.placedSmallStraight,
+            score = vm.scores.smallStraight,
+            canScore = vm.scores.canGetSmallStraight(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
+            onClick = vm::placeSmallStraight
+        )
+
+        ScoreButton(
+            category = "Large Straight",
+            enabled = !vm.scores.placedLargeStraight,
+            score = vm.scores.largeStraight,
+            canScore = vm.scores.canGetLargeStraight(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
+            onClick = vm::placeLargeStraight
+        )
+
+        ScoreButton(
+            category = "Yahtzee",
+            enabled = !vm.scores.placedYahtzee || vm.scores.canGetYahtzee(vm.hand) && vm.hand.none { it.value == 0 },
+            score = vm.scores.yahtzee,
+            canScore = vm.scores.canGetYahtzee(vm.hand) && vm.state != YahtzeeState.RollOne && !vm.rolling,
+            onClick = vm::placeYahtzee
+        )
+
+        ScoreButton(
+            category = "Chance",
+            enabled = !vm.scores.placedChance,
+            score = vm.scores.chance,
+            onClick = vm::placeChance
+        )
+
+        Text("Large Score: ${animateIntAsState(largeScore).value}")
     }
 }
 
