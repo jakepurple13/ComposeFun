@@ -282,6 +282,45 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
     }
 }
 
+@ExperimentalMaterialApi
+@Composable
+fun BottomBarDiceRow(vm: YahtzeeViewModel) {
+    BottomAppBar {
+        vm.hand.forEach {
+            Dice(
+                it,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .weight(1f)
+                    .border(
+                        width = animateDpAsState(targetValue = if (it in vm.hold) 4.dp else 0.dp).value,
+                        color = animateColorAsState(targetValue = if (it in vm.hold) Emerald else Color.Transparent).value,
+                        shape = RoundedCornerShape(7.dp)
+                    )
+            ) { if (it in vm.hold) vm.hold.remove(it) else vm.hold.add(it) }
+        }
+
+        IconButton(
+            onClick = vm::reroll,
+            modifier = Modifier.weight(1f),
+            enabled = vm.state != YahtzeeState.Stop
+        ) {
+            Icon(
+                Icons.Default.PlayCircle,
+                null,
+                tint = animateColorAsState(
+                    when (vm.state) {
+                        YahtzeeState.RollOne -> Emerald
+                        YahtzeeState.RollTwo -> Sunflower
+                        YahtzeeState.RollThree -> Alizarin
+                        YahtzeeState.Stop -> LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+                    }
+                ).value
+            )
+        }
+    }
+}
+
 @Composable
 fun RowScope.SmallScores(vm: YahtzeeViewModel, smallScore: Int) {
     Column(
@@ -365,45 +404,6 @@ fun RowScope.SmallScores(vm: YahtzeeViewModel, smallScore: Int) {
 
         val originalScore = if (smallScore >= 63) " (${animateIntAsState(smallScore).value - 35})" else ""
         Text("Small Score: ${animateIntAsState(smallScore).value}$originalScore")
-    }
-}
-
-@ExperimentalMaterialApi
-@Composable
-fun BottomBarDiceRow(vm: YahtzeeViewModel) {
-    BottomAppBar {
-        vm.hand.forEach {
-            Dice(
-                it,
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .weight(1f)
-                    .border(
-                        width = animateDpAsState(targetValue = if (it in vm.hold) 4.dp else 0.dp).value,
-                        color = animateColorAsState(targetValue = if (it in vm.hold) Emerald else Color.Transparent).value,
-                        shape = RoundedCornerShape(7.dp)
-                    )
-            ) { if (it in vm.hold) vm.hold.remove(it) else vm.hold.add(it) }
-        }
-
-        IconButton(
-            onClick = vm::reroll,
-            modifier = Modifier.weight(1f),
-            enabled = vm.state != YahtzeeState.Stop
-        ) {
-            Icon(
-                Icons.Default.PlayCircle,
-                null,
-                tint = animateColorAsState(
-                    when (vm.state) {
-                        YahtzeeState.RollOne -> Emerald
-                        YahtzeeState.RollTwo -> Sunflower
-                        YahtzeeState.RollThree -> Alizarin
-                        YahtzeeState.Stop -> LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
-                    }
-                ).value
-            )
-        }
     }
 }
 
