@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -182,15 +183,15 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
     val dao = remember { YahtzeeDatabase.getInstance(context).yahtzeeDao() }
     val highScores by dao.getAllScores().collectAsState(initial = emptyList())
 
+    LaunchedEffect(highScores) { highScores.sortedByDescending(YahtzeeScoreItem::score).drop(50).fastMap { dao.deleteScore(it) } }
+
     val scope = rememberCoroutineScope()
     val state = rememberScaffoldState()
 
     BackHandler(state.drawerState.isOpen) { scope.launch { state.drawerState.close() } }
 
     var smallScore = vm.scores.run { ones + twos + threes + fours + fives + sixes }
-
     if (smallScore >= 63) smallScore += 35
-
     val largeScore = vm.scores.run { threeOfKind + fourOfKind + fullHouse + smallStraight + largeStraight + yahtzee + chance }
 
     var newGameDialog by remember { mutableStateOf(false) }
