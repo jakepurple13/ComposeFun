@@ -40,7 +40,9 @@ fun DadJokesScreen(navController: NavController, vm: DadJokeViewModel = viewMode
         navController = navController,
         screen = Screen.DadJokesScreen,
         buttonText = "Get New Joke",
-        onNewJokeClick = { vm.getNewJoke() }
+        onNewJokeClick = { vm.getNewJoke() },
+        apiRequest = {},
+        onSuccess = { "" }
     ) {
         if (vm.loading) {
             CircularProgressIndicator()
@@ -60,21 +62,14 @@ data class DidYouKnowFact(
 
 @Composable
 fun DidYouKnowScreen(navController: NavController) {
-    var count by remember { mutableStateOf(0) }
-    val didYouKnow by getApiJoke(count) { getApi<DidYouKnowFact>("https://uselessfacts.jsph.pl/random.json?language=en") }
-
     JokeScreens(
         navController = navController,
         screen = Screen.DidYouKnowScreen,
         buttonText = "Get New Fact",
-        onNewJokeClick = { count++ }
-    ) {
-        when (didYouKnow) {
-            is Result.Error -> Text("Please Try Again", textAlign = TextAlign.Center)
-            is Result.Loading -> CircularProgressIndicator()
-            is Result.Success -> Text((didYouKnow as Result.Success<DidYouKnowFact>).value.text, textAlign = TextAlign.Center)
-        }
-    }
+        onNewJokeClick = { it.value++ },
+        apiRequest = { getApi<DidYouKnowFact>("https://uselessfacts.jsph.pl/random.json?language=en") },
+        onSuccess = { it.text }
+    )
 }
 
 data class Success(val total: Number?)
@@ -102,23 +97,14 @@ data class Jokes(
 
 @Composable
 fun JokeOfTheDayScreen(navController: NavController) {
-    val joke by getApiJoke(Unit) { getApi<JokeBase>("https://api.jokes.one/jod") }
-
     JokeScreens(
         navController = navController,
         screen = Screen.JokeOfTheDayScreen,
         buttonText = "One Joke!",
-        onNewJokeClick = {}
-    ) {
-        when (joke) {
-            is Result.Error -> Text("Please Try Again", textAlign = TextAlign.Center)
-            is Result.Loading -> CircularProgressIndicator()
-            is Result.Success -> Text(
-                (joke as Result.Success<JokeBase>).value.contents?.jokes?.firstOrNull()?.joke?.text.orEmpty(),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
+        onNewJokeClick = {},
+        apiRequest = { getApi<JokeBase>("https://api.jokes.one/jod") },
+        onSuccess = { it.contents?.jokes?.firstOrNull()?.joke?.text.orEmpty() }
+    )
 }
 
 data class EvilInsult(
@@ -134,21 +120,14 @@ data class EvilInsult(
 
 @Composable
 fun EvilInsultScreen(navController: NavController) {
-    var count by remember { mutableStateOf(0) }
-    val evilInsult by getApiJoke(count) { getApi<EvilInsult>("https://evilinsult.com/generate_insult.php?lang=en&type=json") }
-
     JokeScreens(
         navController = navController,
         screen = Screen.EvilInsultScreen,
         buttonText = "Get New Insult",
-        onNewJokeClick = { count++ }
-    ) {
-        when (evilInsult) {
-            is Result.Error -> Text("Please Try Again", textAlign = TextAlign.Center)
-            is Result.Loading -> CircularProgressIndicator()
-            is Result.Success -> Text((evilInsult as Result.Success<EvilInsult>).value.insult.orEmpty(), textAlign = TextAlign.Center)
-        }
-    }
+        onNewJokeClick = { it.value++ },
+        apiRequest = { getApi<EvilInsult>("https://evilinsult.com/generate_insult.php?lang=en&type=json") },
+        onSuccess = { it.insult.orEmpty() }
+    )
 }
 
 data class ChuckNorrisBase(val type: String?, val value: ChuckNorris?)
@@ -156,38 +135,36 @@ data class ChuckNorris(val id: Number?, val joke: String?, val categories: List<
 
 @Composable
 fun ChuckNorrisScreen(navController: NavController) {
-    var count by remember { mutableStateOf(0) }
-    val chuckNorris by getApiJoke(count) { getApi<ChuckNorrisBase>("http://api.icndb.com/jokes/random") }
-
     JokeScreens(
         navController = navController,
         screen = Screen.ChuckNorrisScreen,
         buttonText = "Get New Chuck Norris Fact",
-        onNewJokeClick = { count++ }
-    ) {
-        when (chuckNorris) {
-            is Result.Error -> Text("Please Try Again", textAlign = TextAlign.Center)
-            is Result.Loading -> CircularProgressIndicator()
-            is Result.Success -> Text((chuckNorris as Result.Success<ChuckNorrisBase>).value.value?.joke.orEmpty(), textAlign = TextAlign.Center)
-        }
-    }
+        onNewJokeClick = { it.value++ },
+        apiRequest = { getApi<ChuckNorrisBase>("http://api.icndb.com/jokes/random") },
+        onSuccess = { it.value?.joke.orEmpty() }
+    )
 }
 
 @Composable
-private fun JokeScreens(
+private fun <T> JokeScreens(
     navController: NavController,
     screen: Screen,
     buttonText: String,
-    onNewJokeClick: () -> Unit,
-    content: @Composable BoxScope.() -> Unit
+    apiRequest: suspend () -> T?,
+    onNewJokeClick: (MutableState<Int>) -> Unit,
+    onSuccess: (T) -> String,
+    content: (@Composable BoxScope.() -> Unit)? = null
 ) {
+    val count = remember { mutableStateOf(0) }
+    val joke by getApiJoke(count.value, apiRequest)
+
     ScaffoldTop(
         screen = screen,
         navController = navController,
         bottomBar = {
             BottomAppBar {
                 Button(
-                    onClick = onNewJokeClick,
+                    onClick = { onNewJokeClick(count) },
                     modifier = Modifier.fillMaxWidth()
                 ) { Text(buttonText) }
             }
@@ -198,7 +175,19 @@ private fun JokeScreens(
                 .padding(p)
                 .fillMaxSize()
                 .padding(4.dp)
-        ) { Box(contentAlignment = Alignment.Center, content = content) }
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                if (content != null) {
+                    content()
+                } else {
+                    when (joke) {
+                        is Result.Error -> Text("Please Try Again", textAlign = TextAlign.Center)
+                        is Result.Loading -> CircularProgressIndicator()
+                        is Result.Success -> Text(onSuccess((joke as Result.Success<T>).value), textAlign = TextAlign.Center)
+                    }
+                }
+            }
+        }
     }
 }
 
