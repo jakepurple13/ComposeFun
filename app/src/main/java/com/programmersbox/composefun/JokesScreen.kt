@@ -208,9 +208,9 @@ fun <T> getApiJoke(key: Any, request: suspend () -> T?): State<Result<T>> {
     // Creates a State<T> with Result.Loading as initial value
     // If either `url` or `imageRepository` changes, the running producer
     // will cancel and will be re-launched with the new inputs.
-    return produceState<Result<T>>(Result.Loading(), key) {
+    return produceState<Result<T>>(Result.Loading, key) {
         //We start by making value Loading so that it will show the loading screen everytime
-        value = Result.Loading()
+        value = Result.Loading
 
         // In a coroutine, can make suspend calls
         val joke = withContext(Dispatchers.IO) { request() }
@@ -218,15 +218,15 @@ fun <T> getApiJoke(key: Any, request: suspend () -> T?): State<Result<T>> {
         // Update State with either an Error or Success result.
         // This will trigger a recomposition where this State is read
         value = if (joke == null) {
-            Result.Error()
+            Result.Error
         } else {
             Result.Success(joke)
         }
     }
 }
 
-sealed class Result<T> {
-    class Error<T> : Result<T>()
-    class Loading<T> : Result<T>()
-    class Success<T>(val value: T) : Result<T>()
+sealed class Result<out R> {
+    class Success<out T>(val value: T) : Result<T>()
+    object Error : Result<Nothing>()
+    object Loading : Result<Nothing>()
 }
