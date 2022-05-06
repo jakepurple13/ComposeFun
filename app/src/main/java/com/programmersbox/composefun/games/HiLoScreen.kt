@@ -19,21 +19,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun HiLoScreen(navController: NavController) {
 
-    val deck = remember {
-        Deck.defaultDeck().also {
-            it.addDeckListener {
-                onDraw { _, size ->
-                    if (size == 0) {
-                        it.addDeck(Deck.defaultDeck())
-                        it.shuffle()
-                    }
-                }
-            }
-            it.shuffle()
-        }
-    }
+    val deck = remember { Deck.defaultDeck().also { it.shuffle() } }
 
     val deckSize by remember { derivedStateOf { deck.size } }
+
+    LaunchedEffect(deckSize) {
+        if (deckSize == 0) {
+            deck.addDeck(Deck.defaultDeck())
+            deck.shuffle()
+        }
+    }
 
     var card by remember { mutableStateOf(deck.draw()) }
 
