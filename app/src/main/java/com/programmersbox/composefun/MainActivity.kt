@@ -162,6 +162,7 @@ class MainActivity : ComponentActivity() {
                                     InsetScreen(navController)
                                 }
                                 composable(Screen.PagerScreen.route) { PagerScreen(navController) }
+                                composable(Screen.HiLoScreen.route) { HiLoScreen(navController) }
                             }
                         }
                     }
