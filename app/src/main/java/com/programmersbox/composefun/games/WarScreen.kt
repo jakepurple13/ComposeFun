@@ -101,7 +101,7 @@ class WarViewModel : ViewModel() {
                     suspend fun drawCards(player: WarPlayer): List<Card> {
                         val cards = mutableListOf(player.cardPlayed!!)
                         val loopValue = if (player.fullSize < value) player.fullSize else value
-                        warLoop@ for (i in 1 until loopValue) {
+                        for (i in 1 until loopValue) {
                             player.draw()
                             delay(1000)
                             cards.add(player.cardPlayed!!)
@@ -196,8 +196,14 @@ fun WarScreen(navController: NavController, vm: WarViewModel = viewModel()) {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy((-50).dp)
             ) {
-                if (vm.computer.winnings.isEmpty()) item { EmptyCard() }
                 items(vm.computer.winnings) { PlayingCard(it) }
+                item {
+                    WarEmptyCard {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("${vm.computer.winnings.size} card(s)")
+                        }
+                    }
+                }
             }
 
             val centerModifier = Modifier.align(Alignment.CenterHorizontally)
@@ -212,9 +218,8 @@ fun WarScreen(navController: NavController, vm: WarViewModel = viewModel()) {
                 modifier = centerModifier,
                 cardFace = computerCardFace,
                 back = {
-                    EmptyCard(
-                        modifier = centerModifier,
-                        onClick = {}
+                    WarEmptyCard(
+                        modifier = centerModifier
                     ) { Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("$computerDeckSize card(s) left") } }
                 },
                 front = {
@@ -233,7 +238,7 @@ fun WarScreen(navController: NavController, vm: WarViewModel = viewModel()) {
                 modifier = centerModifier,
                 cardFace = cardFace,
                 back = {
-                    EmptyCard(
+                    WarEmptyCard(
                         modifier = centerModifier,
                         onClick = {
                             vm.draw {
@@ -247,7 +252,7 @@ fun WarScreen(navController: NavController, vm: WarViewModel = viewModel()) {
                 },
                 front = {
                     if (vm.player.cardPlayed != null) PlayingCard(vm.player.cardPlayed!!, modifier = centerModifier)
-                    else EmptyCard(modifier = centerModifier)
+                    else WarEmptyCard(modifier = centerModifier)
                 }
             )
 
@@ -256,8 +261,14 @@ fun WarScreen(navController: NavController, vm: WarViewModel = viewModel()) {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy((-50).dp)
             ) {
-                if (vm.player.winnings.isEmpty()) item { EmptyCard() }
                 items(vm.player.winnings) { PlayingCard(it) }
+                item {
+                    WarEmptyCard {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("${vm.player.winnings.size} card(s)")
+                        }
+                    }
+                }
             }
 
         }
@@ -266,7 +277,7 @@ fun WarScreen(navController: NavController, vm: WarViewModel = viewModel()) {
 
 @ExperimentalMaterialApi
 @Composable
-fun EmptyCard(modifier: Modifier = Modifier, onClick: () -> Unit = {}, content: @Composable () -> Unit) {
+fun WarEmptyCard(modifier: Modifier = Modifier, onClick: () -> Unit = {}, content: @Composable () -> Unit = {}) {
     Card(
         onClick = onClick,
         shape = RoundedCornerShape(7.dp),
