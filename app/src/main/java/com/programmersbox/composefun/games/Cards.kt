@@ -224,6 +224,8 @@ abstract class AbstractDeck<T>(cards: Iterable<T> = emptyList()) {
      */
     fun reverse() = deckOfCards.reverse()
 
+    fun clear() = deckOfCards.clear()
+
     /**
      * Randomly gets a card
      * @throws DeckException if none of the cards match the [predicate]

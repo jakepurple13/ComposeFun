@@ -68,6 +68,7 @@ sealed class Screen(val route: String, val name: String) {
     object PagerScreen : Screen("pager", "Horizontal Pager Screen")
     object YahtzeeScreen : Screen("yahtzee", "Yahtzee Screen")
     object HiLoScreen : Screen("hilo", "HiLo Game Screen")
+    object WarScreen : Screen("war", "War Game Screen")
 
     companion object {
         val items = arrayOf(
@@ -87,6 +88,7 @@ sealed class Screen(val route: String, val name: String) {
             BlackjackScreen,
             PokerScreen,
             HiLoScreen,
+            WarScreen,
             CalculationScreen,
             MastermindScreen,
             YahtzeeScreen,

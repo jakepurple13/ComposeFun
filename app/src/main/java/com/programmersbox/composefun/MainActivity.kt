@@ -163,6 +163,10 @@ class MainActivity : ComponentActivity() {
                                 }
                                 composable(Screen.PagerScreen.route) { PagerScreen(navController) }
                                 composable(Screen.HiLoScreen.route) { HiLoScreen(navController) }
+                                composable(Screen.WarScreen.route) {
+                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
+                                    WarScreen(navController)
+                                }
                             }
                         }
                     }
