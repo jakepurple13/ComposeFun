@@ -33,6 +33,8 @@ fun HiLoScreen(navController: NavController) {
         }
     }
 
+    val deckSize by remember { derivedStateOf { deck.size } }
+
     var card by remember { mutableStateOf(deck.draw()) }
 
     var win by remember { mutableStateOf(0) }
@@ -42,7 +44,10 @@ fun HiLoScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
 
     fun showEnd(text: String) {
-        scope.launch { state.snackbarHostState.showSnackbar(text, duration = SnackbarDuration.Short) }
+        scope.launch {
+            state.snackbarHostState.currentSnackbarData?.dismiss()
+            state.snackbarHostState.showSnackbar(text, duration = SnackbarDuration.Short)
+        }
     }
 
     ScaffoldTop(
@@ -55,7 +60,7 @@ fun HiLoScreen(navController: NavController) {
                 Text("Lose(s): $lose", textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
             }
         },
-        topBarActions = { Text("${deck.size} card(s) left in deck") }
+        topBarActions = { Text("$deckSize card(s) left in deck") }
     ) { p ->
         Box(
             modifier = Modifier
