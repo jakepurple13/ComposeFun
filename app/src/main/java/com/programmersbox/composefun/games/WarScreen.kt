@@ -34,6 +34,7 @@ class WarPlayer(val deck: Deck<Card>) {
 
     fun addWinningsToDeck() {
         deck.addCards(winnings)
+        deck.shuffle()
         winnings.clear()
     }
 
@@ -142,9 +143,7 @@ fun WarScreen(navController: NavController, vm: WarViewModel = viewModel()) {
     var gameOverDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(vm.player.fullSize, vm.computer.fullSize) {
-        if (vm.player.fullSize == 0 || vm.computer.fullSize == 0) {
-            gameOverDialog = true
-        }
+        gameOverDialog = vm.player.fullSize == 0 || vm.computer.fullSize == 0 && (vm.player.cardPlayed == null && vm.computer.cardPlayed == null)
     }
 
     if (gameOverDialog) {
