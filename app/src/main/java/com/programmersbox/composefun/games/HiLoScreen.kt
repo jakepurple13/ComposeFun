@@ -7,6 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.programmersbox.composefun.LocalCard
@@ -48,7 +49,12 @@ fun HiLoScreen(navController: NavController) {
         scaffoldState = state,
         screen = Screen.HiLoScreen,
         navController = navController,
-        bottomBar = { BottomAppBar { Text("Win(s): $win | Lose(s): $lose") } },
+        bottomBar = {
+            BottomAppBar {
+                Text("Win(s): $win", textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+                Text("Lose(s): $lose", textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+            }
+        },
         topBarActions = { Text("${deck.size} card(s) left in deck") }
     ) { p ->
         Box(
