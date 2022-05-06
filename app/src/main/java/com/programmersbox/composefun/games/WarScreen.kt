@@ -290,12 +290,10 @@ fun WarEmptyCard(modifier: Modifier = Modifier, onClick: () -> Unit = {}, conten
 
 enum class CardFace(val angle: Float) {
     Front(0f) {
-        override val next: CardFace
-            get() = Back
+        override val next: CardFace get() = Back
     },
     Back(180f) {
-        override val next: CardFace
-            get() = Front
+        override val next: CardFace get() = Front
     };
 
     abstract val next: CardFace
@@ -320,15 +318,14 @@ fun FlipCard(
         )
     )
     Card(
-        modifier = modifier
-            .graphicsLayer {
-                if (axis == RotationAxis.AxisX) {
-                    rotationX = rotation.value
-                } else {
-                    rotationY = rotation.value
-                }
-                cameraDistance = 12f * density
-            },
+        modifier = modifier.graphicsLayer {
+            if (axis == RotationAxis.AxisX) {
+                rotationX = rotation.value
+            } else {
+                rotationY = rotation.value
+            }
+            cameraDistance = 12f * density
+        },
     ) {
         if (rotation.value <= 90f) {
             front()
