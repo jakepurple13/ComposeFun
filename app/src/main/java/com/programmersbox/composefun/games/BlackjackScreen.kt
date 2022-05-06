@@ -1,7 +1,6 @@
 package com.programmersbox.composefun.games
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,15 +17,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.navigation.NavController
 import com.google.accompanist.flowlayout.FlowRow
 import com.programmersbox.composefun.animateAsState
+import com.programmersbox.composefun.dataStore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -41,7 +39,6 @@ class BlackjackStats {
     var drawCount by mutableStateOf(0)
 }
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore("blackjack")
 val WIN_COUNT = intPreferencesKey("wins")
 val LOSE_COUNT = intPreferencesKey("loses")
 val DRAW_COUNT = intPreferencesKey("draws")

@@ -1,5 +1,6 @@
 package com.programmersbox.composefun
 
+import android.content.Context
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.Indication
@@ -22,6 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ViewModel
@@ -216,3 +220,5 @@ suspend inline fun <reified T> getApi(url: String, noinline headers: HeadersBuil
     val response: HttpResponse = client.get(url) { headers(headers) }
     return response.bodyAsText().fromJson<T>()
 }
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore("playground")

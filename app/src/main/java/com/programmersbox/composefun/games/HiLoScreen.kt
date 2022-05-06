@@ -7,13 +7,23 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.navigation.NavController
 import com.programmersbox.composefun.LocalCard
 import com.programmersbox.composefun.ScaffoldTop
 import com.programmersbox.composefun.Screen
+import com.programmersbox.composefun.dataStore
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+
+val WIN_STREAK = intPreferencesKey("hilo_win_streak")
+val DataStore<Preferences>.winStreak get() = data.map { it[WIN_STREAK] ?: 0 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
 @Composable
@@ -33,10 +43,15 @@ fun HiLoScreen(navController: NavController) {
     var card by remember { mutableStateOf(deck.draw()) }
 
     var win by remember { mutableStateOf(0) }
+    var streakWin by remember { mutableStateOf(0) }
     var lose by remember { mutableStateOf(0) }
+    val dataStore = LocalContext.current.dataStore
+    val winStreak by dataStore.winStreak.collectAsState(initial = 0)
 
     val state = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(streakWin) { if (streakWin > winStreak) dataStore.edit { it[WIN_STREAK] = win } }
 
     fun showEnd(text: String) {
         scope.launch {
@@ -53,7 +68,12 @@ fun HiLoScreen(navController: NavController) {
             BottomAppBar {
                 Text("Win(s): $win", textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
                 Text("Lose(s): $lose", textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+                Text("Win Streak: $streakWin", textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
             }
+        },
+        drawer = {
+            TopAppBar { Text("HiLo Statistics") }
+            Text("Highest Win Streak: $winStreak", textAlign = TextAlign.Center)
         },
         topBarActions = { Text("$deckSize card(s) left in deck") }
     ) { p ->
@@ -72,9 +92,11 @@ fun HiLoScreen(navController: NavController) {
                         val newCard = deck.draw()
                         if (newCard <= card) {
                             win++
+                            streakWin++
                             showEnd("Win")
                         } else {
                             lose++
+                            streakWin = 0
                             showEnd("Lose")
                         }
                         card = newCard
@@ -100,9 +122,11 @@ fun HiLoScreen(navController: NavController) {
                         val newCard = deck.draw()
                         if (newCard >= card) {
                             win++
+                            streakWin++
                             showEnd("Win")
                         } else {
                             lose++
+                            streakWin = 0
                             showEnd("Lose")
                         }
                         card = newCard
