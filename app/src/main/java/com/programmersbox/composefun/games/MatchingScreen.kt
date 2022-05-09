@@ -29,6 +29,8 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import java.util.*
 
+private const val MATCHING_DELAY = 1500L
+
 class MatchingViewModel : ViewModel() {
 
     val deck = mutableStateListOf<Card>()
@@ -89,7 +91,7 @@ fun MatchingScreen(navController: NavController, vm: MatchingViewModel = viewMod
             onDismissRequest = {},
             title = { Text("Finished!") },
             text = {
-                val delay = (vm.timer - (vm.excessTimer * 1500)).stringForTime()
+                val delay = (vm.timer - (vm.excessTimer * MATCHING_DELAY)).stringForTime()
                 Text("It took you ${vm.timer.stringForTime()} to beat! ($delay) If you remove flip delay")
             },
             confirmButton = {
@@ -116,7 +118,7 @@ fun MatchingScreen(navController: NavController, vm: MatchingViewModel = viewMod
             if (vm.flippedCard!! == vm.flippedCard2!!) {
                 vm.matched.add(vm.flippedCard!!)
             } else {
-                delay(1500)
+                delay(MATCHING_DELAY)
                 vm.excessTimer++
             }
             vm.flippedCard = null
@@ -130,7 +132,7 @@ fun MatchingScreen(navController: NavController, vm: MatchingViewModel = viewMod
     ScaffoldTop(
         screen = Screen.MatchingScreen,
         navController = navController,
-        topBarActions = { Text((vm.timer - (vm.excessTimer * 1500)).stringForTime()) },
+        topBarActions = { Text((vm.timer - (vm.excessTimer * MATCHING_DELAY)).stringForTime()) },
     ) { p ->
         LazyVerticalGrid(
             columns = GridCells.Adaptive(100.dp),
