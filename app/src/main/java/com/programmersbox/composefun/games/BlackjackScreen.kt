@@ -5,7 +5,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -14,7 +13,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
@@ -22,7 +20,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.navigation.NavController
-import com.google.accompanist.flowlayout.FlowRow
 import com.programmersbox.composefun.animateAsState
 import com.programmersbox.composefun.dataStore
 import kotlinx.coroutines.delay
@@ -255,50 +252,4 @@ fun Hand(h: SnapshotStateList<Card>, spacedBy: Dp = 0.dp) = LazyRow(
 suspend fun drawCard(hand: SnapshotStateList<Card>, deck: Deck<Card>, delay: Boolean = true) {
     hand.add(deck.draw())
     if (delay) delay(500)
-}
-
-@ExperimentalMaterialApi
-@Composable
-fun PlayingCard(card: Card, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
-    Card(
-        onClick = onClick,
-        shape = RoundedCornerShape(7.dp),
-        elevation = 5.dp,
-        modifier = Modifier
-            .size(100.dp, 150.dp)
-            .then(modifier),
-    ) {
-        Column(verticalArrangement = Arrangement.SpaceBetween) {
-            Text(
-                text = card.toSymbolString(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(2.dp),
-                textAlign = TextAlign.Start
-            )
-            FlowRow(
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) { repeat(card.value) { Text(text = card.suit.unicodeSymbol, textAlign = TextAlign.Center) } }
-            Text(
-                text = card.toSymbolString(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(2.dp),
-                textAlign = TextAlign.End
-            )
-        }
-    }
-}
-
-@ExperimentalMaterialApi
-@Composable
-fun EmptyCard(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
-    Card(
-        onClick = onClick,
-        shape = RoundedCornerShape(7.dp),
-        elevation = 5.dp,
-        modifier = Modifier
-            .size(100.dp, 150.dp)
-            .then(modifier)
-    ) {}
 }
