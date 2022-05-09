@@ -167,6 +167,10 @@ class MainActivity : ComponentActivity() {
                                     BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
                                     WarScreen(navController)
                                 }
+                                composable(Screen.MatchingScreen.route) {
+                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
+                                    MatchingScreen(navController)
+                                }
                             }
                         }
                     }
