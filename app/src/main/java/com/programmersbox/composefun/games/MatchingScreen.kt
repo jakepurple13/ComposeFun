@@ -43,6 +43,8 @@ class MatchingViewModel : ViewModel() {
 
     var isComplete by mutableStateOf(false)
 
+    var excessTimer by mutableStateOf(0)
+
     fun start() {
         if (tickerChannel == null) {
             tickerChannel = ticker(1, 0, viewModelScope.coroutineContext)
@@ -86,7 +88,10 @@ fun MatchingScreen(navController: NavController, vm: MatchingViewModel = viewMod
         AlertDialog(
             onDismissRequest = {},
             title = { Text("Finished!") },
-            text = { Text("It took you ${vm.timer.stringForTime()} to beat!") },
+            text = {
+                val delay = (vm.timer - (vm.excessTimer * 1500)).stringForTime()
+                Text("It took you ${vm.timer.stringForTime()} to beat! ($delay) If you remove flip delay")
+            },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -112,6 +117,7 @@ fun MatchingScreen(navController: NavController, vm: MatchingViewModel = viewMod
                 vm.matched.add(vm.flippedCard!!)
             } else {
                 delay(1500)
+                vm.excessTimer++
             }
             vm.flippedCard = null
             vm.flippedCard2 = null
@@ -124,7 +130,7 @@ fun MatchingScreen(navController: NavController, vm: MatchingViewModel = viewMod
     ScaffoldTop(
         screen = Screen.MatchingScreen,
         navController = navController,
-        topBarActions = { Text(vm.timer.stringForTime()) },
+        topBarActions = { Text((vm.timer - (vm.excessTimer * 1500)).stringForTime()) },
     ) { p ->
         LazyVerticalGrid(
             columns = GridCells.Adaptive(100.dp),
