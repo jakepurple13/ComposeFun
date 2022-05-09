@@ -34,13 +34,12 @@ private const val MATCHING_DELAY = 1500L
 class MatchingViewModel : ViewModel() {
 
     val deck = mutableStateListOf<Card>()
-
     val matched = mutableStateListOf<Card>()
     var flippedCard by mutableStateOf<Card?>(null)
     var flippedCard2 by mutableStateOf<Card?>(null)
     var flipBack by mutableStateOf(0)
 
-    private var tickerChannel: ReceiveChannel<Unit>? = null
+    private val tickerChannel: ReceiveChannel<Unit> by lazy { ticker(1, 0, viewModelScope.coroutineContext) }
     var timer by mutableStateOf(0)
 
     var isComplete by mutableStateOf(false)
@@ -48,17 +47,12 @@ class MatchingViewModel : ViewModel() {
     var excessTimer by mutableStateOf(0)
 
     fun start() {
-        if (tickerChannel == null) {
-            tickerChannel = ticker(1, 0, viewModelScope.coroutineContext)
-        }
-        tickerChannel?.let {
-            viewModelScope.launch {
-                try {
-                    it.consumeAsFlow().collect {
-                        if (!isComplete) timer++
-                    }
-                } catch (e: Throwable) {
+        viewModelScope.launch {
+            try {
+                tickerChannel.consumeAsFlow().collect {
+                    if (!isComplete) timer++
                 }
+            } catch (e: Throwable) {
             }
         }
     }
@@ -73,7 +67,7 @@ class MatchingViewModel : ViewModel() {
         matched.clear()
         flippedCard = null
         flippedCard2 = null
-        val cards = (1..7).map { Card[it] }.toMutableStateList()
+        val cards = (1..7).map { Card[it] }
         deck.addAll(cards + cards)
         deck.shuffle()
         timer = 0
