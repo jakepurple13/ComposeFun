@@ -40,6 +40,7 @@ import io.ktor.http.*
 
 sealed class Screen(val route: String, val name: String) {
     object MainScreen : Screen("mainscreen", "Playground")
+    object GameScreen : Screen("gamescreen", "Games")
     object AirBarScreen : Screen("airbar", "AirBar Playground")
     object BroadcastReceiverScreen : Screen("broadcastreceiver", "Broadcast Receiver")
     object AnimatedLazyListScreen : Screen("animatedlazylist", "Animated LazyList")
@@ -86,14 +87,6 @@ sealed class Screen(val route: String, val name: String) {
             EvilInsultScreen,
             ChuckNorrisScreen,
             PermissionScreen,
-            BlackjackScreen,
-            PokerScreen,
-            HiLoScreen,
-            WarScreen,
-            MatchingScreen,
-            CalculationScreen,
-            MastermindScreen,
-            YahtzeeScreen,
             CrashScreen,
             WifiScreen,
             BleScreen,
@@ -103,10 +96,20 @@ sealed class Screen(val route: String, val name: String) {
             PagerScreen
         )
 
+        val gameItems = arrayOf(
+            BlackjackScreen,
+            PokerScreen,
+            HiLoScreen,
+            WarScreen,
+            MatchingScreen,
+            CalculationScreen,
+            MastermindScreen,
+            YahtzeeScreen,
+        )
+
         val mainItems = listOf(
             MainScreen,
-            MotionScreen,
-            SettingsScreen
+            GameScreen
         )
     }
 }

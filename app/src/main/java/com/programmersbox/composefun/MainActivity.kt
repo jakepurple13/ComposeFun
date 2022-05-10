@@ -73,6 +73,7 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(innerPadding)
                             ) {
                                 composable(Screen.MainScreen.route) { MainScreen(navController) }
+                                composable(Screen.GameScreen.route) { GameScreen(navController) }
                                 composable(Screen.AirBarScreen.route) { AirBarLayout(navController) }
                                 bottomSheet(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
                                 composable(Screen.AnimatedLazyListScreen.route) {
@@ -191,6 +192,20 @@ fun MainScreen(navController: NavController) {
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier.fillMaxSize()
         ) { items(Screen.items) { Button(onClick = { navController.navigate(it.route) }) { Text(it.name, textAlign = TextAlign.Center) } } }
+    }
+}
+
+@ExperimentalFoundationApi
+@Composable
+fun GameScreen(navController: NavController) {
+    Scaffold(topBar = { TopAppBar(title = { Text(Screen.GameScreen.name) }) }) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            contentPadding = it,
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier.fillMaxSize()
+        ) { items(Screen.gameItems) { Button(onClick = { navController.navigate(it.route) }) { Text(it.name, textAlign = TextAlign.Center) } } }
     }
 }
 

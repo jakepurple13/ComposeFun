@@ -1,0 +1,131 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 4,
+    "identityHash": "9d8d9aac8226924c4b91125854112d8d",
+    "entities": [
+      {
+        "tableName": "YahtzeeScores",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`time` INTEGER NOT NULL, `yahtzee_score` INTEGER NOT NULL, `ones` INTEGER NOT NULL DEFAULT 0, `twos` INTEGER NOT NULL DEFAULT 0, `threes` INTEGER NOT NULL DEFAULT 0, `fours` INTEGER NOT NULL DEFAULT 0, `fives` INTEGER NOT NULL DEFAULT 0, `sixes` INTEGER NOT NULL DEFAULT 0, `threeofakind` INTEGER NOT NULL DEFAULT 0, `fourofakind` INTEGER NOT NULL DEFAULT 0, `fullhouse` INTEGER NOT NULL DEFAULT 0, `smallStraight` INTEGER NOT NULL DEFAULT 0, `largeStraight` INTEGER NOT NULL DEFAULT 0, `yahtzee` INTEGER NOT NULL DEFAULT 0, `chance` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`time`))",
+        "fields": [
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "score",
+            "columnName": "yahtzee_score",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ones",
+            "columnName": "ones",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "twos",
+            "columnName": "twos",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "threes",
+            "columnName": "threes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "fours",
+            "columnName": "fours",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "fives",
+            "columnName": "fives",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "sixes",
+            "columnName": "sixes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "threeKind",
+            "columnName": "threeofakind",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "fourKind",
+            "columnName": "fourofakind",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "fullHouse",
+            "columnName": "fullhouse",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "smallStraight",
+            "columnName": "smallStraight",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "largeStraight",
+            "columnName": "largeStraight",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "yahtzee",
+            "columnName": "yahtzee",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "chance",
+            "columnName": "chance",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "time"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9d8d9aac8226924c4b91125854112d8d')"
+    ]
+  }
+}

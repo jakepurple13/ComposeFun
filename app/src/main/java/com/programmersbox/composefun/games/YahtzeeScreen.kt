@@ -7,6 +7,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -16,13 +17,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.OpenInNew
-import androidx.compose.material.icons.filled.PlayCircle
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -251,7 +250,28 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                         vm.showGameOverDialog
             }
         ) {
-            LaunchedEffect(Unit) { dao.insertScore(YahtzeeScoreItem(System.currentTimeMillis(), largeScore + smallScore)) }
+            LaunchedEffect(Unit) {
+                dao.insertScore(
+                    YahtzeeScoreItem(
+                        time = System.currentTimeMillis(),
+                        score = largeScore + smallScore,
+                        ones = vm.scores.ones,
+                        twos = vm.scores.twos,
+                        threes = vm.scores.threes,
+                        fours = vm.scores.fours,
+                        fives = vm.scores.fives,
+                        sixes = vm.scores.sixes,
+                        threeKind = vm.scores.threeOfKind,
+                        fourKind = vm.scores.fourOfKind,
+                        fullHouse = vm.scores.fullHouse,
+                        smallStraight = vm.scores.smallStraight,
+                        largeStraight = vm.scores.largeStraight,
+                        yahtzee = vm.scores.yahtzee,
+                        chance = vm.scores.chance
+                    )
+                )
+            }
+
             AlertDialog(
                 onDismissRequest = { vm.showGameOverDialog = false },
                 title = { Text("Game Over") },
@@ -502,12 +522,65 @@ fun HighScoreItem(item: YahtzeeScoreItem, onDelete: () -> Unit) {
         )
     }
 
-    Card(elevation = 4.dp) {
-        ListItem(
-            trailing = { IconButton(onClick = { deleteDialog = true }) { Icon(Icons.Default.Close, null) } },
-            text = { Text("Score: ${item.score}") },
-            overlineText = { Text("Time: $time") }
-        )
+    var showMore by remember { mutableStateOf(false) }
+
+    Card(
+        elevation = 10.dp,
+        border = BorderStroke(2.dp, MaterialTheme.colors.background)
+    ) {
+        Column {
+            ListItem(
+                icon = { IconButton(onClick = { deleteDialog = true }) { Icon(Icons.Default.Close, null) } },
+                text = { Text("Score: ${item.score}") },
+                overlineText = { Text("Time: $time") },
+                trailing = {
+                    IconButton(
+                        onClick = { showMore = !showMore },
+                        modifier = Modifier.rotate(animateFloatAsState(targetValue = if (showMore) 180f else 0f).value)
+                    ) { Icon(Icons.Default.ArrowDropDown, null) }
+                }
+            )
+            AnimatedVisibility(visible = showMore) {
+                Divider()
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.padding(4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text("Ones: ${item.ones}")
+                        Text("Twos: ${item.twos}")
+                        Text("Threes: ${item.threes}")
+                        Text("Fours: ${item.fours}")
+                        Text("Fives: ${item.fives}")
+                        Text("Sixes: ${item.sixes}")
+                        val smallScore = with(item) { ones + twos + threes + fours + fives + sixes }
+                        if (smallScore >= 63) {
+                            Text("+35 for >= 63")
+                        }
+                        val originalScore = if (smallScore >= 63) " ($smallScore)" else ""
+                        Text("Small Score: ${if (smallScore >= 63) smallScore + 35 else smallScore}$originalScore")
+                    }
+
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        Text("Three of a Kind: ${item.threeKind}")
+                        Text("Four of a Kind: ${item.fourKind}")
+                        Text("Full House: ${item.fullHouse}")
+                        Text("Small Straight: ${item.smallStraight}")
+                        Text("Large Straight: ${item.largeStraight}")
+                        Text("Yahtzee: ${item.yahtzee}")
+                        Text("Chance: ${item.chance}")
+                        val largeScore = with(item) { threeKind + fourKind + fullHouse + smallStraight + largeStraight + yahtzee + chance }
+                        Text("Large Score: $largeScore")
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -737,7 +810,9 @@ fun YahtzeePreview() {
 
 @Database(
     entities = [YahtzeeScoreItem::class],
-    version = 2,
+    version = 4,
+    exportSchema = true,
+    autoMigrations = [AutoMigration(from = 2, to = 4), AutoMigration(from = 3, to = 4)]
 )
 abstract class YahtzeeDatabase : RoomDatabase() {
 
@@ -778,5 +853,31 @@ data class YahtzeeScoreItem(
     @ColumnInfo(name = "time")
     val time: Long,
     @ColumnInfo(name = "yahtzee_score")
-    val score: Int
+    val score: Int,
+    @ColumnInfo(name = "ones", defaultValue = "0")
+    val ones: Int,
+    @ColumnInfo(name = "twos", defaultValue = "0")
+    val twos: Int,
+    @ColumnInfo(name = "threes", defaultValue = "0")
+    val threes: Int,
+    @ColumnInfo(name = "fours", defaultValue = "0")
+    val fours: Int,
+    @ColumnInfo(name = "fives", defaultValue = "0")
+    val fives: Int,
+    @ColumnInfo(name = "sixes", defaultValue = "0")
+    val sixes: Int,
+    @ColumnInfo(name = "threeofakind", defaultValue = "0")
+    val threeKind: Int,
+    @ColumnInfo(name = "fourofakind", defaultValue = "0")
+    val fourKind: Int,
+    @ColumnInfo(name = "fullhouse", defaultValue = "0")
+    val fullHouse: Int,
+    @ColumnInfo(name = "smallStraight", defaultValue = "0")
+    val smallStraight: Int,
+    @ColumnInfo(name = "largeStraight", defaultValue = "0")
+    val largeStraight: Int,
+    @ColumnInfo(name = "yahtzee", defaultValue = "0")
+    val yahtzee: Int,
+    @ColumnInfo(name = "chance", defaultValue = "0")
+    val chance: Int
 )
