@@ -13,10 +13,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Adb
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -38,6 +34,7 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
 import com.programmersbox.composefun.games.*
 import com.programmersbox.composefun.ui.theme.ComposeFunTheme
 
@@ -151,6 +148,7 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.BleScreen.route) { BleScreen(navController) }
                                 composable(Screen.BluetoothScreen.route) { BluetoothScreen(navController) }
                                 composable(Screen.PlaceholderScreen.route) { PlaceholderScreen(navController) }
+                                composable(Screen.AboutLibrariesScreen.route) { AboutLibrariesScreen(navController) }
                                 composable(Screen.InsetScreen.route) {
                                     DisposableEffect(Unit) {
                                         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -210,6 +208,14 @@ fun GameScreen(navController: NavController) {
 }
 
 @Composable
+fun AboutLibrariesScreen(navController: NavController) {
+    ScaffoldTop(
+        screen = Screen.AboutLibrariesScreen,
+        navController = navController,
+    ) { p -> LibrariesContainer(contentPadding = p, modifier = Modifier.fillMaxSize()) }
+}
+
+@Composable
 fun BottomNavScaffold(navController: NavController, showBottomNav: Boolean, content: @Composable (PaddingValues) -> Unit) {
     Scaffold(
         bottomBar = {
@@ -223,16 +229,7 @@ fun BottomNavScaffold(navController: NavController, showBottomNav: Boolean, cont
                     val currentDestination = navBackStackEntry?.destination
                     Screen.mainItems.forEach { screen ->
                         BottomNavigationItem(
-                            icon = {
-                                Icon(
-                                    when (screen) {
-                                        Screen.MainScreen -> Icons.Default.Favorite
-                                        Screen.SettingsScreen -> Icons.Default.Settings
-                                        else -> Icons.Default.Adb
-                                    },
-                                    null
-                                )
-                            },
+                            icon = { screen.icon?.let { Icon(it, null) } },
                             label = { Text(screen.name) },
                             selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                             onClick = {

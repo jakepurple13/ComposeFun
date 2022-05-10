@@ -16,11 +16,15 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Games
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.datastore.core.DataStore
@@ -38,14 +42,14 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 
-sealed class Screen(val route: String, val name: String) {
-    object MainScreen : Screen("mainscreen", "Playground")
-    object GameScreen : Screen("gamescreen", "Games")
+sealed class Screen(val route: String, val name: String, val icon: ImageVector? = null) {
+    object MainScreen : Screen("mainscreen", "Playground", Icons.Default.Favorite)
+    object GameScreen : Screen("gamescreen", "Games", Icons.Default.Games)
     object AirBarScreen : Screen("airbar", "AirBar Playground")
     object BroadcastReceiverScreen : Screen("broadcastreceiver", "Broadcast Receiver")
     object AnimatedLazyListScreen : Screen("animatedlazylist", "Animated LazyList")
     object GroupButtonScreen : Screen("groupbutton", "Group Buttons")
-    object SettingsScreen : Screen("settings", "Settings Screen")
+    object SettingsScreen : Screen("settings", "Settings Screen", Icons.Default.Settings)
     object BannerBoxScreen : Screen("bannerbox", "Banner Box Screen")
     object ShadowScreen : Screen("shadow", "Shadow Screen")
     object BlackjackScreen : Screen("blackjack", "Blackjack Screen")
@@ -71,6 +75,7 @@ sealed class Screen(val route: String, val name: String) {
     object HiLoScreen : Screen("hilo", "HiLo Game Screen")
     object WarScreen : Screen("war", "War Game Screen")
     object MatchingScreen : Screen("matching", "Matching Screen")
+    object AboutLibrariesScreen : Screen("aboutlibraries", "Libraries Used Screen")
 
     companion object {
         val items = arrayOf(
@@ -93,7 +98,9 @@ sealed class Screen(val route: String, val name: String) {
             BluetoothScreen,
             PlaceholderScreen,
             InsetScreen,
-            PagerScreen
+            PagerScreen,
+            MotionScreen,
+            AboutLibrariesScreen
         )
 
         val gameItems = arrayOf(
@@ -109,7 +116,8 @@ sealed class Screen(val route: String, val name: String) {
 
         val mainItems = listOf(
             MainScreen,
-            GameScreen
+            GameScreen,
+            SettingsScreen
         )
     }
 }
