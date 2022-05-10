@@ -217,18 +217,19 @@ fun GameScreen(navController: NavController) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@ExperimentalComposeUiApi
 @Composable
 fun AboutLibrariesScreen(navController: NavController) {
+    var libraries by remember { mutableStateOf<Libs?>(null) }
+    val context = LocalContext.current
+    LaunchedEffect(libraries) { libraries = Libs.Builder().withContext(context).build() }
+
     ScaffoldTop(
         screen = Screen.AboutLibrariesScreen,
         navController = navController,
+        topBarActions = { Text("${libraries?.libraries?.size ?: 0} libraries") }
     ) { p ->
         val colors = LibraryDefaults.libraryColors()
-        var libraries by remember { mutableStateOf<Libs?>(null) }
-
-        val context = LocalContext.current
-        LaunchedEffect(libraries) { libraries = Libs.Builder().withContext(context).build() }
         val libs = libraries?.libraries
         if (libs != null) {
             LazyColumn(
