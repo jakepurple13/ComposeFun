@@ -241,7 +241,7 @@ fun AboutLibrariesScreen(navController: NavController) {
                     val openDialog = rememberSaveable { mutableStateOf(false) }
                     Card(
                         backgroundColor = colors.backgroundColor,
-                        border = BorderStroke(1.dp, MaterialTheme.colors.onBackground)
+                        border = BorderStroke(1.dp, colors.contentColor)
                     ) {
                         val typography = MaterialTheme.typography
                         Column(
