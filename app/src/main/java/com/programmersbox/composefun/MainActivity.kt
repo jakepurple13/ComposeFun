@@ -1,5 +1,7 @@
 package com.programmersbox.composefun
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -337,7 +339,19 @@ fun AboutLibrariesScreen(navController: NavController) {
                         val scrollState = rememberScrollState()
                         AlertDialog(
                             onDismissRequest = { openDialog.value = false },
-                            confirmButton = { TextButton(onClick = { openDialog.value = false }) { Text("OK") } },
+                            confirmButton = {
+                                TextButton(
+                                    onClick = {
+                                        library.website?.let {
+                                            val i = Intent(Intent.ACTION_VIEW)
+                                            i.data = Uri.parse(it)
+                                            context.startActivity(i)
+                                        }
+                                        openDialog.value = false
+                                    }
+                                ) { Text("Open In Browser") }
+                            },
+                            dismissButton = { TextButton(onClick = { openDialog.value = false }) { Text("OK") } },
                             text = {
                                 Column(
                                     modifier = Modifier.verticalScroll(scrollState)
