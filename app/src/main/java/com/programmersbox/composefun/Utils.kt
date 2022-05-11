@@ -237,3 +237,63 @@ suspend inline fun <reified T> getApi(url: String, noinline headers: HeadersBuil
 }
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore("playground")
+
+class LifecycleEventsScope {
+    internal var onCreate: () -> Unit = {}
+    fun create(block: () -> Unit) = run { onCreate = block }
+    internal var onStart: () -> Unit = {}
+    fun start(block: () -> Unit) = run { onStart = block }
+    internal var onResume: () -> Unit = {}
+    fun resume(block: () -> Unit) = run { onResume = block }
+    internal var onPause: () -> Unit = {}
+    fun pause(block: () -> Unit) = run { onPause = block }
+    internal var onStop: () -> Unit = {}
+    fun stop(block: () -> Unit) = run { onStop = block }
+    internal var onDestroy: () -> Unit = {}
+    fun destroy(block: () -> Unit) = run { onDestroy = block }
+    internal var onAny: () -> Unit = {}
+    fun any(block: () -> Unit) = run { onAny = block }
+}
+
+@Composable
+fun LifecycleEventsDsl(block: LifecycleEventsScope.() -> Unit) {
+    val lifecycleEvent = remember { LifecycleEventsScope().apply(block) }
+    LifecycleEvents(
+        onCreate = lifecycleEvent.onCreate,
+        onStart = lifecycleEvent.onStart,
+        onResume = lifecycleEvent.onResume,
+        onPause = lifecycleEvent.onPause,
+        onStop = lifecycleEvent.onStop,
+        onDestroy = lifecycleEvent.onDestroy,
+        onAny = lifecycleEvent.onAny
+    )
+}
+
+@Composable
+fun LifecycleEvents(
+    onCreate: () -> Unit = {},
+    onStart: () -> Unit = {},
+    onResume: () -> Unit = {},
+    onPause: () -> Unit = {},
+    onStop: () -> Unit = {},
+    onDestroy: () -> Unit = {},
+    onAny: () -> Unit = {}
+) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> onCreate()
+                Lifecycle.Event.ON_START -> onStart()
+                Lifecycle.Event.ON_RESUME -> onResume()
+                Lifecycle.Event.ON_PAUSE -> onPause()
+                Lifecycle.Event.ON_STOP -> onStop()
+                Lifecycle.Event.ON_DESTROY -> onDestroy()
+                Lifecycle.Event.ON_ANY -> onAny()
+            }
+            if (event == Lifecycle.Event.ON_ANY) onAny()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+}
