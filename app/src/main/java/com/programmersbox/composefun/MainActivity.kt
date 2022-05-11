@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -224,13 +226,29 @@ fun AboutLibrariesScreen(navController: NavController) {
     val context = LocalContext.current
     LaunchedEffect(libraries) { libraries = Libs.Builder().withContext(context).build() }
 
+    var searchText by remember { mutableStateOf("") }
+    val libs = libraries?.libraries?.filter { it.name.contains(searchText, true) }
+
     ScaffoldTop(
         screen = Screen.AboutLibrariesScreen,
         navController = navController,
-        topBarActions = { Text("${libraries?.libraries?.size ?: 0} libraries") }
+        topBarActions = { Text("${libs?.size ?: 0} libraries") },
+        bottomBar = {
+            BottomAppBar {
+                OutlinedTextField(
+                    value = searchText,
+                    onValueChange = { searchText = it },
+                    label = { Text("Search Libraries") },
+                    trailingIcon = { IconButton(onClick = { searchText = "" }) { Icon(Icons.Default.Clear, null) } },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp)
+                )
+            }
+        }
     ) { p ->
         val colors = LibraryDefaults.libraryColors()
-        val libs = libraries?.libraries
         if (libs != null) {
             LazyColumn(
                 Modifier.fillMaxSize(),
