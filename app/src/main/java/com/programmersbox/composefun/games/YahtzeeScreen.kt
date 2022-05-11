@@ -14,6 +14,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -28,6 +29,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastMap
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,18 +41,21 @@ import androidx.navigation.compose.rememberNavController
 import androidx.room.*
 import com.programmersbox.composefun.ScaffoldTop
 import com.programmersbox.composefun.Screen
+import com.programmersbox.composefun.dataStore
 import com.programmersbox.composefun.ui.theme.Alizarin
 import com.programmersbox.composefun.ui.theme.ComposeFunTheme
 import com.programmersbox.composefun.ui.theme.Emerald
 import com.programmersbox.composefun.ui.theme.Sunflower
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.util.*
 import kotlin.math.max
 import kotlin.random.Random
 import kotlin.random.nextInt
 
 private const val YAHTZEE_HIGH_SCORE_LIMIT = 25
+private const val DOT_LOOK = "●"
 
 enum class YahtzeeState { RollOne, RollTwo, RollThree, Stop }
 
@@ -177,6 +185,9 @@ class Dice(value: Int = Random.nextInt(1..6), val location: String) {
     var value by mutableStateOf(value)
 }
 
+val DICE_LOOK = booleanPreferencesKey("dice_look")
+val DataStore<Preferences>.diceLook get() = data.map { it[DICE_LOOK] ?: true }
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel()) {
@@ -187,6 +198,8 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
     val state = rememberScaffoldState()
 
     BackHandler(state.drawerState.isOpen) { scope.launch { state.drawerState.close() } }
+
+    val diceLook by context.dataStore.diceLook.collectAsState(initial = false)
 
     var smallScore = vm.scores.run { ones + twos + threes + fours + fives + sixes }
     if (smallScore >= 63) smallScore += 35
@@ -231,14 +244,34 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                     contentPadding = p
-                ) { items(highScores) { HighScoreItem(it) { scope.launch { dao.deleteScore(it) } } } }
+                ) {
+                    item {
+                        Card(
+                            elevation = 10.dp,
+                            border = BorderStroke(2.dp, MaterialTheme.colors.background),
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.toggleable(diceLook) { b -> scope.launch { context.dataStore.edit { it[DICE_LOOK] = b } } }
+                            ) {
+                                Text(if (diceLook) "Numbers" else "Dots", modifier = Modifier.padding(end = 2.dp))
+                                Switch(checked = diceLook, onCheckedChange = null)
+                            }
+                        }
+                    }
+
+                    items(highScores) { HighScoreItem(it) { scope.launch { dao.deleteScore(it) } } }
+                }
             }
         },
         topBarActions = {
             IconButton(onClick = { newGameDialog = true }) { Icon(Icons.Default.OpenInNew, null) }
             IconButton(onClick = { scope.launch { state.drawerState.open() } }) { Icon(Icons.Default.Settings, null) }
         },
-        bottomBar = { BottomBarDiceRow(vm) },
+        bottomBar = { BottomBarDiceRow(vm, diceLook) },
     ) { p ->
         if (
             vm.scores.run {
@@ -304,20 +337,30 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
 
 @ExperimentalMaterialApi
 @Composable
-fun BottomBarDiceRow(vm: YahtzeeViewModel) {
+fun BottomBarDiceRow(vm: YahtzeeViewModel, diceLooks: Boolean) {
     BottomAppBar {
         vm.hand.forEach {
-            Dice(
-                it,
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-                    .weight(1f)
-                    .border(
-                        width = animateDpAsState(targetValue = if (it in vm.hold) 4.dp else 0.dp).value,
-                        color = animateColorAsState(targetValue = if (it in vm.hold) Emerald else Color.Transparent).value,
-                        shape = RoundedCornerShape(7.dp)
-                    )
-            ) { if (it in vm.hold) vm.hold.remove(it) else vm.hold.add(it) }
+
+            val customModifier = Modifier
+                .padding(horizontal = 4.dp)
+                .weight(1f)
+                .border(
+                    width = animateDpAsState(targetValue = if (it in vm.hold) 4.dp else 0.dp).value,
+                    color = animateColorAsState(targetValue = if (it in vm.hold) Emerald else Color.Transparent).value,
+                    shape = RoundedCornerShape(7.dp)
+                )
+
+            if (diceLooks) {
+                Dice(
+                    it,
+                    modifier = customModifier
+                ) { if (it in vm.hold) vm.hold.remove(it) else vm.hold.add(it) }
+            } else {
+                DiceDots(
+                    it,
+                    modifier = customModifier
+                ) { if (it in vm.hold) vm.hold.remove(it) else vm.hold.add(it) }
+            }
         }
 
         IconButton(
@@ -618,6 +661,111 @@ fun Dice(dice: Dice, modifier: Modifier = Modifier, onClick: () -> Unit) {
             .size(50.dp)
             .then(modifier),
     ) { Box(contentAlignment = Alignment.Center) { Text(text = if (dice.value == 0) "" else dice.value.toString(), textAlign = TextAlign.Center) } }
+}
+
+@ExperimentalMaterialApi
+@Composable
+fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+    Card(
+        onClick = onClick,
+        shape = RoundedCornerShape(7.dp),
+        elevation = 5.dp,
+        enabled = dice.value != 0,
+        modifier = Modifier
+            .size(50.dp)
+            .then(modifier),
+    ) {
+        when (dice.value) {
+            1 -> {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(4.dp)) { Text(DOT_LOOK, textAlign = TextAlign.Center) }
+            }
+            2 -> {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(4.dp)) {
+                    Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                    Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                }
+            }
+            3 -> {
+                Box(modifier = Modifier.padding(4.dp)) {
+                    Text(DOT_LOOK, modifier = Modifier.align(Alignment.TopEnd), textAlign = TextAlign.Center)
+                    Text(DOT_LOOK, modifier = Modifier.align(Alignment.Center), textAlign = TextAlign.Center)
+                    Text(DOT_LOOK, modifier = Modifier.align(Alignment.BottomStart), textAlign = TextAlign.Center)
+                }
+            }
+            4 -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp)
+                ) {
+                    Row(modifier = Modifier.weight(1f)) {
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                    }
+                    Row(modifier = Modifier.weight(1f)) {
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                    }
+                }
+            }
+            5 -> {
+                Box(modifier = Modifier.padding(4.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.align(Alignment.TopCenter)
+                    ) {
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                    }
+                    Text(DOT_LOOK, modifier = Modifier.align(Alignment.Center), textAlign = TextAlign.Center)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    ) {
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                    }
+                }
+            }
+            6 -> {
+                Column(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Row(modifier = Modifier.weight(1f)) {
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                    }
+                    Row(modifier = Modifier.weight(1f)) {
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                    }
+                    Row(modifier = Modifier.weight(1f)) {
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+@Preview
+fun DicePreview() {
+    ComposeFunTheme {
+        Row {
+            DiceDots(dice = Dice(1, "1"))
+            DiceDots(dice = Dice(2, "2"))
+            DiceDots(dice = Dice(3, "3"))
+            DiceDots(dice = Dice(4, "4"))
+            DiceDots(dice = Dice(5, "5"))
+            DiceDots(dice = Dice(6, "6"))
+        }
+    }
 }
 
 class YahtzeeScores {
