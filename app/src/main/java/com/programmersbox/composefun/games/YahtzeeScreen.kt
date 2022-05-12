@@ -680,9 +680,9 @@ fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> Unit = {}
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(4.dp)) { Text(DOT_LOOK, textAlign = TextAlign.Center) }
             }
             2 -> {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(4.dp)) {
-                    Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                    Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                Box(modifier = Modifier.padding(4.dp)) {
+                    Text(DOT_LOOK, modifier = Modifier.align(Alignment.TopEnd), textAlign = TextAlign.Center)
+                    Text(DOT_LOOK, modifier = Modifier.align(Alignment.BottomStart), textAlign = TextAlign.Center)
                 }
             }
             3 -> {
@@ -728,21 +728,28 @@ fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> Unit = {}
                 }
             }
             6 -> {
-                Column(
+                Row(
                     modifier = Modifier
                         .padding(4.dp)
                         .fillMaxSize(),
-                    verticalArrangement = Arrangement.Center
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Row(modifier = Modifier.weight(1f)) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
                         Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
                         Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
                     }
-                    Row(modifier = Modifier.weight(1f)) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.weight(1f)
+                    ) {
                         Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                        Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
-                    }
-                    Row(modifier = Modifier.weight(1f)) {
                         Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
                         Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
                     }
