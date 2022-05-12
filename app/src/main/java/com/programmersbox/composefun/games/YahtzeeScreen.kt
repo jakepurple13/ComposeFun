@@ -253,17 +253,23 @@ fun YahtzeeScreen(navController: NavController, vm: YahtzeeViewModel = viewModel
                                 .padding(4.dp)
                                 .fillMaxWidth()
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.toggleable(diceLook) { b -> scope.launch { context.dataStore.edit { it[DICE_LOOK] = b } } }
-                            ) {
-                                Text(if (diceLook) "Numbers" else "Dots", modifier = Modifier.padding(end = 2.dp))
-                                Switch(checked = diceLook, onCheckedChange = null)
+                            Column {
+                                ListItem(text = { Text("Settings") })
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 16.dp)
+                                        .toggleable(diceLook) { b -> scope.launch { context.dataStore.edit { it[DICE_LOOK] = b } } }
+                                ) {
+                                    Text(if (diceLook) "Numbers" else "Dots", modifier = Modifier.padding(end = 2.dp))
+                                    Switch(checked = diceLook, onCheckedChange = null)
+                                }
                             }
                         }
                     }
 
-                    items(highScores) { HighScoreItem(it) { scope.launch { dao.deleteScore(it) } } }
+                    items(highScores) { HighScoreItem(it, state) { scope.launch { dao.deleteScore(it) } } }
                 }
             }
         },
@@ -537,7 +543,7 @@ fun RowScope.LargeScores(vm: YahtzeeViewModel, largeScore: Int) {
 
 @ExperimentalMaterialApi
 @Composable
-fun HighScoreItem(item: YahtzeeScoreItem, onDelete: () -> Unit) {
+fun HighScoreItem(item: YahtzeeScoreItem, scaffoldState: ScaffoldState, onDelete: () -> Unit) {
     var deleteDialog by remember { mutableStateOf(false) }
 
     val time = remember {
@@ -565,7 +571,7 @@ fun HighScoreItem(item: YahtzeeScoreItem, onDelete: () -> Unit) {
         )
     }
 
-    var showMore by remember { mutableStateOf(false) }
+    var showMore by remember(scaffoldState.drawerState.targetValue) { mutableStateOf(false) }
 
     Card(
         elevation = 10.dp,
@@ -657,8 +663,9 @@ fun Dice(dice: Dice, modifier: Modifier = Modifier, onClick: () -> Unit) {
         shape = RoundedCornerShape(7.dp),
         elevation = 5.dp,
         enabled = dice.value != 0,
+        border = BorderStroke(1.dp, contentColorFor(MaterialTheme.colors.surface)),
         modifier = Modifier
-            .size(50.dp)
+            .size(56.dp)
             .then(modifier),
     ) { Box(contentAlignment = Alignment.Center) { Text(text = if (dice.value == 0) "" else dice.value.toString(), textAlign = TextAlign.Center) } }
 }
@@ -671,8 +678,9 @@ fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> Unit = {}
         shape = RoundedCornerShape(7.dp),
         elevation = 5.dp,
         enabled = dice.value != 0,
+        border = BorderStroke(1.dp, contentColorFor(MaterialTheme.colors.surface)),
         modifier = Modifier
-            .size(50.dp)
+            .size(56.dp)
             .then(modifier),
     ) {
         when (dice.value) {
@@ -696,7 +704,8 @@ fun DiceDots(dice: Dice, modifier: Modifier = Modifier, onClick: () -> Unit = {}
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(4.dp)
+                        .padding(4.dp),
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Row(modifier = Modifier.weight(1f)) {
                         Text(DOT_LOOK, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
