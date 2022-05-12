@@ -76,6 +76,7 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
     object WarScreen : Screen("war", "War Game Screen")
     object MatchingScreen : Screen("matching", "Matching Screen")
     object AboutLibrariesScreen : Screen("aboutlibraries", "Libraries Used Screen")
+    object DiceRollerScreen : Screen("diceroller", "Dice Roller Screen")
 
     companion object {
         val items = arrayOf(
@@ -112,6 +113,7 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
             CalculationScreen,
             MastermindScreen,
             YahtzeeScreen,
+            DiceRollerScreen
         )
 
         val mainItems = listOf(

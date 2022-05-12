@@ -163,6 +163,7 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.BluetoothScreen.route) { BluetoothScreen(navController) }
                                 composable(Screen.PlaceholderScreen.route) { PlaceholderScreen(navController) }
                                 composable(Screen.AboutLibrariesScreen.route) { AboutLibrariesScreen(navController) }
+                                composable(Screen.DiceRollerScreen.route) { DiceRollerScreen(navController) }
                                 composable(Screen.InsetScreen.route) {
                                     DisposableEffect(Unit) {
                                         WindowCompat.setDecorFitsSystemWindows(window, false)
