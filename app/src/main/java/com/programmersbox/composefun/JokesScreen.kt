@@ -121,6 +121,20 @@ fun ChuckNorrisScreen(navController: NavController) {
     )
 }
 
+data class IrohSays(val quote: String?)
+
+@Composable
+fun UncleIrohScreen(navController: NavController) {
+    JokeScreens(
+        navController = navController,
+        screen = Screen.UncleIrohScreen,
+        buttonText = "Get New Quote",
+        onNewJokeClick = { it.value++ },
+        apiRequest = { getApi<IrohSays>("https://api.thedragonofthe.rest/quote") },
+        onSuccess = { it.quote.orEmpty() }
+    )
+}
+
 @Composable
 private fun <T> JokeScreens(
     navController: NavController,

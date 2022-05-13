@@ -62,6 +62,7 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
     object JokeOfTheDayScreen : Screen("jokeoftheday", "Joke of the Day Screen")
     object EvilInsultScreen : Screen("evilinsult", "Evil Insult Screen")
     object ChuckNorrisScreen : Screen("chucknorris", "Chuck Norris Screen")
+    object UncleIrohScreen : Screen("uncleiroh", "Uncle Iroh's Wisdom")
     object MotionScreen : Screen("motion", "Motion Layout")
     object PermissionScreen : Screen("permission", "Permissions Screen")
     object CrashScreen : Screen("crash", "Crash Application")
@@ -77,6 +78,7 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
     object MatchingScreen : Screen("matching", "Matching Screen")
     object AboutLibrariesScreen : Screen("aboutlibraries", "Libraries Used Screen")
     object DiceRollerScreen : Screen("diceroller", "Dice Roller Screen")
+    object AvatarScreen : Screen("avatar", "Avatar Airbender")
 
     companion object {
         val items = arrayOf(
@@ -92,6 +94,7 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
             JokeOfTheDayScreen,
             EvilInsultScreen,
             ChuckNorrisScreen,
+            UncleIrohScreen,
             PermissionScreen,
             CrashScreen,
             WifiScreen,
@@ -101,7 +104,8 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
             InsetScreen,
             PagerScreen,
             MotionScreen,
-            AboutLibrariesScreen
+            AboutLibrariesScreen,
+            AvatarScreen
         )
 
         val gameItems = arrayOf(

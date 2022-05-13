@@ -142,6 +142,7 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.JokeOfTheDayScreen.route) { JokeOfTheDayScreen(navController) }
                                 composable(Screen.EvilInsultScreen.route) { EvilInsultScreen(navController) }
                                 composable(Screen.ChuckNorrisScreen.route) { ChuckNorrisScreen(navController) }
+                                composable(Screen.UncleIrohScreen.route) { UncleIrohScreen(navController) }
                                 composable(Screen.PermissionScreen.route) { PermissionScreen(navController) }
                                 composable(
                                     Screen.ShadowScreen.route,
@@ -164,6 +165,7 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.PlaceholderScreen.route) { PlaceholderScreen(navController) }
                                 composable(Screen.AboutLibrariesScreen.route) { AboutLibrariesScreen(navController) }
                                 composable(Screen.DiceRollerScreen.route) { DiceRollerScreen(navController) }
+                                composable(Screen.AvatarScreen.route) { ATLAScreen(navController) }
                                 composable(Screen.InsetScreen.route) {
                                     DisposableEffect(Unit) {
                                         WindowCompat.setDecorFitsSystemWindows(window, false)

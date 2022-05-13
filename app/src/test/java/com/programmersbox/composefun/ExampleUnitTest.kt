@@ -29,4 +29,10 @@ class ExampleUnitTest {
         println(response.bodyAsText().fromJson<DadJoke>())
         client.close()
     }
+
+    @Test
+    fun avatarApiTest() = runBlocking {
+        val a = AvatarApiService()
+        println(a.getCharacters(10, 1))
+    }
 }
