@@ -85,10 +85,7 @@ class YahtzeeViewModel : ViewModel() {
             (0 until hand.size).map { i ->
                 async(Dispatchers.IO) {
                     if (hand[i] !in hold) {
-                        for (d in 0..5) {
-                            delay(50L)
-                            hand[i].value = Random.nextInt(1..6)
-                        }
+                        hand[i].roll()
                     }
                 }
             }.awaitAll()
@@ -167,7 +164,7 @@ class YahtzeeViewModel : ViewModel() {
         reset()
     }
 
-    fun reset() {
+    private fun reset() {
         hold.clear()
         hand.forEach { it.value = 0 }
         state = YahtzeeState.RollOne
@@ -183,6 +180,13 @@ class YahtzeeViewModel : ViewModel() {
 
 class Dice(value: Int = Random.nextInt(1..6), val location: String) {
     var value by mutableStateOf(value)
+
+    suspend fun roll(rollCount: Int = 5) {
+        repeat(rollCount) {
+            delay(50L)
+            value = Random.nextInt(1..6)
+        }
+    }
 }
 
 val DICE_LOOK = booleanPreferencesKey("dice_look")

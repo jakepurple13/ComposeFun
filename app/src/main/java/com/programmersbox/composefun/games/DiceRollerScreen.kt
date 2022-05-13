@@ -27,7 +27,6 @@ import androidx.navigation.NavController
 import com.programmersbox.composefun.ScaffoldTop
 import com.programmersbox.composefun.Screen
 import com.programmersbox.composefun.dataStore
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -132,12 +131,7 @@ fun DiceRollerScreen(navController: NavController, vm: DiceRollerViewModel = vie
             items(vm.diceList) { dice ->
                 var count by remember { mutableStateOf(0) }
 
-                LaunchedEffect(count, vm.rollAll) {
-                    for (d in 0..5) {
-                        delay(50L)
-                        dice.value = Random.nextInt(1..6)
-                    }
-                }
+                LaunchedEffect(count, vm.rollAll) { dice.roll() }
 
                 if (diceLook) {
                     Dice(dice = dice) { count++ }
