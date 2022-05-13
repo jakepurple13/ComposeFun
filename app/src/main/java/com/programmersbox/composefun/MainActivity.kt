@@ -199,28 +199,26 @@ class MainActivity : ComponentActivity() {
 @ExperimentalFoundationApi
 @Composable
 fun MainScreen(navController: NavController) {
-    Scaffold(topBar = { TopAppBar(title = { Text(Screen.MainScreen.name) }) }) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            contentPadding = it,
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-            modifier = Modifier.fillMaxSize()
-        ) { items(Screen.items) { Button(onClick = { navController.navigate(it.route) }) { Text(it.name, textAlign = TextAlign.Center) } } }
-    }
+    HubScreen(navController, Screen.MainScreen, Screen.items)
 }
 
 @ExperimentalFoundationApi
 @Composable
 fun GameScreen(navController: NavController) {
-    Scaffold(topBar = { TopAppBar(title = { Text(Screen.GameScreen.name) }) }) {
+    HubScreen(navController, Screen.GameScreen, Screen.gameItems)
+}
+
+@ExperimentalFoundationApi
+@Composable
+private fun HubScreen(navController: NavController, header: Screen, items: Array<Screen>) {
+    Scaffold(topBar = { TopAppBar(title = { Text(header.name) }) }) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             contentPadding = it,
             verticalArrangement = Arrangement.spacedBy(2.dp),
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier.fillMaxSize()
-        ) { items(Screen.gameItems) { Button(onClick = { navController.navigate(it.route) }) { Text(it.name, textAlign = TextAlign.Center) } } }
+        ) { items(items) { Button(onClick = { navController.navigate(it.route) }) { Text(it.name, textAlign = TextAlign.Center) } } }
     }
 }
 
