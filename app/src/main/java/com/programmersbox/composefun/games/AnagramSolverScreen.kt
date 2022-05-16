@@ -44,12 +44,9 @@ fun AnagramSolverScreen(navController: NavController) {
                     OutlinedTextField(
                         value = text,
                         onValueChange = { text = it },
-                        placeholder = { Text("Enter Text") },
+                        label = { Text("Enter Text") },
                         singleLine = true,
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp, vertical = 8.dp)
-                            .navigationBarsPadding()
-                            .imePadding()
+                        modifier = Modifier.navigationBarsPadding()
                     )
                 },
                 floatingActionButton = {
@@ -70,22 +67,24 @@ fun AnagramSolverScreen(navController: NavController) {
             state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
             onRefresh = {},
             swipeEnabled = false,
-            indicatorPadding = p
+            modifier = Modifier.padding(p)
         ) {
             LazyColumn(
-                contentPadding = p,
                 verticalArrangement = Arrangement.spacedBy(2.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                anagramList.groupBy { it.length }.forEach {
-                    stickyHeader {
-                        SmallTopAppBar(
-                            title = { Text("${it.key} letter words") },
-                            actions = { Text("${it.value.size} words") }
-                        )
+                anagramList
+                    .sortedByDescending { it.length?.toInt() ?: 0 }
+                    .groupBy { it.length }
+                    .forEach {
+                        stickyHeader {
+                            SmallTopAppBar(
+                                title = { Text("${it.key} letter words") },
+                                actions = { Text("${it.value.size} words") }
+                            )
+                        }
+                        items(it.value) { item -> AnagramWord(item = item) }
                     }
-                    items(it.value) { item -> AnagramWord(item = item) }
-                }
             }
         }
     }

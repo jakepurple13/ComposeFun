@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Games
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.material3.FabPosition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -174,12 +173,11 @@ fun M3ScaffoldTop(
     topAppBarScrollBehavior: TopAppBarScrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() },
     containerColor: Color = androidx.compose.material3.MaterialTheme.colorScheme.background,
     bottomBar: @Composable () -> Unit = {},
-    floatingActionButton: @Composable () -> Unit = {},
-    floatingActionButtonPosition: FabPosition = FabPosition.End,
     topBarActions: @Composable RowScope.() -> Unit = {},
     block: @Composable (PaddingValues) -> Unit
 ) {
     androidx.compose.material3.Scaffold(
+        modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         topBar = {
             SmallTopAppBar(
                 title = { Text(screen.name) },
@@ -188,9 +186,6 @@ fun M3ScaffoldTop(
                 scrollBehavior = topAppBarScrollBehavior
             )
         },
-        modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
-        floatingActionButton = floatingActionButton,
-        floatingActionButtonPosition = floatingActionButtonPosition,
         containerColor = containerColor,
         bottomBar = bottomBar,
         content = block
