@@ -5,10 +5,10 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -39,8 +39,8 @@ import androidx.navigation.compose.rememberNavController
  * @param viewText how the choice will appear to the user.
  * @param updateValue when the user presses on a new option
  */
+@ExperimentalMaterial3Api
 @ExperimentalComposeUiApi
-@ExperimentalMaterialApi
 @Composable
 fun <T> ListSetting(
     modifier: Modifier = Modifier,
@@ -85,7 +85,7 @@ fun <T> ListSetting(
                             )
                             Text(
                                 viewText(it),
-                                style = MaterialTheme.typography.body1
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
                     }
@@ -123,8 +123,8 @@ fun <T> ListSetting(
  * @param viewText how the choice will appear to the user.
  * @param updateValue when the user presses on a new option
  */
+@ExperimentalMaterial3Api
 @ExperimentalComposeUiApi
-@ExperimentalMaterialApi
 @Composable
 fun <T> MultiSelectListSetting(
     modifier: Modifier = Modifier,
@@ -169,7 +169,7 @@ fun <T> MultiSelectListSetting(
                             )
                             Text(
                                 viewText(it),
-                                style = MaterialTheme.typography.body1
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
                     }
@@ -202,7 +202,6 @@ fun <T> MultiSelectListSetting(
  * @param settingTitle the title for the row. The default style is [MaterialTheme.typography.body1]
  * @param endIcon the icon to the end of the row
  */
-@ExperimentalMaterialApi
 @Composable
 fun PreferenceSetting(
     modifier: Modifier = Modifier,
@@ -227,7 +226,6 @@ fun PreferenceSetting(
  * @param value the current choice
  * @param updateValue when the user changes state
  */
-@ExperimentalMaterialApi
 @Composable
 fun SwitchSetting(
     modifier: Modifier = Modifier,
@@ -264,7 +262,7 @@ fun SwitchSetting(
  * @param value the current choice
  * @param updateValue when the user changes state
  */
-@ExperimentalMaterialApi
+@ExperimentalMaterial3Api
 @Composable
 fun CheckBoxSetting(
     modifier: Modifier = Modifier,
@@ -352,10 +350,10 @@ fun SliderSetting(
             }
         ) {
             ProvideTextStyle(
-                MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Medium, textAlign = TextAlign.Start)
+                MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium, textAlign = TextAlign.Start)
             ) { settingTitle() }
             settingSummary?.let {
-                ProvideTextStyle(MaterialTheme.typography.body2.copy(textAlign = TextAlign.Start)) { it() }
+                ProvideTextStyle(MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Start)) { it() }
             }
         }
 
@@ -376,7 +374,7 @@ fun SliderSetting(
 
         Text(
             format(sliderValue),
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .constrainAs(value) {
                     end.linkTo(parent.end)
@@ -464,10 +462,10 @@ private fun DefaultPreferenceLayout(
             }
         ) {
             ProvideTextStyle(
-                MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Medium, textAlign = TextAlign.Start)
+                MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium, textAlign = TextAlign.Start)
             ) { settingTitle() }
             summaryValue?.let {
-                ProvideTextStyle(MaterialTheme.typography.body2.copy(textAlign = TextAlign.Start)) { it() }
+                ProvideTextStyle(MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Start)) { it() }
             }
         }
 
@@ -490,7 +488,6 @@ private fun DefaultPreferenceLayout(
  * @param settingIcon the icon to the start of the row
  * @param settingTitle the title for the row. The default style is [MaterialTheme.typography.body1]
  */
-@ExperimentalMaterialApi
 @Composable
 fun CategorySetting(
     modifier: Modifier = Modifier,
@@ -498,7 +495,7 @@ fun CategorySetting(
     settingTitle: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
-        LocalContentColor provides MaterialTheme.colors.primary
+        LocalContentColor provides MaterialTheme.colorScheme.primary
     ) {
         ConstraintLayout(
             modifier = Modifier
@@ -531,18 +528,18 @@ fun CategorySetting(
                 }
             ) {
                 ProvideTextStyle(
-                    MaterialTheme.typography.body1.copy(fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Start)
+                    MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Start)
                 ) { settingTitle() }
             }
         }
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun SettingsScreen(navController: NavController = rememberNavController()) {
-    ScaffoldTop(screen = Screen.SettingsScreen, navController = navController) { p ->
+    M3ScaffoldTop(screen = Screen.SettingsScreen, navController = navController) { p ->
         Column(
             modifier = Modifier
                 .padding(p)

@@ -73,119 +73,121 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(ac) { sys.setStatusBarColor(ac) }
 
             ComposeFunTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    val bottomSheetNavigator = rememberBottomSheetNavigator()
-                    val navController = rememberAnimatedNavController(bottomSheetNavigator)
-                    com.google.accompanist.navigation.material.ModalBottomSheetLayout(bottomSheetNavigator) {
-                        BottomNavScaffold(navController = navController, showBottomNav = showBottomNav) { innerPadding ->
-                            AnimatedNavHost(
-                                navController = navController,
-                                startDestination = Screen.MainScreen.route,
-                                modifier = Modifier.padding(innerPadding)
-                            ) {
-                                composable(Screen.MainScreen.route) { MainScreen(navController) }
-                                composable(Screen.GameScreen.route) { GameScreen(navController) }
-                                composable(Screen.AirBarScreen.route) { AirBarLayout(navController) }
-                                bottomSheet(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
-                                composable(Screen.AnimatedLazyListScreen.route) {
-                                    val lifecycleOwner = LocalLifecycleOwner.current
+                androidx.compose.material3.MaterialTheme(currentColorScheme) {
+                    Surface(modifier = Modifier.fillMaxSize()) {
+                        val bottomSheetNavigator = rememberBottomSheetNavigator()
+                        val navController = rememberAnimatedNavController(bottomSheetNavigator)
+                        com.google.accompanist.navigation.material.ModalBottomSheetLayout(bottomSheetNavigator) {
+                            BottomNavScaffold(navController = navController, showBottomNav = showBottomNav) { innerPadding ->
+                                AnimatedNavHost(
+                                    navController = navController,
+                                    startDestination = Screen.MainScreen.route,
+                                    modifier = Modifier.padding(innerPadding)
+                                ) {
+                                    composable(Screen.MainScreen.route) { MainScreen(navController) }
+                                    composable(Screen.GameScreen.route) { GameScreen(navController) }
+                                    composable(Screen.AirBarScreen.route) { AirBarLayout(navController) }
+                                    bottomSheet(Screen.BroadcastReceiverScreen.route) { BroadcastReceiverScreen(navController) }
+                                    composable(Screen.AnimatedLazyListScreen.route) {
+                                        val lifecycleOwner = LocalLifecycleOwner.current
 
-                                    // If `lifecycleOwner` changes, dispose and reset the effect
-                                    DisposableEffect(lifecycleOwner) {
-                                        // Create an observer that triggers our remembered callbacks
-                                        // for sending analytics events
-                                        val observer = LifecycleEventObserver { _, event ->
-                                            c = when (event) {
-                                                Lifecycle.Event.ON_CREATE -> Color.Yellow
-                                                Lifecycle.Event.ON_START -> Color.Green
-                                                Lifecycle.Event.ON_RESUME -> Color.Blue
-                                                Lifecycle.Event.ON_PAUSE -> Color.Magenta
-                                                Lifecycle.Event.ON_STOP, Lifecycle.Event.ON_DESTROY -> primary
-                                                Lifecycle.Event.ON_ANY -> Color.White
+                                        // If `lifecycleOwner` changes, dispose and reset the effect
+                                        DisposableEffect(lifecycleOwner) {
+                                            // Create an observer that triggers our remembered callbacks
+                                            // for sending analytics events
+                                            val observer = LifecycleEventObserver { _, event ->
+                                                c = when (event) {
+                                                    Lifecycle.Event.ON_CREATE -> Color.Yellow
+                                                    Lifecycle.Event.ON_START -> Color.Green
+                                                    Lifecycle.Event.ON_RESUME -> Color.Blue
+                                                    Lifecycle.Event.ON_PAUSE -> Color.Magenta
+                                                    Lifecycle.Event.ON_STOP, Lifecycle.Event.ON_DESTROY -> primary
+                                                    Lifecycle.Event.ON_ANY -> Color.White
+                                                }
+                                            }
+
+                                            // Add the observer to the lifecycle
+                                            lifecycleOwner.lifecycle.addObserver(observer)
+
+                                            // When the effect leaves the Composition, remove the observer
+                                            onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+                                        }
+                                        AnimatedLazyListScreen(navController)
+                                    }
+                                    bottomSheet(Screen.GroupButtonScreen.route) { GroupButtonScreen(navController) }
+                                    composable(Screen.SettingsScreen.route) { SettingsScreen(navController) }
+                                    composable(Screen.BannerBoxScreen.route) { BannerBoxScreen(navController) }
+                                    composable(Screen.CompositionLocalScreen.route) { CompositionLocalScreen(navController) }
+                                    composable(Screen.BlackjackScreen.route) {
+                                        BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
+                                        Blackjack(navController)
+                                    }
+                                    composable(Screen.PokerScreen.route) {
+                                        BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
+                                        Poker(navController)
+                                    }
+                                    composable(Screen.CalculationScreen.route) {
+                                        BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
+                                        CalculationScreen(navController)
+                                    }
+                                    composable(Screen.MastermindScreen.route) {
+                                        BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
+                                        MastermindScreen(navController)
+                                    }
+                                    composable(Screen.YahtzeeScreen.route) {
+                                        BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
+                                        YahtzeeScreen(navController)
+                                    }
+                                    composable(Screen.DadJokesScreen.route) { DadJokesScreen(navController) }
+                                    composable(Screen.DidYouKnowScreen.route) { DidYouKnowScreen(navController) }
+                                    composable(Screen.JokeOfTheDayScreen.route) { JokeOfTheDayScreen(navController) }
+                                    composable(Screen.EvilInsultScreen.route) { EvilInsultScreen(navController) }
+                                    composable(Screen.ChuckNorrisScreen.route) { ChuckNorrisScreen(navController) }
+                                    composable(Screen.UncleIrohScreen.route) { UncleIrohScreen(navController) }
+                                    composable(Screen.PermissionScreen.route) { PermissionScreen(navController) }
+                                    composable(
+                                        Screen.ShadowScreen.route,
+                                        enterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Up) },
+                                        exitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Down) },
+                                        popEnterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Down) },
+                                        popExitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Up) }
+                                    ) { ShadowScreen(navController) }
+                                    composable(
+                                        Screen.MotionScreen.route,
+                                        enterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Start) },
+                                        exitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Start) },
+                                        popEnterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.End) },
+                                        popExitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.End) }
+                                    ) { MotionScreen(navController) }
+                                    composable(Screen.CrashScreen.route) { LaunchedEffect(Unit) { throw RuntimeException("Innocent Crash!") } }
+                                    composable(Screen.WifiScreen.route) { WifiScreen(navController) }
+                                    composable(Screen.BleScreen.route) { BleScreen(navController) }
+                                    composable(Screen.BluetoothScreen.route) { BluetoothScreen(navController) }
+                                    composable(Screen.PlaceholderScreen.route) { PlaceholderScreen(navController) }
+                                    composable(Screen.AboutLibrariesScreen.route) { AboutLibrariesScreen(navController) }
+                                    composable(Screen.DiceRollerScreen.route) { DiceRollerScreen(navController) }
+                                    composable(Screen.AvatarScreen.route) { ATLAScreen(navController) }
+                                    composable(Screen.InsetScreen.route) {
+                                        DisposableEffect(Unit) {
+                                            WindowCompat.setDecorFitsSystemWindows(window, false)
+                                            sys.setSystemBarsColor(Color.Transparent)
+                                            onDispose {
+                                                WindowCompat.setDecorFitsSystemWindows(window, true)
+                                                sys.setSystemBarsColor(Color.Black)
                                             }
                                         }
-
-                                        // Add the observer to the lifecycle
-                                        lifecycleOwner.lifecycle.addObserver(observer)
-
-                                        // When the effect leaves the Composition, remove the observer
-                                        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+                                        InsetScreen(navController)
                                     }
-                                    AnimatedLazyListScreen(navController)
-                                }
-                                bottomSheet(Screen.GroupButtonScreen.route) { GroupButtonScreen(navController) }
-                                composable(Screen.SettingsScreen.route) { SettingsScreen(navController) }
-                                composable(Screen.BannerBoxScreen.route) { BannerBoxScreen(navController) }
-                                composable(Screen.CompositionLocalScreen.route) { CompositionLocalScreen(navController) }
-                                composable(Screen.BlackjackScreen.route) {
-                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
-                                    Blackjack(navController)
-                                }
-                                composable(Screen.PokerScreen.route) {
-                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
-                                    Poker(navController)
-                                }
-                                composable(Screen.CalculationScreen.route) {
-                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
-                                    CalculationScreen(navController)
-                                }
-                                composable(Screen.MastermindScreen.route) {
-                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
-                                    MastermindScreen(navController)
-                                }
-                                composable(Screen.YahtzeeScreen.route) {
-                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
-                                    YahtzeeScreen(navController)
-                                }
-                                composable(Screen.DadJokesScreen.route) { DadJokesScreen(navController) }
-                                composable(Screen.DidYouKnowScreen.route) { DidYouKnowScreen(navController) }
-                                composable(Screen.JokeOfTheDayScreen.route) { JokeOfTheDayScreen(navController) }
-                                composable(Screen.EvilInsultScreen.route) { EvilInsultScreen(navController) }
-                                composable(Screen.ChuckNorrisScreen.route) { ChuckNorrisScreen(navController) }
-                                composable(Screen.UncleIrohScreen.route) { UncleIrohScreen(navController) }
-                                composable(Screen.PermissionScreen.route) { PermissionScreen(navController) }
-                                composable(
-                                    Screen.ShadowScreen.route,
-                                    enterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Up) },
-                                    exitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Down) },
-                                    popEnterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Down) },
-                                    popExitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Up) }
-                                ) { ShadowScreen(navController) }
-                                composable(
-                                    Screen.MotionScreen.route,
-                                    enterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Start) },
-                                    exitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.Start) },
-                                    popEnterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.End) },
-                                    popExitTransition = { slideOutOfContainer(AnimatedContentScope.SlideDirection.End) }
-                                ) { MotionScreen(navController) }
-                                composable(Screen.CrashScreen.route) { LaunchedEffect(Unit) { throw RuntimeException("Innocent Crash!") } }
-                                composable(Screen.WifiScreen.route) { WifiScreen(navController) }
-                                composable(Screen.BleScreen.route) { BleScreen(navController) }
-                                composable(Screen.BluetoothScreen.route) { BluetoothScreen(navController) }
-                                composable(Screen.PlaceholderScreen.route) { PlaceholderScreen(navController) }
-                                composable(Screen.AboutLibrariesScreen.route) { AboutLibrariesScreen(navController) }
-                                composable(Screen.DiceRollerScreen.route) { DiceRollerScreen(navController) }
-                                composable(Screen.AvatarScreen.route) { ATLAScreen(navController) }
-                                composable(Screen.InsetScreen.route) {
-                                    DisposableEffect(Unit) {
-                                        WindowCompat.setDecorFitsSystemWindows(window, false)
-                                        sys.setSystemBarsColor(Color.Transparent)
-                                        onDispose {
-                                            WindowCompat.setDecorFitsSystemWindows(window, true)
-                                            sys.setSystemBarsColor(Color.Black)
-                                        }
+                                    composable(Screen.PagerScreen.route) { PagerScreen(navController) }
+                                    composable(Screen.HiLoScreen.route) { HiLoScreen(navController) }
+                                    composable(Screen.WarScreen.route) {
+                                        BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
+                                        WarScreen(navController)
                                     }
-                                    InsetScreen(navController)
-                                }
-                                composable(Screen.PagerScreen.route) { PagerScreen(navController) }
-                                composable(Screen.HiLoScreen.route) { HiLoScreen(navController) }
-                                composable(Screen.WarScreen.route) {
-                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
-                                    WarScreen(navController)
-                                }
-                                composable(Screen.MatchingScreen.route) {
-                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
-                                    MatchingScreen(navController)
+                                    composable(Screen.MatchingScreen.route) {
+                                        BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
+                                        MatchingScreen(navController)
+                                    }
                                 }
                             }
                         }

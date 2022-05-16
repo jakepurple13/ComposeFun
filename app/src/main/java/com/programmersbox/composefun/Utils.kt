@@ -1,6 +1,7 @@
 package com.programmersbox.composefun
 
 import android.content.Context
+import android.os.Build
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.Indication
@@ -9,23 +10,30 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Games
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -150,6 +158,33 @@ fun ScaffoldTop(
         },
         drawerContent = drawer,
         backgroundColor = backgroundColor,
+        bottomBar = bottomBar,
+        content = block
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun M3ScaffoldTop(
+    screen: Screen,
+    navController: NavController,
+    topAppBarScrollBehavior: TopAppBarScrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() },
+    containerColor: Color = androidx.compose.material3.MaterialTheme.colorScheme.background,
+    bottomBar: @Composable () -> Unit = {},
+    topBarActions: @Composable RowScope.() -> Unit = {},
+    block: @Composable (PaddingValues) -> Unit
+) {
+    androidx.compose.material3.Scaffold(
+        topBar = {
+            SmallTopAppBar(
+                title = { Text(screen.name) },
+                navigationIcon = { IconButton(onClick = { navController.popBackStack() }) { Icon(Icons.Default.ArrowBack, null) } },
+                actions = topBarActions,
+                scrollBehavior = topAppBarScrollBehavior
+            )
+        },
+        modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
+        containerColor = containerColor,
         bottomBar = bottomBar,
         content = block
     )
@@ -303,3 +338,22 @@ fun LifecycleEvents(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 }
+
+
+val currentColorScheme: ColorScheme
+    @Composable
+    get() {
+        val darkTheme = isSystemInDarkTheme()
+        return when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
+            darkTheme -> darkColorScheme(
+                primary = Color(0xff90CAF9),
+                secondary = Color(0xff90CAF9)
+            )
+            else -> lightColorScheme(
+                primary = Color(0xff2196F3),
+                secondary = Color(0xff90CAF9)
+            )
+        }
+    }
