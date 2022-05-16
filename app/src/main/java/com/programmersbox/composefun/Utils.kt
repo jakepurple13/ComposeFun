@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Games
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
+import androidx.compose.material3.FabPosition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -87,6 +88,7 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
     object AboutLibrariesScreen : Screen("aboutlibraries", "Libraries Used Screen")
     object DiceRollerScreen : Screen("diceroller", "Dice Roller Screen")
     object AvatarScreen : Screen("avatar", "Avatar Airbender")
+    object AnagramSolverScreen : Screen("anagramsolver", "Anagram Solver")
 
     companion object {
         val items = arrayOf(
@@ -125,7 +127,8 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
             CalculationScreen,
             MastermindScreen,
             YahtzeeScreen,
-            DiceRollerScreen
+            DiceRollerScreen,
+            AnagramSolverScreen
         )
 
         val mainItems = listOf(
@@ -171,6 +174,8 @@ fun M3ScaffoldTop(
     topAppBarScrollBehavior: TopAppBarScrollBehavior = remember { TopAppBarDefaults.pinnedScrollBehavior() },
     containerColor: Color = androidx.compose.material3.MaterialTheme.colorScheme.background,
     bottomBar: @Composable () -> Unit = {},
+    floatingActionButton: @Composable () -> Unit = {},
+    floatingActionButtonPosition: FabPosition = FabPosition.End,
     topBarActions: @Composable RowScope.() -> Unit = {},
     block: @Composable (PaddingValues) -> Unit
 ) {
@@ -184,6 +189,8 @@ fun M3ScaffoldTop(
             )
         },
         modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
+        floatingActionButton = floatingActionButton,
+        floatingActionButtonPosition = floatingActionButtonPosition,
         containerColor = containerColor,
         bottomBar = bottomBar,
         content = block
@@ -268,6 +275,7 @@ fun Any?.toJson(): String = Gson().toJson(this)
 inline fun <reified T> String?.fromJson(): T? = try {
     Gson().fromJson(this, object : TypeToken<T>() {}.type)
 } catch (e: Exception) {
+    e.printStackTrace()
     null
 }
 

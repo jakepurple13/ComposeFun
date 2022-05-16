@@ -35,4 +35,14 @@ class ExampleUnitTest {
         val a = AvatarApiService()
         println(a.getCharacters(10, 1))
     }
+
+    @Test
+    fun anagramTest() = runBlocking {
+        //val f = getAnagram("Hello")
+        val f = getApi<Any>("https://danielthepope-countdown-v1.p.rapidapi.com/solve/hello?variance=1") {
+            append("X-RapidAPI-Host", "danielthepope-countdown-v1.p.rapidapi.com")
+            append("X-RapidAPI-Key", "cefe1904a6msh94a1484f93d57dbp16f734jsn098d9ecefd68")
+        }
+        println(f)
+    }
 }

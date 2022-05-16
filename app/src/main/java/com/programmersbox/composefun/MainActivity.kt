@@ -188,6 +188,10 @@ class MainActivity : ComponentActivity() {
                                         BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
                                         MatchingScreen(navController)
                                     }
+                                    composable(Screen.AnagramSolverScreen.route) {
+                                        BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
+                                        AnagramSolverScreen(navController)
+                                    }
                                 }
                             }
                         }
