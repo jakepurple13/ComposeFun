@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
@@ -387,6 +389,103 @@ fun SliderSetting(
 }
 
 /**
+ * A slider setting
+ *
+ * @param settingIcon the icon to the start of the row
+ * @param settingSummary the value which will be placed under the title. The default style is [MaterialTheme.typography.body2]
+ * @param settingTitle the title for the row. The default style is [MaterialTheme.typography.body1]
+ * @param sliderValue the current choice
+ * @param updateValue when the user slides the slider
+ * @param format change the [sliderValue] to a user readable string
+ * @param range the range of the slider
+ * @param onValueChangedFinished when the slider is done changing the value
+ * @param steps the steps in between.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RangeSliderSetting(
+    modifier: Modifier = Modifier,
+    sliderValue: ClosedFloatingPointRange<Float>,
+    settingIcon: (@Composable BoxScope.() -> Unit)? = null,
+    settingTitle: @Composable () -> Unit,
+    settingSummary: (@Composable () -> Unit)? = null,
+    range: ClosedFloatingPointRange<Float>,
+    steps: Int = 0,
+    colors: SliderColors = SliderDefaults.colors(),
+    format: (ClosedFloatingPointRange<Float>) -> String = { it.toString() },
+    onValueChangedFinished: (() -> Unit)? = null,
+    updateValue: (ClosedFloatingPointRange<Float>) -> Unit
+) {
+    ConstraintLayout(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .then(modifier)
+    ) {
+        val (
+            icon,
+            info,
+            slider,
+            value
+        ) = createRefs()
+
+        Box(
+            modifier = Modifier
+                .padding(16.dp)
+                .size(32.dp)
+                .constrainAs(icon) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
+        ) { settingIcon?.invoke(this) }
+
+        Column(
+            modifier = Modifier.constrainAs(info) {
+                top.linkTo(parent.top)
+                end.linkTo(parent.end, 8.dp)
+                start.linkTo(icon.end)
+                width = Dimension.fillToConstraints
+            }
+        ) {
+            ProvideTextStyle(
+                MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium, textAlign = TextAlign.Start)
+            ) { settingTitle() }
+            settingSummary?.let {
+                ProvideTextStyle(MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Start)) { it() }
+            }
+        }
+
+        RangeSlider(
+            values = sliderValue,
+            onValueChange = updateValue,
+            valueRange = range,
+            colors = colors,
+            steps = steps,
+            onValueChangeFinished = onValueChangedFinished,
+            modifier = Modifier.constrainAs(slider) {
+                top.linkTo(info.bottom)
+                end.linkTo(value.start)
+                start.linkTo(icon.end)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        Text(
+            format(sliderValue),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier
+                .constrainAs(value) {
+                    end.linkTo(parent.end)
+                    start.linkTo(slider.end)
+                    centerVerticallyTo(slider)
+                }
+                .padding(horizontal = 16.dp)
+        )
+    }
+}
+
+/**
  * A [PreferenceSetting] with a dropdown icon at the end, using [ShowWhen] to show or hide multiple other settings.
  *
  * @param settingIcon the icon to the start of the row
@@ -535,10 +634,17 @@ fun CategorySetting(
     }
 }
 
+class SettingsViewModel : ViewModel() {
+
+    var sliderSetting by mutableStateOf(0f)
+    var rangeSliderSetting by mutableStateOf(0f..100f)
+
+}
+
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 @Preview
-fun SettingsScreen(navController: NavController = rememberNavController()) {
+fun SettingsScreen(navController: NavController = rememberNavController(), vm: SettingsViewModel = viewModel()) {
     M3ScaffoldTop(screen = Screen.SettingsScreen, navController = navController) { p ->
         Column(
             modifier = Modifier
@@ -557,12 +663,23 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
 
             Divider()
 
-            var sliderSetting by remember { mutableStateOf(0f) }
+            var sliderSetting by remember(vm.sliderSetting) { mutableStateOf(vm.sliderSetting) }
             SliderSetting(
                 sliderValue = sliderSetting,
                 settingTitle = { Text("Slider") },
                 range = 0f..100f,
-                updateValue = { sliderSetting = it }
+                updateValue = { sliderSetting = it },
+                onValueChangedFinished = { vm.sliderSetting = sliderSetting }
+            )
+
+            var rangeSliderSetting by remember(vm.rangeSliderSetting) { mutableStateOf(vm.rangeSliderSetting) }
+            RangeSliderSetting(
+                sliderValue = rangeSliderSetting,
+                settingTitle = { Text("Range Slider") },
+                range = 0f..100f,
+                updateValue = { rangeSliderSetting = it },
+                format = { "${it.start.toInt()} - ${it.endInclusive.toInt()}" },
+                onValueChangedFinished = { vm.rangeSliderSetting = rangeSliderSetting }
             )
 
             var listSetting by remember { mutableStateOf(1) }

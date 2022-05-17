@@ -85,6 +85,7 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
     object DiceRollerScreen : Screen("diceroller", "Dice Roller Screen")
     object AvatarScreen : Screen("avatar", "Avatar Airbender")
     object AnagramSolverScreen : Screen("anagramsolver", "Anagram Solver")
+    object TextFieldDropDownScreen : Screen("textfielddropdown", "TextField Screen")
 
     companion object {
         val items = arrayOf(
@@ -111,7 +112,8 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
             PagerScreen,
             MotionScreen,
             AboutLibrariesScreen,
-            AvatarScreen
+            AvatarScreen,
+            TextFieldDropDownScreen
         )
 
         val gameItems = arrayOf(

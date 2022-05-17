@@ -166,6 +166,7 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.AboutLibrariesScreen.route) { AboutLibrariesScreen(navController) }
                                 composable(Screen.DiceRollerScreen.route) { DiceRollerScreen(navController) }
                                 composable(Screen.AvatarScreen.route) { ATLAScreen(navController) }
+                                composable(Screen.TextFieldDropDownScreen.route) { TextFieldScreen(navController) }
                                 composable(Screen.InsetScreen.route) {
                                     DisposableEffect(Unit) {
                                         WindowCompat.setDecorFitsSystemWindows(window, false)
