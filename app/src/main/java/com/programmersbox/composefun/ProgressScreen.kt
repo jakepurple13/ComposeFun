@@ -194,15 +194,6 @@ fun CenterDiamondLoader(
                 addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
                 val naturalValue = startAngle.value % 100f
                 if (startAngle.value > 100f) {
-                    drawProgressIndeterminate(
-                        progress = naturalValue,
-                        x = halfWidth,
-                        y = halfHeight,
-                        width = width - loadingWidthChange,
-                        height = height - loadingWidthChange,
-                        paint = Color.Unspecified,
-                        stroke = emptyStroke
-                    )
                     drawProgressIndeterminateReverse(
                         progress = 100f - naturalValue,
                         x = halfWidth,
@@ -211,15 +202,6 @@ fun CenterDiamondLoader(
                         height = height - loadingWidthChange,
                         paint = emptyColor,
                         stroke = emptyStroke
-                    )
-                    drawProgressIndeterminate(
-                        progress = 100f - naturalValue,
-                        x = halfWidth,
-                        y = halfHeight,
-                        width = halfWidth - loadingWidthChange,
-                        height = halfHeight - loadingWidthChange,
-                        paint = Color.Unspecified,
-                        stroke = progressStroke
                     )
                     drawProgressIndeterminateReverse(
                         progress = naturalValue,
