@@ -30,6 +30,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {}
+        beta {
+            initWith debug
+            matchingFallbacks = ['debug', 'release']
+            debuggable false
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -90,6 +96,7 @@ dependencies {
     implementation "io.ktor:ktor-client-cio:2.0.0"
     implementation "com.google.code.gson:gson:2.9.0"
     debugImplementation 'com.github.thelumiereguy:CrashWatcher-Android:2.0.2'
+    betaImplementation 'com.github.thelumiereguy:CrashWatcher-Android:2.0.2'
     implementation "com.juul.kable:core:0.17.0"
     def room_version = "2.4.2"
     implementation "androidx.room:room-runtime:$room_version"
