@@ -175,18 +175,15 @@ fun CenterDiamondLoader(
         val transition = rememberInfiniteTransition()
         val startAngle = transition.animateFloat(
             0f,
-            100f,
+            200f,
             infiniteRepeatable(
                 animation = keyframes {
-                    durationMillis = (1332 * 0.5).toInt() * 2
+                    durationMillis = (1332 * 0.5).toInt() * 2 * 2
                     0f at (1332 * 0.5).toInt() * 2 with CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
-                    100f at durationMillis
+                    200f at durationMillis
                 }
             )
         )
-
-        var shift by remember { mutableStateOf(false) }
-        if (startAngle.value >= 99f) shift = !shift
 
         Canvas(modifier.progressSemantics()) {
             val (width, height) = size
@@ -195,9 +192,10 @@ fun CenterDiamondLoader(
 
             drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
                 addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
-                if (shift) {
+                val naturalValue = startAngle.value % 100f
+                if (startAngle.value > 100f) {
                     drawProgressIndeterminate(
-                        progress = startAngle.value,
+                        progress = naturalValue,
                         x = halfWidth,
                         y = halfHeight,
                         width = width - loadingWidthChange,
@@ -206,7 +204,7 @@ fun CenterDiamondLoader(
                         stroke = emptyStroke
                     )
                     drawProgressIndeterminateReverse(
-                        progress = 100f - startAngle.value,
+                        progress = 100f - naturalValue,
                         x = halfWidth,
                         y = halfHeight,
                         width = width - loadingWidthChange,
@@ -214,9 +212,8 @@ fun CenterDiamondLoader(
                         paint = emptyColor,
                         stroke = emptyStroke
                     )
-
                     drawProgressIndeterminate(
-                        progress = 100f - startAngle.value,
+                        progress = 100f - naturalValue,
                         x = halfWidth,
                         y = halfHeight,
                         width = halfWidth - loadingWidthChange,
@@ -225,7 +222,7 @@ fun CenterDiamondLoader(
                         stroke = progressStroke
                     )
                     drawProgressIndeterminateReverse(
-                        progress = startAngle.value,
+                        progress = naturalValue,
                         x = halfWidth,
                         y = halfHeight,
                         width = halfWidth - loadingWidthChange,
@@ -234,8 +231,17 @@ fun CenterDiamondLoader(
                         stroke = progressStroke
                     )
                 } else {
+                    drawProgressIndeterminateReverse(
+                        progress = 100f - naturalValue,
+                        x = halfWidth,
+                        y = halfHeight,
+                        width = width - loadingWidthChange,
+                        height = height - loadingWidthChange,
+                        paint = Color.Unspecified,
+                        stroke = emptyStroke
+                    )
                     drawProgressIndeterminate(
-                        progress = startAngle.value,
+                        progress = naturalValue,
                         x = halfWidth,
                         y = halfHeight,
                         width = width - loadingWidthChange,
@@ -243,8 +249,17 @@ fun CenterDiamondLoader(
                         paint = emptyColor,
                         stroke = emptyStroke
                     )
+                    drawProgressIndeterminateReverse(
+                        progress = naturalValue,
+                        x = halfWidth,
+                        y = halfHeight,
+                        width = halfWidth - loadingWidthChange,
+                        height = halfHeight - loadingWidthChange,
+                        paint = Color.Unspecified,
+                        stroke = progressStroke
+                    )
                     drawProgressIndeterminate(
-                        progress = 100f - startAngle.value,
+                        progress = 100f - naturalValue,
                         x = halfWidth,
                         y = halfHeight,
                         width = halfWidth - loadingWidthChange,
