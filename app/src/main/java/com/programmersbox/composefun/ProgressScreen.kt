@@ -213,15 +213,6 @@ fun CenterDiamondLoader(
                         stroke = progressStroke
                     )
                 } else {
-                    drawProgressIndeterminateReverse(
-                        progress = 100f - naturalValue,
-                        x = halfWidth,
-                        y = halfHeight,
-                        width = width - loadingWidthChange,
-                        height = height - loadingWidthChange,
-                        paint = Color.Unspecified,
-                        stroke = emptyStroke
-                    )
                     drawProgressIndeterminate(
                         progress = naturalValue,
                         x = halfWidth,
@@ -230,15 +221,6 @@ fun CenterDiamondLoader(
                         height = height - loadingWidthChange,
                         paint = emptyColor,
                         stroke = emptyStroke
-                    )
-                    drawProgressIndeterminateReverse(
-                        progress = naturalValue,
-                        x = halfWidth,
-                        y = halfHeight,
-                        width = halfWidth - loadingWidthChange,
-                        height = halfHeight - loadingWidthChange,
-                        paint = Color.Unspecified,
-                        stroke = progressStroke
                     )
                     drawProgressIndeterminate(
                         progress = 100f - naturalValue,
