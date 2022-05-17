@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ListItem
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -48,7 +50,7 @@ class AvatarViewModel(private val db: AvatarDatabase) : ViewModel() {
 
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ATLAScreen(navController: NavController) {
     val context = LocalContext.current
@@ -56,7 +58,7 @@ fun ATLAScreen(navController: NavController) {
     val vm: AvatarViewModel = viewModel(factory = factoryCreate { AvatarViewModel(db) })
     val data = vm.pager.collectAsLazyPagingItems()
 
-    ScaffoldTop(
+    M3ScaffoldTop(
         screen = Screen.AvatarScreen,
         navController = navController
     ) { p ->
@@ -82,17 +84,16 @@ fun ATLAScreen(navController: NavController) {
     }
 }
 
+@ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 @Composable
 fun AvatarCard(item: ATLACharacter) {
-    Card {
+    ElevatedCard {
         ListItem(
             text = { Text(item.name.orEmpty()) },
             secondaryText = { Text(item.affiliation.orEmpty()) },
             icon = {
-                Surface(
-                    shape = CircleShape,
-                ) {
+                Surface(shape = CircleShape) {
                     AsyncImage(
                         model = item.photoUrl,
                         contentDescription = null,
@@ -104,21 +105,22 @@ fun AvatarCard(item: ATLACharacter) {
     }
 }
 
+@ExperimentalMaterial3Api
 @ExperimentalMaterialApi
 @Composable
 fun AvatarPlaceholderCard() {
-    Card {
+    ElevatedCard {
         ListItem(
             text = {
                 Text(
                     "",
-                    modifier = Modifier.placeholder(true, color = MaterialTheme.colors.primaryVariant, highlight = PlaceholderHighlight.shimmer())
+                    modifier = Modifier.placeholder(true, color = MaterialTheme.colorScheme.primary, highlight = PlaceholderHighlight.shimmer())
                 )
             },
             secondaryText = {
                 Text(
                     "",
-                    modifier = Modifier.placeholder(true, color = MaterialTheme.colors.primaryVariant, highlight = PlaceholderHighlight.shimmer())
+                    modifier = Modifier.placeholder(true, color = MaterialTheme.colorScheme.primary, highlight = PlaceholderHighlight.shimmer())
                 )
             },
             icon = {
@@ -127,7 +129,7 @@ fun AvatarPlaceholderCard() {
                     modifier = Modifier
                         .border(1.dp, color = Color.Black, shape = CircleShape)
                         .size(50.dp)
-                        .placeholder(true, color = MaterialTheme.colors.primaryVariant, highlight = PlaceholderHighlight.shimmer())
+                        .placeholder(true, color = MaterialTheme.colorScheme.primary, highlight = PlaceholderHighlight.shimmer())
                 ) {}
             }
         )
