@@ -17,14 +17,18 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.PathSegment
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import kotlin.random.Random
 
+@Preview(device = Devices.NEXUS_5X)
 @Composable
-fun ProgressScreen(navController: NavController) {
+fun ProgressScreen(navController: NavController = rememberNavController()) {
     M3ScaffoldTop(screen = Screen.ProgressScreen, navController = navController) { p ->
         Column(
             modifier = Modifier
