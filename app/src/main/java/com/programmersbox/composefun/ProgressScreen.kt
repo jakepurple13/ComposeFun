@@ -1,5 +1,6 @@
 package com.programmersbox.composefun
 
+import android.content.res.Configuration
 import android.graphics.PointF
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
@@ -26,7 +27,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlin.random.Random
 
-@Preview(device = Devices.NEXUS_5X)
+@Preview(device = Devices.NEXUS_5X, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ProgressScreen(navController: NavController = rememberNavController()) {
     M3ScaffoldTop(screen = Screen.ProgressScreen, navController = navController) { p ->
@@ -106,7 +107,6 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(100.dp)
                 )
-
                 CenterDiamondLoader(
                     progressColor = primaryColorAnimation,
                     emptyColor = backgroundColorAnimation,
@@ -114,7 +114,6 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                     modifier = Modifier.size(100.dp)
                 )
             }
-
         }
     }
 }
@@ -197,7 +196,7 @@ fun CenterDiamondLoader(
             drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
                 addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
                 val naturalValue = startAngle.value % 100f
-                if (startAngle.value > 100f) {
+                if (startAngle.value >= 100f) {
                     drawProgressIndeterminateReverse(
                         progress = 100f - naturalValue,
                         x = halfWidth,
