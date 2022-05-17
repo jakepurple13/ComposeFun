@@ -46,6 +46,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlin.random.Random
 
 sealed class Screen(val route: String, val name: String, val icon: ImageVector? = null) {
     object MainScreen : Screen("mainscreen", "Playground", Icons.Default.Favorite)
@@ -86,6 +87,7 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
     object AvatarScreen : Screen("avatar", "Avatar Airbender")
     object AnagramSolverScreen : Screen("anagramsolver", "Anagram Solver")
     object TextFieldDropDownScreen : Screen("textfielddropdown", "TextField Screen")
+    object ProgressScreen : Screen("progress", "Progress Screen")
 
     companion object {
         val items = arrayOf(
@@ -113,7 +115,8 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
             MotionScreen,
             AboutLibrariesScreen,
             AvatarScreen,
-            TextFieldDropDownScreen
+            TextFieldDropDownScreen,
+            ProgressScreen
         )
 
         val gameItems = arrayOf(
@@ -340,3 +343,10 @@ fun LifecycleEvents(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 }
+
+fun Random.nextColor(
+    r: Int = nextInt(0, 255),
+    g: Int = nextInt(0, 255),
+    b: Int = nextInt(0, 255),
+    a: Int = nextInt(0, 255)
+) = Color(r, g, b, a)

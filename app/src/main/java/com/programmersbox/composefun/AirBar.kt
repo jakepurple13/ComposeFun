@@ -382,8 +382,8 @@ fun AirBarLayout(navController: NavController = rememberNavController()) {
 
                 Button(
                     onClick = {
-                        primaryColor = Color(Random.nextInt(0, 255), Random.nextInt(0, 255), Random.nextInt(0, 255), 255)
-                        backgroundColor = Color(Random.nextInt(0, 255), Random.nextInt(0, 255), Random.nextInt(0, 255), 255)
+                        primaryColor = Random.nextColor(a = 255)
+                        backgroundColor = Random.nextColor(a = 255)
                     }
                 ) { Text("Random Color") }
 
