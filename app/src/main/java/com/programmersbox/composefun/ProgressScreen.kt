@@ -7,6 +7,8 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.progressSemantics
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,6 +20,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -34,6 +37,7 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(p)
         ) {
             var diamond by remember { mutableStateOf(Random.nextFloat()) }
@@ -127,6 +131,57 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                     modifier = Modifier.size(100.dp)
                 )
             }
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                CenterDiamondLoader(
+                    progressColor = primaryColorAnimation,
+                    emptyColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(100.dp),
+                    image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
+                )
+                CenterDiamondLoader(
+                    progress = diamondProgress,
+                    progressColor = primaryColorAnimation,
+                    emptyColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(100.dp),
+                    image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
+                )
+                DiamondLoader(
+                    progress = diamondProgress,
+                    progressColor = primaryColorAnimation,
+                    emptyColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(100.dp),
+                    image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
+                )
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                InsideDiamondLoader(
+                    progress = diamondProgress,
+                    progressColor = primaryColorAnimation,
+                    emptyColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(100.dp),
+                    image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
+                )
+                OutsideDiamondLoader(
+                    progress = diamondProgress,
+                    progressColor = primaryColorAnimation,
+                    emptyColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(100.dp),
+                    image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
+                )
+            }
         }
     }
 }
@@ -140,36 +195,34 @@ fun OutsideDiamondLoader(
     strokeWidth: Dp = 4.dp,
     image: ImageBitmap? = null
 ) {
-    Surface {
-        val imagePaint = newStrokePaint(strokeWidth.value)
-        val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-        val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-        val loadingWidthChange = strokeWidth.value
-        Canvas(modifier.progressSemantics(progress * 100f)) {
-            val (width, height) = size
-            val halfHeight = width / 2f
-            val halfWidth = height / 2f
+    val imagePaint = newStrokePaint(strokeWidth.value)
+    val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val loadingWidthChange = strokeWidth.value
+    Canvas(modifier.progressSemantics(progress * 100f)) {
+        val (width, height) = size
+        val halfHeight = width / 2f
+        val halfWidth = height / 2f
 
-            drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
-                addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
-                drawRhombus(
-                    x = halfWidth,
-                    y = halfHeight,
-                    width = halfWidth - loadingWidthChange,
-                    height = halfHeight - loadingWidthChange,
-                    paint = emptyColor,
-                    stroke = emptyStroke
-                )
-                drawProgress(
-                    progress * 100f,
-                    x = halfWidth,
-                    y = halfHeight,
-                    width = halfWidth - loadingWidthChange,
-                    height = halfHeight - loadingWidthChange,
-                    paint = progressColor,
-                    stroke = progressStroke
-                )
-            }
+        drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
+            addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
+            drawRhombus(
+                x = halfWidth,
+                y = halfHeight,
+                width = halfWidth - loadingWidthChange,
+                height = halfHeight - loadingWidthChange,
+                paint = emptyColor,
+                stroke = emptyStroke
+            )
+            drawProgress(
+                progress * 100f,
+                x = halfWidth,
+                y = halfHeight,
+                width = halfWidth - loadingWidthChange,
+                height = halfHeight - loadingWidthChange,
+                paint = progressColor,
+                stroke = progressStroke
+            )
         }
     }
 }
@@ -183,39 +236,37 @@ fun CenterDiamondLoader(
     strokeWidth: Dp = 4.dp,
     image: ImageBitmap? = null
 ) {
-    Surface {
-        val imagePaint = newStrokePaint(strokeWidth.value)
-        val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-        val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-        val loadingWidthChange = strokeWidth.value
+    val imagePaint = newStrokePaint(strokeWidth.value)
+    val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val loadingWidthChange = strokeWidth.value
 
-        Canvas(modifier.progressSemantics(progress * 100f)) {
-            val (width, height) = size
-            val halfHeight = width / 2f
-            val halfWidth = height / 2f
+    Canvas(modifier.progressSemantics(progress * 100f)) {
+        val (width, height) = size
+        val halfHeight = width / 2f
+        val halfWidth = height / 2f
 
-            drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
-                addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
-                val naturalValue = progress * 100f
-                drawProgressIndeterminate(
-                    progress = naturalValue,
-                    x = halfWidth,
-                    y = halfHeight,
-                    width = width - loadingWidthChange,
-                    height = height - loadingWidthChange,
-                    paint = emptyColor,
-                    stroke = emptyStroke
-                )
-                drawProgressIndeterminate(
-                    progress = naturalValue,
-                    x = halfWidth,
-                    y = halfHeight,
-                    width = halfWidth - loadingWidthChange,
-                    height = halfHeight - loadingWidthChange,
-                    paint = progressColor,
-                    stroke = progressStroke
-                )
-            }
+        drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
+            addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
+            val naturalValue = progress * 100f
+            drawProgressIndeterminate(
+                progress = naturalValue,
+                x = halfWidth,
+                y = halfHeight,
+                width = width - loadingWidthChange,
+                height = height - loadingWidthChange,
+                paint = emptyColor,
+                stroke = emptyStroke
+            )
+            drawProgressIndeterminate(
+                progress = naturalValue,
+                x = halfWidth,
+                y = halfHeight,
+                width = halfWidth - loadingWidthChange,
+                height = halfHeight - loadingWidthChange,
+                paint = progressColor,
+                stroke = progressStroke
+            )
         }
     }
 }
@@ -228,72 +279,70 @@ fun CenterDiamondLoader(
     strokeWidth: Dp = 4.dp,
     image: ImageBitmap? = null
 ) {
-    Surface {
-        val imagePaint = newStrokePaint(strokeWidth.value)
-        val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-        val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-        val loadingWidthChange = strokeWidth.value
+    val imagePaint = newStrokePaint(strokeWidth.value)
+    val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val loadingWidthChange = strokeWidth.value
 
-        val transition = rememberInfiniteTransition()
-        val startAngle = transition.animateFloat(
-            0f,
-            200f,
-            infiniteRepeatable(
-                animation = keyframes {
-                    durationMillis = (1332 * 0.5).toInt() * 2 * 2
-                    0f at (1332 * 0.5).toInt() * 2 with CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
-                    200f at durationMillis
-                }
-            )
+    val transition = rememberInfiniteTransition()
+    val startAngle = transition.animateFloat(
+        0f,
+        200f,
+        infiniteRepeatable(
+            animation = keyframes {
+                durationMillis = (1332 * 0.5).toInt() * 2 * 2
+                0f at (1332 * 0.5).toInt() * 2 with CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+                200f at durationMillis
+            }
         )
+    )
 
-        Canvas(modifier.progressSemantics()) {
-            val (width, height) = size
-            val halfHeight = width / 2f
-            val halfWidth = height / 2f
+    Canvas(modifier.progressSemantics()) {
+        val (width, height) = size
+        val halfHeight = width / 2f
+        val halfWidth = height / 2f
 
-            drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
-                addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
-                val naturalValue = startAngle.value % 100f
-                if (startAngle.value >= 100f) {
-                    drawProgressIndeterminateReverse(
-                        progress = 100f - naturalValue,
-                        x = halfWidth,
-                        y = halfHeight,
-                        width = width - loadingWidthChange,
-                        height = height - loadingWidthChange,
-                        paint = emptyColor,
-                        stroke = emptyStroke
-                    )
-                    drawProgressIndeterminateReverse(
-                        progress = naturalValue,
-                        x = halfWidth,
-                        y = halfHeight,
-                        width = halfWidth - loadingWidthChange,
-                        height = halfHeight - loadingWidthChange,
-                        paint = progressColor,
-                        stroke = progressStroke
-                    )
-                } else {
-                    drawProgressIndeterminate(
-                        progress = naturalValue,
-                        x = halfWidth,
-                        y = halfHeight,
-                        width = width - loadingWidthChange,
-                        height = height - loadingWidthChange,
-                        paint = emptyColor,
-                        stroke = emptyStroke
-                    )
-                    drawProgressIndeterminate(
-                        progress = 100f - naturalValue,
-                        x = halfWidth,
-                        y = halfHeight,
-                        width = halfWidth - loadingWidthChange,
-                        height = halfHeight - loadingWidthChange,
-                        paint = progressColor,
-                        stroke = progressStroke
-                    )
-                }
+        drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
+            addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
+            val naturalValue = startAngle.value % 100f
+            if (startAngle.value >= 100f) {
+                drawProgressIndeterminateReverse(
+                    progress = 100f - naturalValue,
+                    x = halfWidth,
+                    y = halfHeight,
+                    width = width - loadingWidthChange,
+                    height = height - loadingWidthChange,
+                    paint = emptyColor,
+                    stroke = emptyStroke
+                )
+                drawProgressIndeterminateReverse(
+                    progress = naturalValue,
+                    x = halfWidth,
+                    y = halfHeight,
+                    width = halfWidth - loadingWidthChange,
+                    height = halfHeight - loadingWidthChange,
+                    paint = progressColor,
+                    stroke = progressStroke
+                )
+            } else {
+                drawProgressIndeterminate(
+                    progress = naturalValue,
+                    x = halfWidth,
+                    y = halfHeight,
+                    width = width - loadingWidthChange,
+                    height = height - loadingWidthChange,
+                    paint = emptyColor,
+                    stroke = emptyStroke
+                )
+                drawProgressIndeterminate(
+                    progress = 100f - naturalValue,
+                    x = halfWidth,
+                    y = halfHeight,
+                    width = halfWidth - loadingWidthChange,
+                    height = halfHeight - loadingWidthChange,
+                    paint = progressColor,
+                    stroke = progressStroke
+                )
             }
         }
     }
@@ -308,37 +357,35 @@ fun InsideDiamondLoader(
     strokeWidth: Dp = 4.dp,
     image: ImageBitmap? = null
 ) {
-    Surface {
-        val imagePaint = newStrokePaint(strokeWidth.value)
-        val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-        val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-        val loadingWidthChange = strokeWidth.value// / 2
-        Canvas(modifier.progressSemantics(progress * 100f)) {
-            val (width, height) = size
-            val halfHeight = width / 2f
-            val halfWidth = height / 2f
+    val imagePaint = newStrokePaint(strokeWidth.value)
+    val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val loadingWidthChange = strokeWidth.value// / 2
+    Canvas(modifier.progressSemantics(progress * 100f)) {
+        val (width, height) = size
+        val halfHeight = width / 2f
+        val halfWidth = height / 2f
 
-            drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
-                addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
-                drawProgress(
-                    100f,
-                    x = halfWidth,
-                    y = halfHeight,
-                    width = halfWidth - loadingWidthChange,
-                    height = halfHeight - loadingWidthChange,
-                    paint = emptyColor,
-                    stroke = emptyStroke
-                )
-                drawProgress(
-                    progress * 100f,
-                    x = halfWidth,
-                    y = halfHeight,
-                    width = width - loadingWidthChange,
-                    height = height - loadingWidthChange,
-                    paint = progressColor,
-                    stroke = progressStroke
-                )
-            }
+        drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
+            addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
+            drawProgress(
+                100f,
+                x = halfWidth,
+                y = halfHeight,
+                width = halfWidth - loadingWidthChange,
+                height = halfHeight - loadingWidthChange,
+                paint = emptyColor,
+                stroke = emptyStroke
+            )
+            drawProgress(
+                progress * 100f,
+                x = halfWidth,
+                y = halfHeight,
+                width = width - loadingWidthChange,
+                height = height - loadingWidthChange,
+                paint = progressColor,
+                stroke = progressStroke
+            )
         }
     }
 }
@@ -354,38 +401,36 @@ fun DiamondLoader(
 ) {
     //size == 50
     //strokeWidth == 4.dp
-    Surface {
-        val imagePaint = newStrokePaint(strokeWidth.value)
-        val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-        val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-        val loadingWidthChange = strokeWidth.value// / 2
-        Canvas(modifier.progressSemantics(progress * 100f)) {
-            val (width, height) = size
-            val halfHeight = width / 2f
-            val halfWidth = height / 2f
+    val imagePaint = newStrokePaint(strokeWidth.value)
+    val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val loadingWidthChange = strokeWidth.value// / 2
+    Canvas(modifier.progressSemantics(progress * 100f)) {
+        val (width, height) = size
+        val halfHeight = width / 2f
+        val halfWidth = height / 2f
 
-            //val arcDimen = size.width - 2 * loadingWidthChange
+        //val arcDimen = size.width - 2 * loadingWidthChange
 
-            drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
-                addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
-                drawRhombus(
-                    x = halfWidth,
-                    y = halfHeight,
-                    width = halfWidth - loadingWidthChange,
-                    height = halfHeight - loadingWidthChange,
-                    paint = emptyColor,
-                    stroke = emptyStroke
-                )
-                drawProgress2(
-                    progress * 100f,
-                    x = halfWidth,
-                    y = halfHeight,
-                    width = width - loadingWidthChange,
-                    height = height - loadingWidthChange,
-                    paint = progressColor,
-                    stroke = progressStroke
-                )
-            }
+        drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
+            addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
+            drawRhombus(
+                x = halfWidth,
+                y = halfHeight,
+                width = halfWidth - loadingWidthChange,
+                height = halfHeight - loadingWidthChange,
+                paint = emptyColor,
+                stroke = emptyStroke
+            )
+            drawProgress2(
+                progress * 100f,
+                x = halfWidth,
+                y = halfHeight,
+                width = width - loadingWidthChange,
+                height = height - loadingWidthChange,
+                paint = progressColor,
+                stroke = progressStroke
+            )
         }
     }
 }
