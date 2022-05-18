@@ -92,7 +92,7 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CenterDiamondLoader(
+                OutsideDiamondLoader(
                     progress = diamondProgress,
                     progressColor = primaryColorAnimation,
                     emptyColor = backgroundColorAnimation,
@@ -100,7 +100,7 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                     modifier = Modifier.size(100.dp)
                 )
 
-                ReverseCenterDiamondLoader(
+                InsideDiamondLoader(
                     progress = diamondProgress,
                     progressColor = primaryColorAnimation,
                     emptyColor = backgroundColorAnimation,
@@ -114,12 +114,25 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                     modifier = Modifier.size(100.dp)
                 )
             }
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                CenterDiamondLoader(
+                    progress = diamondProgress,
+                    progressColor = primaryColorAnimation,
+                    emptyColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(100.dp)
+                )
+            }
         }
     }
 }
 
 @Composable
-fun CenterDiamondLoader(
+fun OutsideDiamondLoader(
     progress: Float,
     modifier: Modifier = Modifier,
     progressColor: Color = MaterialTheme.colorScheme.primary,
@@ -149,6 +162,52 @@ fun CenterDiamondLoader(
                 )
                 drawProgress(
                     progress * 100f,
+                    x = halfWidth,
+                    y = halfHeight,
+                    width = halfWidth - loadingWidthChange,
+                    height = halfHeight - loadingWidthChange,
+                    paint = progressColor,
+                    stroke = progressStroke
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CenterDiamondLoader(
+    progress: Float,
+    modifier: Modifier = Modifier,
+    progressColor: Color = MaterialTheme.colorScheme.primary,
+    emptyColor: Color = MaterialTheme.colorScheme.background,
+    strokeWidth: Dp = 4.dp,
+    image: ImageBitmap? = null
+) {
+    Surface {
+        val imagePaint = newStrokePaint(strokeWidth.value)
+        val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+        val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+        val loadingWidthChange = strokeWidth.value
+
+        Canvas(modifier.progressSemantics(progress * 100f)) {
+            val (width, height) = size
+            val halfHeight = width / 2f
+            val halfWidth = height / 2f
+
+            drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
+                addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
+                val naturalValue = progress * 100f
+                drawProgressIndeterminate(
+                    progress = naturalValue,
+                    x = halfWidth,
+                    y = halfHeight,
+                    width = width - loadingWidthChange,
+                    height = height - loadingWidthChange,
+                    paint = emptyColor,
+                    stroke = emptyStroke
+                )
+                drawProgressIndeterminate(
+                    progress = naturalValue,
                     x = halfWidth,
                     y = halfHeight,
                     width = halfWidth - loadingWidthChange,
@@ -241,7 +300,7 @@ fun CenterDiamondLoader(
 }
 
 @Composable
-fun ReverseCenterDiamondLoader(
+fun InsideDiamondLoader(
     progress: Float,
     modifier: Modifier = Modifier,
     progressColor: Color = MaterialTheme.colorScheme.primary,
