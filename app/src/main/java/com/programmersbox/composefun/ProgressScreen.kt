@@ -205,7 +205,7 @@ fun OutsideDiamondLoader(
         val halfWidth = height / 2f
 
         drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
-            addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
+            image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
             drawRhombus(
                 x = halfWidth,
                 y = halfHeight,
@@ -247,7 +247,7 @@ fun CenterDiamondLoader(
         val halfWidth = height / 2f
 
         drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
-            addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
+            image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
             val naturalValue = progress * 100f
             drawProgressIndeterminate(
                 progress = naturalValue,
@@ -303,7 +303,7 @@ fun CenterDiamondLoader(
         val halfWidth = height / 2f
 
         drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
-            addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
+            image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
             val naturalValue = startAngle.value % 100f
             if (startAngle.value >= 100f) {
                 drawProgressIndeterminateReverse(
@@ -367,7 +367,7 @@ fun InsideDiamondLoader(
         val halfWidth = height / 2f
 
         drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
-            addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
+            image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
             drawProgress(
                 100f,
                 x = halfWidth,
@@ -413,7 +413,7 @@ fun DiamondLoader(
         //val arcDimen = size.width - 2 * loadingWidthChange
 
         drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
-            addImage(image, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint)
+            image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
             drawRhombus(
                 x = halfWidth,
                 y = halfHeight,
@@ -452,7 +452,7 @@ private fun DrawScope.drawRhombus(x: Float, y: Float, width: Float, height: Floa
     path.reset()
 }
 
-private fun DrawScope.addImage(imageAsset: ImageBitmap?, x: Float, y: Float, width: Float, height: Float, stroke: Stroke) {
+private fun DrawScope.addImage(imageAsset: ImageBitmap, x: Float, y: Float, width: Float, height: Float, stroke: Stroke) {
     val path = Path()
     path.moveTo(x, y + height) // Top
     path.lineTo(x - width, y) // Left
@@ -460,7 +460,7 @@ private fun DrawScope.addImage(imageAsset: ImageBitmap?, x: Float, y: Float, wid
     path.lineTo(x + width, y) // Right
     path.lineTo(x, y + height) // Back to Top
     path.close()
-    clipPath(path) { imageAsset?.let { drawImage(it, topLeft = Offset(x - it.width / 2, y - it.height / 2), style = stroke) } }
+    clipPath(path) { drawImage(imageAsset, topLeft = Offset(x - imageAsset.width / 2, y - imageAsset.height / 2), style = stroke) }
     path.reset()
 }
 
