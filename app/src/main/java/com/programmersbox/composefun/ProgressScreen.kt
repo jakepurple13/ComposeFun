@@ -92,6 +92,21 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
 
             }
 
+            LinearProgressIndicator(
+                color = primaryColorAnimation,
+                trackColor = backgroundColorAnimation,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(10.dp))
+
+            LinearProgressIndicator(
+                progress = diamondProgress,
+                color = primaryColorAnimation,
+                trackColor = backgroundColorAnimation,
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
