@@ -2,6 +2,7 @@ package com.programmersbox.composefun
 
 import android.content.res.Configuration
 import android.graphics.PointF
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
@@ -61,17 +62,20 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 ) { Text("Random Colors") }
             }
 
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Primary Color")
-                SliderRedRGB(red = primaryColor.red, onValueChange = { primaryColor = primaryColor.copy(red = it) })
-                SliderGreenRGB(green = primaryColor.green, onValueChange = { primaryColor = primaryColor.copy(green = it) })
-                SliderBlueRGB(blue = primaryColor.blue, onValueChange = { primaryColor = primaryColor.copy(blue = it) })
-                Text("Background Color")
-                SliderRedRGB(red = backgroundColor.red, onValueChange = { backgroundColor = backgroundColor.copy(red = it) })
-                SliderGreenRGB(green = backgroundColor.green, onValueChange = { backgroundColor = backgroundColor.copy(green = it) })
-                SliderBlueRGB(blue = backgroundColor.blue, onValueChange = { backgroundColor = backgroundColor.copy(blue = it) })
+            var showColors by remember { mutableStateOf(false) }
+
+            SwitchSetting(settingTitle = { Text("Edit Colors") }, value = showColors, updateValue = { showColors = it })
+            AnimatedVisibility(visible = showColors) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text("Primary Color")
+                    SliderRedRGB(red = primaryColor.red, onValueChange = { primaryColor = primaryColor.copy(red = it) })
+                    SliderGreenRGB(green = primaryColor.green, onValueChange = { primaryColor = primaryColor.copy(green = it) })
+                    SliderBlueRGB(blue = primaryColor.blue, onValueChange = { primaryColor = primaryColor.copy(blue = it) })
+                    Text("Background Color")
+                    SliderRedRGB(red = backgroundColor.red, onValueChange = { backgroundColor = backgroundColor.copy(red = it) })
+                    SliderGreenRGB(green = backgroundColor.green, onValueChange = { backgroundColor = backgroundColor.copy(green = it) })
+                    SliderBlueRGB(blue = backgroundColor.blue, onValueChange = { backgroundColor = backgroundColor.copy(blue = it) })
+                }
             }
 
             Slider(value = diamond, onValueChange = { diamond = it })
