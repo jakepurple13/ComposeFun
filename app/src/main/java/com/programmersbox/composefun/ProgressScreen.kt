@@ -28,6 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.PathSegment
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.programmersbox.composefun.composeutils.SliderBlueRGB
+import com.programmersbox.composefun.composeutils.SliderGreenRGB
+import com.programmersbox.composefun.composeutils.SliderRedRGB
 import kotlin.random.Random
 
 @Preview(device = Devices.NEXUS_5X, uiMode = Configuration.UI_MODE_NIGHT_YES)
@@ -56,6 +59,19 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                         backgroundColor = Random.nextColor(a = 255)
                     }
                 ) { Text("Random Colors") }
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Primary Color")
+                SliderRedRGB(red = primaryColor.red, onValueChange = { primaryColor = primaryColor.copy(red = it) })
+                SliderGreenRGB(green = primaryColor.green, onValueChange = { primaryColor = primaryColor.copy(green = it) })
+                SliderBlueRGB(blue = primaryColor.blue, onValueChange = { primaryColor = primaryColor.copy(blue = it) })
+                Text("Background Color")
+                SliderRedRGB(red = backgroundColor.red, onValueChange = { backgroundColor = backgroundColor.copy(red = it) })
+                SliderGreenRGB(green = backgroundColor.green, onValueChange = { backgroundColor = backgroundColor.copy(green = it) })
+                SliderBlueRGB(blue = backgroundColor.blue, onValueChange = { backgroundColor = backgroundColor.copy(blue = it) })
             }
 
             Slider(value = diamond, onValueChange = { diamond = it })

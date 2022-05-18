@@ -110,5 +110,6 @@ dependencies {
     implementation "androidx.paging:paging-runtime:$paging_version"
     testImplementation "androidx.paging:paging-common:$paging_version"
     implementation "androidx.paging:paging-compose:1.0.0-alpha14"
-    implementation "io.coil-kt:coil-compose:2.0.0"
+    implementation "io.coil-kt:coil-compose:2.1.0"
+    implementation 'com.github.SmartToolFactory:Compose-Colorful-Sliders:1.0.1'
 }
