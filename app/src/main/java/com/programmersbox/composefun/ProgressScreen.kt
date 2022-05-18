@@ -182,6 +182,51 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                     image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
                 )
             }
+
+            var sizeOfLoaders by remember { mutableStateOf(100f) }
+            Text("Size (Default 100): ${sizeOfLoaders.toInt()}")
+            Slider(
+                value = sizeOfLoaders,
+                onValueChange = { sizeOfLoaders = it },
+                valueRange = 25f..200f
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                CenterDiamondLoader(
+                    progressColor = primaryColorAnimation,
+                    emptyColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(animateDpAsState(targetValue = sizeOfLoaders.dp).value)
+                )
+                CenterDiamondLoader(
+                    progress = diamondProgress,
+                    progressColor = primaryColorAnimation,
+                    emptyColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(animateDpAsState(targetValue = sizeOfLoaders.dp).value)
+                )
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                CenterDiamondLoader(
+                    progressColor = primaryColorAnimation,
+                    emptyColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(200.dp)
+                )
+                CenterDiamondLoader(
+                    progressColor = primaryColorAnimation,
+                    emptyColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(200.dp)
+                )
+            }
         }
     }
 }
