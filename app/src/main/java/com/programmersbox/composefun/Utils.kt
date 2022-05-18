@@ -88,6 +88,7 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
     object AnagramSolverScreen : Screen("anagramsolver", "Anagram Solver")
     object TextFieldDropDownScreen : Screen("textfielddropdown", "TextField Screen")
     object ProgressScreen : Screen("progress", "Progress Screen")
+    object LoadingInfoScreen : Screen("loadinginfo", "Loading Info Screen")
 
     companion object {
         val items = arrayOf(
@@ -116,7 +117,8 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
             AboutLibrariesScreen,
             AvatarScreen,
             TextFieldDropDownScreen,
-            ProgressScreen
+            ProgressScreen,
+            LoadingInfoScreen
         )
 
         val gameItems = arrayOf(

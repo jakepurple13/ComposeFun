@@ -168,6 +168,7 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.AvatarScreen.route) { ATLAScreen(navController) }
                                 composable(Screen.TextFieldDropDownScreen.route) { TextFieldScreen(navController) }
                                 composable(Screen.ProgressScreen.route) { ProgressScreen(navController) }
+                                composable(Screen.LoadingInfoScreen.route) { LoadingInfoScreen(navController) }
                                 composable(Screen.InsetScreen.route) {
                                     DisposableEffect(Unit) {
                                         WindowCompat.setDecorFitsSystemWindows(window, false)
