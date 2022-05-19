@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,7 +21,10 @@ import androidx.compose.ui.unit.dp
 import com.smarttoolfactory.slider.ColorfulSlider
 import com.smarttoolfactory.slider.MaterialSliderDefaults
 import com.smarttoolfactory.slider.SliderBrushColor
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 /**
  * [CheckeredColorfulSlider] that displays [red] change in
@@ -263,4 +266,24 @@ fun sliderAlphaRGBGradient(
         start = start,
         end = end
     )
+}
+
+
+@Composable
+fun animateIntRandomAsState(
+    targetValue: Int,
+    repeatCount: Int = 10,
+    durationDelay: Long = 50L,
+    range: IntRange = 0..10
+): State<Int> {
+    val state = remember { mutableStateOf(targetValue) }
+
+    LaunchedEffect(targetValue) {
+        repeat(repeatCount) {
+            delay(durationDelay)
+            state.value = Random.nextInt(range)
+        }
+    }
+
+    return state
 }

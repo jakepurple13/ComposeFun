@@ -1,6 +1,6 @@
 package com.programmersbox.composefun
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -26,6 +26,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.programmersbox.composefun.composeutils.animateIntRandomAsState
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 /**
  * A single select list setting. When pressed, a dialog will come up with radio buttons allowing the user to select an option.
@@ -707,6 +710,15 @@ fun SettingsScreen(navController: NavController = rememberNavController(), vm: S
             )
 
             Divider()
+
+            var num by remember { mutableStateOf(0) }
+            val numAnim by animateIntRandomAsState(num)
+
+            PreferenceSetting(
+                settingTitle = { Text("Random Number Animation") },
+                summaryValue = { Text(numAnim.toString()) },
+                modifier = Modifier.clickable { num = Random.nextInt(0..100) }
+            )
 
             ShowMoreSetting(settingTitle = { Text("Show More") }) {
                 Column {
