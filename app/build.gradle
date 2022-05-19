@@ -90,8 +90,6 @@ dependencies {
     implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist"
     implementation "com.google.accompanist:accompanist-placeholder-material:$accompanist"
     implementation "com.google.accompanist:accompanist-placeholder:$accompanist"
-    implementation "com.google.accompanist:accompanist-insets:$accompanist"
-    implementation "com.google.accompanist:accompanist-insets-ui:$accompanist"
     implementation datastore.datastore
     implementation "io.ktor:ktor-client-core:2.0.1"
     implementation "io.ktor:ktor-client-cio:2.0.1"

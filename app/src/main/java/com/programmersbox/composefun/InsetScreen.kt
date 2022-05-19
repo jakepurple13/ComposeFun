@@ -8,21 +8,18 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.accompanist.insets.ExperimentalAnimatedInsets
-import com.google.accompanist.insets.rememberImeNestedScrollConnection
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalAnimatedInsets::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun InsetScreen(navController: NavController) {
     Scaffold(
         topBar = {
-            com.google.accompanist.insets.ui.TopAppBar(
+            TopAppBar(
                 title = { Text(Screen.InsetScreen.name) },
                 navigationIcon = { IconButton(onClick = { navController.popBackStack() }) { Icon(Icons.Default.ArrowBack, null) } },
-                contentPadding = WindowInsets.statusBars.asPaddingValues()
+                modifier = Modifier.statusBarsPadding()
             )
         },
         bottomBar = {
@@ -49,7 +46,7 @@ fun InsetScreen(navController: NavController) {
                 reverseLayout = true,
                 modifier = Modifier
                     .weight(1f)
-                    .nestedScroll(connection = rememberImeNestedScrollConnection())
+                    .imeNestedScroll()
             ) {
                 items(40) {
                     Card {
