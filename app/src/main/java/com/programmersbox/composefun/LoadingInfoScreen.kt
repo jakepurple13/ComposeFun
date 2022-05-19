@@ -2,6 +2,7 @@ package com.programmersbox.composefun
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -98,7 +99,8 @@ fun LoadingInfoScreen(navController: NavController, vm: LoadingViewModel = viewM
                     CenterDiamondLoader(
                         progressColor = primaryColorAnimation,
                         emptyColor = backgroundColorAnimation,
-                        modifier = Modifier.size(100.dp)
+                        modifier = Modifier.size(100.dp),
+                        animationSpec = tween(1500)
                     )
                 }
                 LoadingState.LoadingComplete -> {

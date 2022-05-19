@@ -46,8 +46,8 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
         ) {
             var diamond by remember { mutableStateOf(Random.nextFloat()) }
 
-            var primaryColor by remember { mutableStateOf(Random.nextColor()) }
-            var backgroundColor by remember { mutableStateOf(Random.nextColor()) }
+            var primaryColor by remember { mutableStateOf(Random.nextColor(a = 255)) }
+            var backgroundColor by remember { mutableStateOf(Random.nextColor(a = 255)) }
 
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -253,13 +253,48 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                     progressColor = primaryColorAnimation,
                     emptyColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
-                    modifier = Modifier.size(200.dp)
+                    modifier = Modifier.size(200.dp),
+                    animationSpec = keyframes {
+                        durationMillis = (1332 * 0.5).toInt() * 2 * 2
+                        0f at (1332 * 0.5).toInt() * 2 with CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+                        200f at durationMillis
+                    }
                 )
                 CenterDiamondLoader(
                     progressColor = primaryColorAnimation,
                     emptyColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
-                    modifier = Modifier.size(200.dp)
+                    modifier = Modifier.size(200.dp),
+                    animationSpec = keyframes {
+                        durationMillis = (1332 * 0.5).toInt() * 2
+                        0f at (1332 * 0.5).toInt() * 2 with CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+                        200f at durationMillis
+                    }
+                )
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                CenterDiamondLoader(
+                    progressColor = primaryColorAnimation,
+                    emptyColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(100.dp),
+                    animationSpec = keyframes {
+                        durationMillis = (1332 * 0.5).toInt() * 2 * 2
+                        0f at (1332 * 0.5).toInt() with CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+                        200f at durationMillis
+                    }
+                )
+
+                CenterDiamondLoader(
+                    progressColor = primaryColorAnimation,
+                    emptyColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(100.dp),
+                    animationSpec = tween(1500)
                 )
             }
         }
@@ -357,7 +392,12 @@ fun CenterDiamondLoader(
     progressColor: Color = MaterialTheme.colorScheme.primary,
     emptyColor: Color = MaterialTheme.colorScheme.background,
     strokeWidth: Dp = 4.dp,
-    image: ImageBitmap? = null
+    image: ImageBitmap? = null,
+    animationSpec: DurationBasedAnimationSpec<Float> = keyframes {
+        durationMillis = (1332 * 0.5).toInt() * 2 * 2
+        0f at (1332 * 0.5).toInt() with CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+        200f at durationMillis
+    }
 ) {
     val imagePaint = newStrokePaint(strokeWidth.value)
     val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
@@ -368,13 +408,7 @@ fun CenterDiamondLoader(
     val startAngle = transition.animateFloat(
         0f,
         200f,
-        infiniteRepeatable(
-            animation = keyframes {
-                durationMillis = (1332 * 0.5).toInt() * 2 * 2
-                0f at (1332 * 0.5).toInt() * 2 with CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
-                200f at durationMillis
-            }
-        )
+        infiniteRepeatable(animation = animationSpec)
     )
 
     Canvas(modifier.progressSemantics()) {
