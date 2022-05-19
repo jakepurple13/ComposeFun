@@ -93,7 +93,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-insets:$accompanist"
     implementation "com.google.accompanist:accompanist-insets-ui:$accompanist"
     implementation datastore.datastore
-    implementation "io.ktor:ktor-client-core:2.0.0"
+    implementation "io.ktor:ktor-client-core:2.0.1"
     implementation "io.ktor:ktor-client-cio:2.0.0"
     implementation "com.google.code.gson:gson:2.9.0"
     debugImplementation 'com.github.thelumiereguy:CrashWatcher-Android:2.0.2'
