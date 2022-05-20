@@ -241,6 +241,26 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 )
             }
 
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                DiamondProgressIndicator(
+                    progress = diamondProgress,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(100.dp),
+                    image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
+                )
+                DiamondProgressIndicator(
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(100.dp)
+                )
+            }
+
             Slider(value = diamond, onValueChange = { diamond = it })
             Text("${diamond * 100f}%")
 
