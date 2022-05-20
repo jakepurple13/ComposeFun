@@ -177,7 +177,7 @@ private fun <T> JokeScreens(
                         if (circleOrDiamond) {
                             CircularProgressIndicator()
                         } else {
-                            CenterDiamondLoader(
+                            DiamondProgressIndicator(
                                 innerColor = Alizarin,
                                 outerColor = Emerald,
                                 animationSpec = tween(1500)

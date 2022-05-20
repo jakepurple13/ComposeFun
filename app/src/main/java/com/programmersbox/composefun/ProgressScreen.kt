@@ -79,7 +79,6 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
             }
 
             Slider(value = diamond, onValueChange = { diamond = it })
-
             Text("${diamond * 100f}%")
 
             val primaryColorAnimation by animateColorAsState(targetValue = primaryColor)
@@ -131,22 +130,21 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                OutsideDiamondLoader(
+                OuterDiamondProgressIndicator(
                     progress = diamondProgress,
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(100.dp)
                 )
-
-                InsideDiamondLoader(
+                InnerDiamondProgressIndicator(
                     progress = diamondProgress,
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(100.dp)
                 )
-                CenterDiamondLoader(
+                DiamondProgressIndicator(
                     innerColor = primaryColorAnimation,
                     outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
@@ -158,7 +156,7 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CenterDiamondLoader(
+                DiamondProgressIndicator(
                     progress = diamondProgress,
                     innerColor = primaryColorAnimation,
                     outerColor = backgroundColorAnimation,
@@ -167,18 +165,21 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 )
             }
 
+            Slider(value = diamond, onValueChange = { diamond = it })
+            Text("${diamond * 100f}%")
+
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CenterDiamondLoader(
+                DiamondProgressIndicator(
                     innerColor = primaryColorAnimation,
                     outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(100.dp),
                     image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
                 )
-                CenterDiamondLoader(
+                DiamondProgressIndicator(
                     progress = diamondProgress,
                     innerColor = primaryColorAnimation,
                     outerColor = backgroundColorAnimation,
@@ -196,27 +197,52 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 )
             }
 
+            Slider(value = diamond, onValueChange = { diamond = it })
+            Text("${diamond * 100f}%")
+
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                InsideDiamondLoader(
+
+                OuterDiamondProgressIndicator(
                     progress = diamondProgress,
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(100.dp),
                     image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
                 )
-                OutsideDiamondLoader(
-                    progress = diamondProgress,
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                OuterDiamondProgressIndicator(
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
-                    modifier = Modifier.size(100.dp),
-                    image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
+                    modifier = Modifier.size(100.dp)
                 )
             }
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                InnerDiamondProgressIndicator(
+                    progress = diamondProgress,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(100.dp),
+                    image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
+                )
+                InnerDiamondProgressIndicator(
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
+                    strokeWidth = 4.dp,
+                    modifier = Modifier.size(100.dp)
+                )
+            }
+
+            Slider(value = diamond, onValueChange = { diamond = it })
+            Text("${diamond * 100f}%")
 
             var sizeOfLoaders by remember { mutableStateOf(100f) }
             Text("Size (Default 100): ${sizeOfLoaders.toInt()}")
@@ -230,13 +256,13 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CenterDiamondLoader(
+                DiamondProgressIndicator(
                     innerColor = primaryColorAnimation,
                     outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(animateDpAsState(targetValue = sizeOfLoaders.dp).value)
                 )
-                CenterDiamondLoader(
+                DiamondProgressIndicator(
                     progress = diamondProgress,
                     innerColor = primaryColorAnimation,
                     outerColor = backgroundColorAnimation,
@@ -249,7 +275,7 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CenterDiamondLoader(
+                DiamondProgressIndicator(
                     innerColor = primaryColorAnimation,
                     outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
@@ -260,7 +286,7 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                         200f at durationMillis
                     }
                 )
-                CenterDiamondLoader(
+                DiamondProgressIndicator(
                     innerColor = primaryColorAnimation,
                     outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
@@ -277,7 +303,7 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CenterDiamondLoader(
+                DiamondProgressIndicator(
                     innerColor = primaryColorAnimation,
                     outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
@@ -289,7 +315,7 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                     }
                 )
 
-                CenterDiamondLoader(
+                DiamondProgressIndicator(
                     innerColor = primaryColorAnimation,
                     outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
@@ -302,48 +328,7 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
 }
 
 @Composable
-fun OutsideDiamondLoader(
-    progress: Float,
-    modifier: Modifier = Modifier,
-    progressColor: Color = MaterialTheme.colorScheme.primary,
-    emptyColor: Color = MaterialTheme.colorScheme.background,
-    strokeWidth: Dp = 4.dp,
-    image: ImageBitmap? = null
-) {
-    val imagePaint = newStrokePaint(strokeWidth.value)
-    val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-    val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-    val loadingWidthChange = strokeWidth.value
-    Canvas(modifier.progressSemantics(progress * 100f)) {
-        val (width, height) = size
-        val halfHeight = width / 2f
-        val halfWidth = height / 2f
-
-        drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
-            image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
-            drawRhombus(
-                x = halfWidth,
-                y = halfHeight,
-                width = halfWidth - loadingWidthChange,
-                height = halfHeight - loadingWidthChange,
-                paint = emptyColor,
-                stroke = emptyStroke
-            )
-            drawProgress(
-                progress * 100f,
-                x = halfWidth,
-                y = halfHeight,
-                width = halfWidth - loadingWidthChange,
-                height = halfHeight - loadingWidthChange,
-                paint = progressColor,
-                stroke = progressStroke
-            )
-        }
-    }
-}
-
-@Composable
-fun CenterDiamondLoader(
+fun InnerDiamondProgressIndicator(
     progress: Float,
     modifier: Modifier = Modifier,
     innerColor: Color = MaterialTheme.colorScheme.primary,
@@ -355,7 +340,123 @@ fun CenterDiamondLoader(
     val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
     val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
     val loadingWidthChange = strokeWidth.value
+    Canvas(
+        Modifier
+            .size(100.dp, 100.dp)
+            .then(modifier)
+            .progressSemantics(progress * 100f)
+    ) {
+        val (width, height) = size
+        val halfHeight = width / 2f
+        val halfWidth = height / 2f
 
+        drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
+            image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
+            drawRhombus(
+                x = halfWidth,
+                y = halfHeight,
+                width = halfWidth - loadingWidthChange,
+                height = halfHeight - loadingWidthChange,
+                paint = outerColor,
+                stroke = emptyStroke
+            )
+            drawProgress(
+                progress * 100f,
+                x = halfWidth,
+                y = halfHeight,
+                width = halfWidth - loadingWidthChange,
+                height = halfHeight - loadingWidthChange,
+                paint = innerColor,
+                stroke = progressStroke
+            )
+        }
+    }
+}
+
+@Composable
+fun InnerDiamondProgressIndicator(
+    modifier: Modifier = Modifier,
+    innerColor: Color = MaterialTheme.colorScheme.primary,
+    outerColor: Color = MaterialTheme.colorScheme.background,
+    strokeWidth: Dp = 4.dp,
+    image: ImageBitmap? = null,
+    animationSpec: DurationBasedAnimationSpec<Float> = keyframes {
+        durationMillis = (1332 * 0.5).toInt() * 2 * 2
+        0f at (1332 * 0.5).toInt() with CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+        200f at durationMillis
+    }
+) {
+    val imagePaint = newStrokePaint(strokeWidth.value)
+    val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val loadingWidthChange = strokeWidth.value
+
+    val transition = rememberInfiniteTransition()
+    val startAngle = transition.animateFloat(
+        0f,
+        200f,
+        infiniteRepeatable(animation = animationSpec)
+    )
+
+    Canvas(
+        Modifier
+            .size(100.dp, 100.dp)
+            .then(modifier)
+            .progressSemantics()
+    ) {
+        val (width, height) = size
+        val halfHeight = width / 2f
+        val halfWidth = height / 2f
+
+        drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
+            image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
+            drawRhombus(
+                x = halfWidth,
+                y = halfHeight,
+                width = halfWidth - loadingWidthChange,
+                height = halfHeight - loadingWidthChange,
+                paint = outerColor,
+                stroke = emptyStroke
+            )
+            val naturalValue = startAngle.value % 100f
+            if (startAngle.value >= 100f) {
+                drawProgressIndeterminateReverse(
+                    progress = naturalValue,
+                    x = halfWidth,
+                    y = halfHeight,
+                    width = halfWidth - loadingWidthChange,
+                    height = halfHeight - loadingWidthChange,
+                    paint = innerColor,
+                    stroke = progressStroke
+                )
+            } else {
+                drawProgressIndeterminate(
+                    progress = 100f - naturalValue,
+                    x = halfWidth,
+                    y = halfHeight,
+                    width = halfWidth - loadingWidthChange,
+                    height = halfHeight - loadingWidthChange,
+                    paint = innerColor,
+                    stroke = progressStroke
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DiamondProgressIndicator(
+    progress: Float,
+    modifier: Modifier = Modifier,
+    innerColor: Color = MaterialTheme.colorScheme.primary,
+    outerColor: Color = MaterialTheme.colorScheme.background,
+    strokeWidth: Dp = 4.dp,
+    image: ImageBitmap? = null
+) {
+    val imagePaint = newStrokePaint(strokeWidth.value)
+    val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val loadingWidthChange = strokeWidth.value
     Canvas(
         Modifier
             .size(100.dp, 100.dp)
@@ -392,7 +493,7 @@ fun CenterDiamondLoader(
 }
 
 @Composable
-fun CenterDiamondLoader(
+fun DiamondProgressIndicator(
     modifier: Modifier = Modifier,
     innerColor: Color = MaterialTheme.colorScheme.primary,
     outerColor: Color = MaterialTheme.colorScheme.background,
@@ -473,11 +574,11 @@ fun CenterDiamondLoader(
 }
 
 @Composable
-fun InsideDiamondLoader(
+fun OuterDiamondProgressIndicator(
     progress: Float,
     modifier: Modifier = Modifier,
-    progressColor: Color = MaterialTheme.colorScheme.primary,
-    emptyColor: Color = MaterialTheme.colorScheme.background,
+    innerColor: Color = MaterialTheme.colorScheme.primary,
+    outerColor: Color = MaterialTheme.colorScheme.background,
     strokeWidth: Dp = 4.dp,
     image: ImageBitmap? = null
 ) {
@@ -485,7 +586,12 @@ fun InsideDiamondLoader(
     val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
     val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
     val loadingWidthChange = strokeWidth.value// / 2
-    Canvas(modifier.progressSemantics(progress * 100f)) {
+    Canvas(
+        Modifier
+            .size(100.dp, 100.dp)
+            .then(modifier)
+            .progressSemantics(progress * 100f)
+    ) {
         val (width, height) = size
         val halfHeight = width / 2f
         val halfWidth = height / 2f
@@ -498,7 +604,7 @@ fun InsideDiamondLoader(
                 y = halfHeight,
                 width = halfWidth - loadingWidthChange,
                 height = halfHeight - loadingWidthChange,
-                paint = emptyColor,
+                paint = outerColor,
                 stroke = emptyStroke
             )
             drawProgress(
@@ -507,9 +613,81 @@ fun InsideDiamondLoader(
                 y = halfHeight,
                 width = width - loadingWidthChange,
                 height = height - loadingWidthChange,
-                paint = progressColor,
+                paint = innerColor,
                 stroke = progressStroke
             )
+        }
+    }
+}
+
+@Composable
+fun OuterDiamondProgressIndicator(
+    modifier: Modifier = Modifier,
+    innerColor: Color = MaterialTheme.colorScheme.primary,
+    outerColor: Color = MaterialTheme.colorScheme.background,
+    strokeWidth: Dp = 4.dp,
+    image: ImageBitmap? = null,
+    animationSpec: DurationBasedAnimationSpec<Float> = keyframes {
+        durationMillis = (1332 * 0.5).toInt() * 2 * 2
+        0f at (1332 * 0.5).toInt() with CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+        200f at durationMillis
+    }
+) {
+    val imagePaint = newStrokePaint(strokeWidth.value)
+    val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val loadingWidthChange = strokeWidth.value// / 2
+
+    val transition = rememberInfiniteTransition()
+    val startAngle = transition.animateFloat(
+        0f,
+        200f,
+        infiniteRepeatable(animation = animationSpec)
+    )
+
+    Canvas(
+        Modifier
+            .size(100.dp, 100.dp)
+            .then(modifier)
+            .progressSemantics()
+    ) {
+        val (width, height) = size
+        val halfHeight = width / 2f
+        val halfWidth = height / 2f
+
+        drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
+            image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
+            drawProgress(
+                100f,
+                x = halfWidth,
+                y = halfHeight,
+                width = halfWidth - loadingWidthChange,
+                height = halfHeight - loadingWidthChange,
+                paint = outerColor,
+                stroke = emptyStroke
+            )
+            val naturalValue = startAngle.value % 100f
+            if (startAngle.value >= 100f) {
+                drawProgressIndeterminateReverse(
+                    progress = 100f - naturalValue,
+                    x = halfWidth,
+                    y = halfHeight,
+                    width = width - loadingWidthChange,
+                    height = height - loadingWidthChange,
+                    paint = innerColor,
+                    stroke = progressStroke
+                )
+            } else {
+                drawProgressIndeterminate(
+                    progress = naturalValue,
+                    x = halfWidth,
+                    y = halfHeight,
+                    width = width - loadingWidthChange,
+                    height = height - loadingWidthChange,
+                    paint = innerColor,
+                    stroke = progressStroke
+                )
+            }
         }
     }
 }
