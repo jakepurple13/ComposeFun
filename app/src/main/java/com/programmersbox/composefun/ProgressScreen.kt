@@ -712,10 +712,6 @@ private fun DiamondProgressIndeterminate(
     animationSpec: DurationBasedAnimationSpec<Float>,
     block: DrawScope.(DiamondData, Float) -> Unit
 ) {
-    val imagePaint = newStrokePaint(strokeWidth.value)
-    val stroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
-    val loadingWidthChange = strokeWidth.value
-
     val transition = rememberInfiniteTransition()
     val startAngle = transition.animateFloat(
         0f,
@@ -723,21 +719,7 @@ private fun DiamondProgressIndeterminate(
         infiniteRepeatable(animation = animationSpec)
     )
 
-    Canvas(
-        Modifier
-            .size(100.dp, 100.dp)
-            .progressSemantics()
-            .then(modifier)
-    ) {
-        val (width, height) = size
-        val halfHeight = width / 2f
-        val halfWidth = height / 2f
-
-        drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
-            image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
-            block(DiamondData(loadingWidthChange, width, height, stroke), startAngle.value)
-        }
-    }
+    DiamondProgress(modifier.progressSemantics(), strokeWidth, image) { block(it, startAngle.value) }
 }
 
 @Composable
