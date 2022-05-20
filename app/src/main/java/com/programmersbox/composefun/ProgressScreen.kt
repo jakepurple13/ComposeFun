@@ -379,7 +379,6 @@ fun InnerDiamondProgressIndicator(
         val (width, height) = it.width to it.height
         val halfHeight = width / 2f
         val halfWidth = height / 2f
-
         drawRhombus(
             x = halfWidth,
             y = halfHeight,
@@ -413,14 +412,7 @@ fun InnerDiamondProgressIndicator(
         200f at durationMillis
     }
 ) {
-    val transition = rememberInfiniteTransition()
-    val startAngle = transition.animateFloat(
-        0f,
-        200f,
-        infiniteRepeatable(animation = animationSpec)
-    )
-
-    DiamondProgress(modifier.progressSemantics(), strokeWidth, image) {
+    DiamondProgressIndeterminate(modifier, strokeWidth, image, animationSpec) { it, startAngle ->
         val (width, height) = it.width to it.height
         val halfHeight = width / 2f
         val halfWidth = height / 2f
@@ -433,8 +425,8 @@ fun InnerDiamondProgressIndicator(
             paint = outerColor,
             stroke = it.stroke
         )
-        val naturalValue = startAngle.value % 100f
-        if (startAngle.value >= 100f) {
+        val naturalValue = startAngle % 100f
+        if (startAngle >= 100f) {
             drawProgressIndeterminateReverse(
                 progress = naturalValue,
                 x = halfWidth,
@@ -519,15 +511,15 @@ fun DiamondProgressIndicator(
             paint = outerColor,
             stroke = it.stroke
         )
-            drawProgressIndeterminate(
-                progress = naturalValue,
-                x = halfWidth,
-                y = halfHeight,
-                width = halfWidth - it.strokeWidth,
-                height = halfHeight - it.strokeWidth,
-                paint = innerColor,
-                stroke = it.stroke
-            )
+        drawProgressIndeterminate(
+            progress = naturalValue,
+            x = halfWidth,
+            y = halfHeight,
+            width = halfWidth - it.strokeWidth,
+            height = halfHeight - it.strokeWidth,
+            paint = innerColor,
+            stroke = it.stroke
+        )
     }
 }
 
@@ -544,19 +536,13 @@ fun DiamondProgressIndicator(
         200f at durationMillis
     }
 ) {
-    val transition = rememberInfiniteTransition()
-    val startAngle = transition.animateFloat(
-        0f,
-        200f,
-        infiniteRepeatable(animation = animationSpec)
-    )
-    DiamondProgress(modifier.progressSemantics(), strokeWidth, image) {
+    DiamondProgressIndeterminate(modifier, strokeWidth, image, animationSpec) { it, startAngle ->
         val (width, height) = it.width to it.height
         val halfHeight = width / 2f
         val halfWidth = height / 2f
 
-        val naturalValue = startAngle.value % 100f
-        if (startAngle.value >= 100f) {
+        val naturalValue = startAngle % 100f
+        if (startAngle >= 100f) {
             drawProgressIndeterminateReverse(
                 progress = 100f - naturalValue,
                 x = halfWidth,
@@ -566,34 +552,34 @@ fun DiamondProgressIndicator(
                 paint = outerColor,
                 stroke = it.stroke
             )
-                drawProgressIndeterminateReverse(
-                    progress = naturalValue,
-                    x = halfWidth,
-                    y = halfHeight,
-                    width = halfWidth - it.strokeWidth,
-                    height = halfHeight - it.strokeWidth,
-                    paint = innerColor,
-                    stroke = it.stroke
-                )
-            } else {
-                drawProgressIndeterminate(
-                    progress = naturalValue,
-                    x = halfWidth,
-                    y = halfHeight,
-                    width = width - it.strokeWidth,
-                    height = height - it.strokeWidth,
-                    paint = outerColor,
-                    stroke = it.stroke
-                )
-                drawProgressIndeterminate(
-                    progress = 100f - naturalValue,
-                    x = halfWidth,
-                    y = halfHeight,
-                    width = halfWidth - it.strokeWidth,
-                    height = halfHeight - it.strokeWidth,
-                    paint = innerColor,
-                    stroke = it.stroke
-                )
+            drawProgressIndeterminateReverse(
+                progress = naturalValue,
+                x = halfWidth,
+                y = halfHeight,
+                width = halfWidth - it.strokeWidth,
+                height = halfHeight - it.strokeWidth,
+                paint = innerColor,
+                stroke = it.stroke
+            )
+        } else {
+            drawProgressIndeterminate(
+                progress = naturalValue,
+                x = halfWidth,
+                y = halfHeight,
+                width = width - it.strokeWidth,
+                height = height - it.strokeWidth,
+                paint = outerColor,
+                stroke = it.stroke
+            )
+            drawProgressIndeterminate(
+                progress = 100f - naturalValue,
+                x = halfWidth,
+                y = halfHeight,
+                width = halfWidth - it.strokeWidth,
+                height = halfHeight - it.strokeWidth,
+                paint = innerColor,
+                stroke = it.stroke
+            )
         }
     }
 }
@@ -645,17 +631,10 @@ fun OuterDiamondProgressIndicator(
         200f at durationMillis
     }
 ) {
-    val transition = rememberInfiniteTransition()
-    val startAngle = transition.animateFloat(
-        0f,
-        200f,
-        infiniteRepeatable(animation = animationSpec)
-    )
-    DiamondProgress(modifier = modifier.progressSemantics(), strokeWidth, image) {
+    DiamondProgressIndeterminate(modifier, strokeWidth, image, animationSpec) { it, startAngle ->
         val (width, height) = it.width to it.height
         val halfHeight = width / 2f
         val halfWidth = height / 2f
-
         drawProgress(
             100f,
             x = halfWidth,
@@ -665,8 +644,8 @@ fun OuterDiamondProgressIndicator(
             paint = outerColor,
             stroke = it.stroke
         )
-        val naturalValue = startAngle.value % 100f
-        if (startAngle.value >= 100f) {
+        val naturalValue = startAngle % 100f
+        if (startAngle >= 100f) {
             drawProgressIndeterminateReverse(
                 progress = 100f - naturalValue,
                 x = halfWidth,
@@ -720,6 +699,42 @@ private fun DiamondProgress(
         drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
             image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
             block(DiamondData(loadingWidthChange, width, height, stroke))
+        }
+    }
+}
+
+@Composable
+private fun DiamondProgressIndeterminate(
+    modifier: Modifier,
+    strokeWidth: Dp,
+    image: ImageBitmap?,
+    animationSpec: DurationBasedAnimationSpec<Float>,
+    block: DrawScope.(DiamondData, Float) -> Unit
+) {
+    val imagePaint = newStrokePaint(strokeWidth.value)
+    val stroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val loadingWidthChange = strokeWidth.value
+
+    val transition = rememberInfiniteTransition()
+    val startAngle = transition.animateFloat(
+        0f,
+        200f,
+        infiniteRepeatable(animation = animationSpec)
+    )
+
+    Canvas(
+        Modifier
+            .size(100.dp, 100.dp)
+            .progressSemantics()
+            .then(modifier)
+    ) {
+        val (width, height) = size
+        val halfHeight = width / 2f
+        val halfWidth = height / 2f
+
+        drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
+            image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
+            block(DiamondData(loadingWidthChange, width, height, stroke), startAngle.value)
         }
     }
 }
