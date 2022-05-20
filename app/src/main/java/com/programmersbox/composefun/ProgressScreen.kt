@@ -261,6 +261,26 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 )
             }
 
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                ReverseDiamondProgressIndicator(
+                    progress = diamondProgress,
+                    reverse = true,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
+                    modifier = Modifier.size(100.dp)
+                )
+                ReverseDiamondProgressIndicator(
+                    progress = diamondProgress,
+                    reverse = false,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
+                    modifier = Modifier.size(100.dp)
+                )
+            }
+
             Slider(value = diamond, onValueChange = { diamond = it })
             Text("${diamond * 100f}%")
 
@@ -501,6 +521,55 @@ fun DiamondProgressIndicator(
             )
             drawProgressIndeterminate(
                 progress = naturalValue,
+                x = halfWidth,
+                y = halfHeight,
+                width = halfWidth - loadingWidthChange,
+                height = halfHeight - loadingWidthChange,
+                paint = innerColor,
+                stroke = progressStroke
+            )
+        }
+    }
+}
+
+@Composable
+fun ReverseDiamondProgressIndicator(
+    progress: Float,
+    modifier: Modifier = Modifier,
+    reverse: Boolean = true,
+    innerColor: Color = MaterialTheme.colorScheme.primary,
+    outerColor: Color = MaterialTheme.colorScheme.background,
+    strokeWidth: Dp = 4.dp,
+    image: ImageBitmap? = null
+) {
+    val imagePaint = newStrokePaint(strokeWidth.value)
+    val emptyStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
+    val loadingWidthChange = strokeWidth.value
+    Canvas(
+        Modifier
+            .size(100.dp, 100.dp)
+            .then(modifier)
+            .progressSemantics(progress * 100f)
+    ) {
+        val (width, height) = size
+        val halfHeight = width / 2f
+        val halfWidth = height / 2f
+
+        drawContext.canvas.withSaveLayer(bounds = drawContext.size.toRect(), paint = Paint()) {
+            image?.let { addImage(it, halfWidth, halfHeight, halfWidth, halfHeight, imagePaint) }
+            val naturalValue = progress * 100f
+            drawProgressIndeterminate(
+                progress = if (reverse) 100f - naturalValue else naturalValue,
+                x = halfWidth,
+                y = halfHeight,
+                width = width - loadingWidthChange,
+                height = height - loadingWidthChange,
+                paint = outerColor,
+                stroke = emptyStroke
+            )
+            drawProgressIndeterminate(
+                progress = if (!reverse) 100f - naturalValue else naturalValue,
                 x = halfWidth,
                 y = halfHeight,
                 width = halfWidth - loadingWidthChange,
