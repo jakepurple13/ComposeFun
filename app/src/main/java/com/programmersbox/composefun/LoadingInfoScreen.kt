@@ -97,8 +97,8 @@ fun LoadingInfoScreen(navController: NavController, vm: LoadingViewModel = viewM
             when (vm.showLoading) {
                 LoadingState.Loading -> {
                     CenterDiamondLoader(
-                        progressColor = primaryColorAnimation,
-                        emptyColor = backgroundColorAnimation,
+                        innerColor = primaryColorAnimation,
+                        outerColor = backgroundColorAnimation,
                         modifier = Modifier.size(100.dp),
                         animationSpec = tween(1500)
                     )
@@ -106,8 +106,8 @@ fun LoadingInfoScreen(navController: NavController, vm: LoadingViewModel = viewM
                 LoadingState.LoadingComplete -> {
                     CenterDiamondLoader(
                         progress = animatedProgress,
-                        progressColor = primaryColorAnimation,
-                        emptyColor = backgroundColorAnimation,
+                        innerColor = primaryColorAnimation,
+                        outerColor = backgroundColorAnimation,
                         modifier = Modifier.size(100.dp)
                     )
                 }

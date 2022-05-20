@@ -1,5 +1,6 @@
 package com.programmersbox.composefun
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,8 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.programmersbox.composefun.ui.theme.Alizarin
+import com.programmersbox.composefun.ui.theme.Emerald
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 data class DadJoke(val id: String?, val joke: String?, val status: Number?)
 
@@ -166,9 +170,20 @@ private fun <T> JokeScreens(
                 .padding(4.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
+                val circleOrDiamond by remember(joke) { mutableStateOf(Random.nextBoolean()) }
                 when (joke) {
                     is Result.Error -> Text("Please Try Again", textAlign = TextAlign.Center)
-                    is Result.Loading -> CircularProgressIndicator()
+                    is Result.Loading -> {
+                        if (circleOrDiamond) {
+                            CircularProgressIndicator()
+                        } else {
+                            CenterDiamondLoader(
+                                innerColor = Alizarin,
+                                outerColor = Emerald,
+                                animationSpec = tween(1500)
+                            )
+                        }
+                    }
                     is Result.Success -> Text(onSuccess((joke as Result.Success<T>).value), textAlign = TextAlign.Center)
                 }
             }

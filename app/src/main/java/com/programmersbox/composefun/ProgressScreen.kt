@@ -147,8 +147,8 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                     modifier = Modifier.size(100.dp)
                 )
                 CenterDiamondLoader(
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(100.dp)
                 )
@@ -160,8 +160,8 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
             ) {
                 CenterDiamondLoader(
                     progress = diamondProgress,
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(100.dp)
                 )
@@ -172,16 +172,16 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 CenterDiamondLoader(
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(100.dp),
                     image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
                 )
                 CenterDiamondLoader(
                     progress = diamondProgress,
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(100.dp),
                     image = ImageBitmap.imageResource(id = android.R.drawable.ic_menu_add)
@@ -231,15 +231,15 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 CenterDiamondLoader(
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(animateDpAsState(targetValue = sizeOfLoaders.dp).value)
                 )
                 CenterDiamondLoader(
                     progress = diamondProgress,
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(animateDpAsState(targetValue = sizeOfLoaders.dp).value)
                 )
@@ -250,8 +250,8 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 CenterDiamondLoader(
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(200.dp),
                     animationSpec = keyframes {
@@ -261,8 +261,8 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                     }
                 )
                 CenterDiamondLoader(
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(200.dp),
                     animationSpec = keyframes {
@@ -278,8 +278,8 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 CenterDiamondLoader(
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(100.dp),
                     animationSpec = keyframes {
@@ -290,8 +290,8 @@ fun ProgressScreen(navController: NavController = rememberNavController()) {
                 )
 
                 CenterDiamondLoader(
-                    progressColor = primaryColorAnimation,
-                    emptyColor = backgroundColorAnimation,
+                    innerColor = primaryColorAnimation,
+                    outerColor = backgroundColorAnimation,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(100.dp),
                     animationSpec = tween(1500)
@@ -346,8 +346,8 @@ fun OutsideDiamondLoader(
 fun CenterDiamondLoader(
     progress: Float,
     modifier: Modifier = Modifier,
-    progressColor: Color = MaterialTheme.colorScheme.primary,
-    emptyColor: Color = MaterialTheme.colorScheme.background,
+    innerColor: Color = MaterialTheme.colorScheme.primary,
+    outerColor: Color = MaterialTheme.colorScheme.background,
     strokeWidth: Dp = 4.dp,
     image: ImageBitmap? = null
 ) {
@@ -356,7 +356,12 @@ fun CenterDiamondLoader(
     val progressStroke = with(LocalDensity.current) { Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt) }
     val loadingWidthChange = strokeWidth.value
 
-    Canvas(modifier.progressSemantics(progress * 100f)) {
+    Canvas(
+        Modifier
+            .size(100.dp, 100.dp)
+            .then(modifier)
+            .progressSemantics(progress * 100f)
+    ) {
         val (width, height) = size
         val halfHeight = width / 2f
         val halfWidth = height / 2f
@@ -370,7 +375,7 @@ fun CenterDiamondLoader(
                 y = halfHeight,
                 width = width - loadingWidthChange,
                 height = height - loadingWidthChange,
-                paint = emptyColor,
+                paint = outerColor,
                 stroke = emptyStroke
             )
             drawProgressIndeterminate(
@@ -379,7 +384,7 @@ fun CenterDiamondLoader(
                 y = halfHeight,
                 width = halfWidth - loadingWidthChange,
                 height = halfHeight - loadingWidthChange,
-                paint = progressColor,
+                paint = innerColor,
                 stroke = progressStroke
             )
         }
@@ -389,8 +394,8 @@ fun CenterDiamondLoader(
 @Composable
 fun CenterDiamondLoader(
     modifier: Modifier = Modifier,
-    progressColor: Color = MaterialTheme.colorScheme.primary,
-    emptyColor: Color = MaterialTheme.colorScheme.background,
+    innerColor: Color = MaterialTheme.colorScheme.primary,
+    outerColor: Color = MaterialTheme.colorScheme.background,
     strokeWidth: Dp = 4.dp,
     image: ImageBitmap? = null,
     animationSpec: DurationBasedAnimationSpec<Float> = keyframes {
@@ -411,7 +416,12 @@ fun CenterDiamondLoader(
         infiniteRepeatable(animation = animationSpec)
     )
 
-    Canvas(modifier.progressSemantics()) {
+    Canvas(
+        Modifier
+            .size(100.dp, 100.dp)
+            .then(modifier)
+            .progressSemantics()
+    ) {
         val (width, height) = size
         val halfHeight = width / 2f
         val halfWidth = height / 2f
@@ -426,7 +436,7 @@ fun CenterDiamondLoader(
                     y = halfHeight,
                     width = width - loadingWidthChange,
                     height = height - loadingWidthChange,
-                    paint = emptyColor,
+                    paint = outerColor,
                     stroke = emptyStroke
                 )
                 drawProgressIndeterminateReverse(
@@ -435,7 +445,7 @@ fun CenterDiamondLoader(
                     y = halfHeight,
                     width = halfWidth - loadingWidthChange,
                     height = halfHeight - loadingWidthChange,
-                    paint = progressColor,
+                    paint = innerColor,
                     stroke = progressStroke
                 )
             } else {
@@ -445,7 +455,7 @@ fun CenterDiamondLoader(
                     y = halfHeight,
                     width = width - loadingWidthChange,
                     height = height - loadingWidthChange,
-                    paint = emptyColor,
+                    paint = outerColor,
                     stroke = emptyStroke
                 )
                 drawProgressIndeterminate(
@@ -454,7 +464,7 @@ fun CenterDiamondLoader(
                     y = halfHeight,
                     width = halfWidth - loadingWidthChange,
                     height = halfHeight - loadingWidthChange,
-                    paint = progressColor,
+                    paint = innerColor,
                     stroke = progressStroke
                 )
             }
