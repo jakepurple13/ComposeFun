@@ -376,9 +376,8 @@ fun InnerDiamondProgressIndicator(
     image: ImageBitmap? = null
 ) {
     DiamondProgress(modifier.progressSemantics(progress), strokeWidth, image) {
-        val (width, height) = it.width to it.height
-        val halfHeight = width / 2f
-        val halfWidth = height / 2f
+        val halfHeight = it.halfHeight
+        val halfWidth = it.halfWidth
         drawRhombus(
             x = halfWidth,
             y = halfHeight,
@@ -413,9 +412,8 @@ fun InnerDiamondProgressIndicator(
     }
 ) {
     DiamondProgressIndeterminate(modifier, strokeWidth, image, animationSpec) { it, startAngle ->
-        val (width, height) = it.width to it.height
-        val halfHeight = width / 2f
-        val halfWidth = height / 2f
+        val halfHeight = it.halfHeight
+        val halfWidth = it.halfWidth
 
         drawRhombus(
             x = halfWidth,
@@ -462,8 +460,8 @@ fun ReverseDiamondProgressIndicator(
 ) {
     DiamondProgress(modifier.progressSemantics(progress), strokeWidth, image) {
         val (width, height) = it.width to it.height
-        val halfHeight = width / 2f
-        val halfWidth = height / 2f
+        val halfHeight = it.halfHeight
+        val halfWidth = it.halfWidth
 
         val naturalValue = progress * 100f
         drawProgressIndeterminate(
@@ -498,8 +496,8 @@ fun DiamondProgressIndicator(
 ) {
     DiamondProgress(modifier.progressSemantics(progress), strokeWidth, image) {
         val (width, height) = it.width to it.height
-        val halfHeight = width / 2f
-        val halfWidth = height / 2f
+        val halfHeight = it.halfHeight
+        val halfWidth = it.halfWidth
 
         val naturalValue = progress * 100f
         drawProgressIndeterminate(
@@ -538,8 +536,8 @@ fun DiamondProgressIndicator(
 ) {
     DiamondProgressIndeterminate(modifier, strokeWidth, image, animationSpec) { it, startAngle ->
         val (width, height) = it.width to it.height
-        val halfHeight = width / 2f
-        val halfWidth = height / 2f
+        val halfHeight = it.halfHeight
+        val halfWidth = it.halfWidth
 
         val naturalValue = startAngle % 100f
         if (startAngle >= 100f) {
@@ -595,8 +593,8 @@ fun OuterDiamondProgressIndicator(
 ) {
     DiamondProgress(modifier.progressSemantics(progress), strokeWidth, image) {
         val (width, height) = it.width to it.height
-        val halfHeight = width / 2f
-        val halfWidth = height / 2f
+        val halfHeight = it.halfHeight
+        val halfWidth = it.halfWidth
         drawProgress(
             100f,
             x = halfWidth,
@@ -633,8 +631,8 @@ fun OuterDiamondProgressIndicator(
 ) {
     DiamondProgressIndeterminate(modifier, strokeWidth, image, animationSpec) { it, startAngle ->
         val (width, height) = it.width to it.height
-        val halfHeight = width / 2f
-        val halfWidth = height / 2f
+        val halfHeight = it.halfHeight
+        val halfWidth = it.halfWidth
         drawProgress(
             100f,
             x = halfWidth,
@@ -674,7 +672,10 @@ private class DiamondData(
     val width: Float,
     val height: Float,
     val stroke: Stroke
-)
+) {
+    val halfWidth by lazy { width / 2f }
+    val halfHeight by lazy { height / 2f }
+}
 
 @Composable
 private fun DiamondProgress(
