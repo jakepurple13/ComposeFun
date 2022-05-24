@@ -179,6 +179,7 @@ class MainActivity : ComponentActivity() {
                                             sys.setSystemBarsColor(Color.Black)
                                         }
                                     }
+                                    BottomNavVisibility(onShow = { showBottomNav = true }, onHide = { showBottomNav = false })
                                     InsetScreen(navController)
                                 }
                                 composable(Screen.PagerScreen.route) { PagerScreen(navController) }
