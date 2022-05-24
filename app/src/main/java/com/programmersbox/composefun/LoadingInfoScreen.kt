@@ -31,6 +31,7 @@ enum class LoadingState {
     }
 }
 
+
 class LoadingViewModel : ViewModel() {
 
     var showLoading by mutableStateOf(LoadingState.Loading)
