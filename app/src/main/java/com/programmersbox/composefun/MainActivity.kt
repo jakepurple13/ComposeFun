@@ -144,6 +144,7 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.ChuckNorrisScreen.route) { ChuckNorrisScreen(navController) }
                                 composable(Screen.UncleIrohScreen.route) { UncleIrohScreen(navController) }
                                 composable(Screen.PermissionScreen.route) { PermissionScreen(navController) }
+                                composable(Screen.SatisfyingScreen.route) { SatisfyingScreen(navController) }
                                 composable(
                                     Screen.ShadowScreen.route,
                                     enterTransition = { slideIntoContainer(AnimatedContentScope.SlideDirection.Up) },

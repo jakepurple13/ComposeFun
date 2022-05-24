@@ -37,8 +37,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -89,6 +87,7 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
     object TextFieldDropDownScreen : Screen("textfielddropdown", "TextField Screen")
     object ProgressScreen : Screen("progress", "Progress Screen")
     object LoadingInfoScreen : Screen("loadinginfo", "Loading Info Screen")
+    object SatisfyingScreen : Screen("satisfying", "Satisfying Screen")
 
     companion object {
         val items = arrayOf(
@@ -118,7 +117,8 @@ sealed class Screen(val route: String, val name: String, val icon: ImageVector? 
             AvatarScreen,
             TextFieldDropDownScreen,
             ProgressScreen,
-            LoadingInfoScreen
+            LoadingInfoScreen,
+            SatisfyingScreen
         )
 
         val gameItems = arrayOf(
@@ -257,15 +257,6 @@ fun BottomNavVisibility(
 
         // When the effect leaves the Composition, remove the observer
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
-}
-
-inline fun <reified V : ViewModel> factoryCreate(crossinline build: () -> V) = object : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(V::class.java)) {
-            return build() as T
-        }
-        throw IllegalArgumentException("Unknown class name")
     }
 }
 

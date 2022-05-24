@@ -1,12 +1,11 @@
 package com.programmersbox.composefun
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Shuffle
@@ -117,5 +116,39 @@ fun LoadingInfoScreen(navController: NavController, vm: LoadingViewModel = viewM
             }
         }
 
+    }
+}
+
+@Composable
+fun SatisfyingScreen(navController: NavController) {
+    M3ScaffoldTop(screen = Screen.SatisfyingScreen, navController = navController) { p ->
+        val inner = remember { Random.nextColor(a = 255) }
+        val outer = remember { Random.nextColor(a = 255) }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(p),
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            repeat(3) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    DiamondProgressIndicator(
+                        innerColor = inner,
+                        outerColor = outer,
+                        modifier = Modifier.size(100.dp),
+                        animationSpec = tween(1500)
+                    )
+                    DiamondProgressIndicator(
+                        innerColor = inner,
+                        outerColor = outer,
+                        modifier = Modifier.size(100.dp),
+                        animationSpec = tween(1500)
+                    )
+                }
+            }
+        }
     }
 }

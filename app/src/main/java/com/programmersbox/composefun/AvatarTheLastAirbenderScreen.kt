@@ -53,7 +53,7 @@ class AvatarViewModel(private val db: AvatarDatabase) : ViewModel() {
 fun ATLAScreen(navController: NavController) {
     val context = LocalContext.current
     val db = remember { AvatarDatabase.getInstance(context) }
-    val vm: AvatarViewModel = viewModel(factory = factoryCreate { AvatarViewModel(db) })
+    val vm: AvatarViewModel = viewModel { AvatarViewModel(db) }
     val data = vm.pager.collectAsLazyPagingItems()
 
     ScaffoldTop(
