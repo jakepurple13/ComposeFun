@@ -1,37 +1,25 @@
 package com.programmersbox.composefun
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -46,10 +34,6 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.mikepenz.aboutlibraries.Libs
-import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
-import com.mikepenz.aboutlibraries.ui.compose.util.author
-import com.mikepenz.aboutlibraries.util.withContext
 import com.programmersbox.composefun.games.*
 import com.programmersbox.composefun.ui.theme.ComposeFunTheme
 
@@ -229,156 +213,6 @@ private fun HubScreen(navController: NavController, header: Screen, items: Array
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier.fillMaxSize()
         ) { items(items) { Button(onClick = { navController.navigate(it.route) }) { Text(it.name, textAlign = TextAlign.Center) } } }
-    }
-}
-
-@Composable
-fun libraryList(librariesBlock: (Context) -> Libs = { context -> Libs.Builder().withContext(context).build() }): State<Libs?> {
-    val libraries = remember { mutableStateOf<Libs?>(null) }
-
-    val context = LocalContext.current
-    LaunchedEffect(libraries) { libraries.value = librariesBlock(context) }
-    return libraries
-}
-
-@ExperimentalComposeUiApi
-@Composable
-fun AboutLibrariesScreen(navController: NavController) {
-    val libraries by libraryList()
-    val context = LocalContext.current
-
-    var searchText by remember { mutableStateOf("") }
-    val libs = libraries?.libraries?.filter { it.name.contains(searchText, true) }
-
-    ScaffoldTop(
-        screen = Screen.AboutLibrariesScreen,
-        navController = navController,
-        topBarActions = { Text("${libs?.size ?: 0} libraries") },
-        bottomBar = {
-            BottomAppBar {
-                OutlinedTextField(
-                    value = searchText,
-                    onValueChange = { searchText = it },
-                    label = { Text("Search Libraries") },
-                    trailingIcon = { IconButton(onClick = { searchText = "" }) { Icon(Icons.Default.Clear, null) } },
-                    singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp)
-                )
-            }
-        }
-    ) { p ->
-        val colors = LibraryDefaults.libraryColors()
-        if (libs != null) {
-            LazyColumn(
-                Modifier.fillMaxSize(),
-                state = rememberLazyListState(),
-                contentPadding = p,
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                items(libs) { library ->
-                    val openDialog = rememberSaveable { mutableStateOf(false) }
-                    Card(
-                        backgroundColor = colors.backgroundColor,
-                        border = BorderStroke(1.dp, colors.contentColor)
-                    ) {
-                        val typography = MaterialTheme.typography
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { openDialog.value = true }
-                                .padding(LibraryDefaults.ContentPadding)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = library.name,
-                                    modifier = Modifier
-                                        .padding(top = 4.dp)
-                                        .weight(1f),
-                                    style = typography.h6,
-                                    color = colors.contentColor,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                val version = library.artifactVersion
-                                if (version != null) {
-                                    Text(
-                                        version,
-                                        modifier = Modifier.padding(start = 8.dp),
-                                        style = typography.body2,
-                                        color = colors.contentColor,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                            }
-                            val author = library.author
-                            if (author.isNotBlank()) {
-                                Text(
-                                    text = author,
-                                    style = typography.body2,
-                                    color = colors.contentColor
-                                )
-                            }
-                            if (library.licenses.isNotEmpty()) {
-                                Row(modifier = Modifier.padding(top = 8.dp)) {
-                                    library.licenses.forEach {
-                                        Badge(
-                                            modifier = Modifier.padding(end = 4.dp),
-                                            contentColor = colors.badgeContentColor,
-                                            backgroundColor = colors.badgeBackgroundColor
-                                        ) {
-                                            Text(text = it.name)
-                                        }
-                                    }
-                                }
-                            }
-                            if (!library.description.isNullOrBlank()) {
-                                Text(
-                                    text = library.description.orEmpty(),
-                                    style = typography.body2,
-                                    color = colors.contentColor,
-                                    modifier = Modifier.padding(top = 8.dp)
-                                )
-                            }
-                            if (!library.website.isNullOrBlank()) {
-                                Text(
-                                    text = library.website.orEmpty(),
-                                    style = typography.subtitle2,
-                                    color = colors.contentColor,
-                                    modifier = Modifier.padding(top = 8.dp)
-                                )
-                            }
-                        }
-                    }
-
-                    if (openDialog.value) {
-                        AlertDialog(
-                            onDismissRequest = { openDialog.value = false },
-                            confirmButton = {
-                                TextButton(
-                                    onClick = {
-                                        library.website?.let {
-                                            val i = Intent(Intent.ACTION_VIEW)
-                                            i.data = Uri.parse(it)
-                                            context.startActivity(i)
-                                        }
-                                        openDialog.value = false
-                                    }
-                                ) { Text("Open In Browser") }
-                            },
-                            dismissButton = { TextButton(onClick = { openDialog.value = false }) { Text("OK") } },
-                            title = { Text(library.name, style = MaterialTheme.typography.subtitle1) },
-                            text = { Text(library.website.orEmpty()) },
-                            modifier = Modifier.padding(16.dp),
-                            properties = DialogProperties(usePlatformDefaultWidth = false),
-                        )
-                    }
-                }
-            }
-        }
     }
 }
 
