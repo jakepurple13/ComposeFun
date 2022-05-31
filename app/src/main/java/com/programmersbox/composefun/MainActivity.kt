@@ -1,12 +1,15 @@
 package com.programmersbox.composefun
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -44,10 +47,8 @@ import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.mikepenz.aboutlibraries.Libs
-import com.mikepenz.aboutlibraries.ui.compose.HtmlText
 import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
 import com.mikepenz.aboutlibraries.ui.compose.util.author
-import com.mikepenz.aboutlibraries.ui.compose.util.htmlReadyLicenseContent
 import com.mikepenz.aboutlibraries.util.withContext
 import com.programmersbox.composefun.games.*
 import com.programmersbox.composefun.ui.theme.ComposeFunTheme
@@ -231,12 +232,20 @@ private fun HubScreen(navController: NavController, header: Screen, items: Array
     }
 }
 
+@Composable
+fun libraryList(librariesBlock: (Context) -> Libs = { context -> Libs.Builder().withContext(context).build() }): State<Libs?> {
+    val libraries = remember { mutableStateOf<Libs?>(null) }
+
+    val context = LocalContext.current
+    LaunchedEffect(libraries) { libraries.value = librariesBlock(context) }
+    return libraries
+}
+
 @ExperimentalComposeUiApi
 @Composable
 fun AboutLibrariesScreen(navController: NavController) {
-    var libraries by remember { mutableStateOf<Libs?>(null) }
+    val libraries by libraryList()
     val context = LocalContext.current
-    LaunchedEffect(libraries) { libraries = Libs.Builder().withContext(context).build() }
 
     var searchText by remember { mutableStateOf("") }
     val libs = libraries?.libraries?.filter { it.name.contains(searchText, true) }
@@ -346,7 +355,6 @@ fun AboutLibrariesScreen(navController: NavController) {
                     }
 
                     if (openDialog.value) {
-                        val scrollState = rememberScrollState()
                         AlertDialog(
                             onDismissRequest = { openDialog.value = false },
                             confirmButton = {
@@ -362,11 +370,8 @@ fun AboutLibrariesScreen(navController: NavController) {
                                 ) { Text("Open In Browser") }
                             },
                             dismissButton = { TextButton(onClick = { openDialog.value = false }) { Text("OK") } },
-                            text = {
-                                Column(
-                                    modifier = Modifier.verticalScroll(scrollState)
-                                ) { HtmlText(library.licenses.firstOrNull()?.htmlReadyLicenseContent.orEmpty()) }
-                            },
+                            title = { Text(library.name, style = MaterialTheme.typography.subtitle1) },
+                            text = { Text(library.website.orEmpty()) },
                             modifier = Modifier.padding(16.dp),
                             properties = DialogProperties(usePlatformDefaultWidth = false),
                         )
