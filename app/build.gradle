@@ -79,7 +79,7 @@ dependencies {
     implementation "androidx.compose.material3:material3:1.0.0-alpha12"
     implementation "androidx.compose.material:material-icons-core:$compose_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
-    def accompanist = "0.24.9-beta"
+    def accompanist = "0.24.10-beta"
     implementation "com.google.accompanist:accompanist-flowlayout:$accompanist"
     implementation "com.google.accompanist:accompanist-navigation-material:$accompanist"
     implementation "com.google.accompanist:accompanist-navigation-animation:$accompanist"
